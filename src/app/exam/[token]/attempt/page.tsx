@@ -119,26 +119,95 @@ export default function ExamAttemptPage() {
     setSupportsFullscreen(isSupported);
   }, []);
 
+  // Proctoring Event Queue & Reliable Flush Worker
+  const pendingEventsRef = useRef<
+    Array<{
+      id: string;
+      attempt_id: string;
+      event_type: string;
+      timestamp: string;
+      severity?: "alert" | "warning" | "info";
+      details?: unknown;
+    }>
+  >([]);
+  const isFlushingEventsRef = useRef<boolean>(false);
+
+  const flushProctorEvents = useCallback(async () => {
+    if (!attemptId || pendingEventsRef.current.length === 0 || isFlushingEventsRef.current) {
+      return;
+    }
+    isFlushingEventsRef.current = true;
+    const eventsToSend = [...pendingEventsRef.current];
+
+    try {
+      const res = await fetch("/api/proctor/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          attempt_id: attemptId,
+          events: eventsToSend,
+        }),
+      });
+
+      if (res.ok) {
+        // Remove successfully sent events from the queue
+        const sentIds = new Set(eventsToSend.map((e) => e.id));
+        pendingEventsRef.current = pendingEventsRef.current.filter((e) => !sentIds.has(e.id));
+      } else {
+        console.warn("Proctor event flush response status:", res.status);
+      }
+    } catch (e) {
+      console.warn("Proctor event flush network notice:", e);
+    } finally {
+      isFlushingEventsRef.current = false;
+    }
+  }, [attemptId]);
+
+  // Periodic flush interval (every 3 seconds)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (pendingEventsRef.current.length > 0) {
+        flushProctorEvents();
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [flushProctorEvents]);
+
   // Proctoring Log function
   const logProctorEvent = useCallback(
-    async (eventType: string, details?: unknown) => {
+    (
+      eventType: string,
+      details?: unknown,
+      severity?: "alert" | "warning" | "info"
+    ) => {
       if (!attemptId) return;
-      try {
-        await fetch("/api/proctor/log", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            attempt_id: attemptId,
-            event_type: eventType,
-            timestamp: new Date().toISOString(),
-            details,
-          }),
-        });
-      } catch (e) {
-        console.error("Proctor event logging failed:", e);
-      }
+
+      const eventId =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `evt_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+      const inferredSeverity =
+        severity ||
+        (details && typeof details === "object" && "severity" in details
+          ? (details as { severity?: "alert" | "warning" | "info" }).severity
+          : undefined);
+
+      const newEvent = {
+        id: eventId,
+        attempt_id: attemptId,
+        event_type: eventType,
+        timestamp: new Date().toISOString(),
+        severity: inferredSeverity,
+        details,
+      };
+
+      pendingEventsRef.current.push(newEvent);
+
+      // Trigger immediate background flush
+      flushProctorEvents();
     },
-    [attemptId]
+    [attemptId, flushProctorEvents]
   );
 
   // Fullscreen Request Helper (with webkit prefix fallback)
@@ -488,6 +557,7 @@ export default function ExamAttemptPage() {
 
       try {
         await saveResponses(true);
+        await flushProctorEvents();
 
         const res = await fetch(`/api/exam-link/${token}/submit`, {
           method: "POST",
@@ -495,6 +565,7 @@ export default function ExamAttemptPage() {
           body: JSON.stringify({
             attempt_id: attemptId,
             is_auto_submitted: isAuto,
+            proctor_events: pendingEventsRef.current,
           }),
         });
 
@@ -523,7 +594,7 @@ export default function ExamAttemptPage() {
         setIsSubmitting(false);
       }
     },
-    [attemptId, isSubmitting, saveResponses, token, router]
+    [attemptId, isSubmitting, saveResponses, flushProctorEvents, token, router]
   );
 
   // 6. Countdown Timer

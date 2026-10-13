@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPrivilegedSupabaseClient } from "@/lib/supabase/admin";
 import { getAuthenticatedUser } from "@/lib/auth/get-user";
+import crypto from "crypto";
 
 export async function POST(
   request: NextRequest,
@@ -17,7 +18,7 @@ export async function POST(
     }
 
     const body = await request.json();
-    const { attempt_id, is_auto_submitted = false } = body;
+    const { attempt_id, is_auto_submitted = false, proctor_events } = body;
 
     if (!attempt_id) {
       return NextResponse.json(
@@ -41,7 +42,7 @@ export async function POST(
     // 2. Validate attempt ownership and status via privileged client
     const { data: attempt, error: attemptError } = await privilegedClient
       .from("exam_attempts")
-      .select("id, student_id, started_at, status, score, total_correct, total_incorrect, total_unanswered, is_auto_submitted, exam_id, exams(id, title, marks_per_question, negative_marks, max_marks, ends_at, duration_minutes)")
+      .select("id, student_id, started_at, status, score, total_correct, total_incorrect, total_unanswered, is_auto_submitted, exam_id, proctor_log, exams(id, title, marks_per_question, negative_marks, max_marks, ends_at, duration_minutes)")
       .eq("id", attempt_id)
       .maybeSingle();
 
@@ -163,7 +164,34 @@ export async function POST(
 
     const submittedAt = now.toISOString();
 
-    // 7. Update exam_attempt: score, total_correct, total_incorrect, total_unanswered, submitted_at, status='graded'
+    // 7. Merge any in-flight proctor events submitted with attempt
+    let finalProctorLog = Array.isArray(attempt.proctor_log)
+      ? (attempt.proctor_log as Array<Record<string, unknown>>)
+      : [];
+
+    if (Array.isArray(proctor_events) && proctor_events.length > 0) {
+      const existingIds = new Set(
+        finalProctorLog.map((e) => (e as Record<string, unknown>)?.id).filter(Boolean)
+      );
+      for (const ev of proctor_events) {
+        if (!ev || !ev.event_type) continue;
+        const evId = ev.id || crypto.randomUUID();
+        if (existingIds.has(evId)) continue;
+        existingIds.add(evId);
+        finalProctorLog.push({
+          id: evId,
+          attempt_id: attempt.id,
+          student_id: attempt.student_id,
+          exam_id: attempt.exam_id,
+          event_type: ev.event_type,
+          timestamp: ev.timestamp || submittedAt,
+          severity: ev.severity || "warning",
+          details: ev.details || null,
+        });
+      }
+    }
+
+    // Update exam_attempt: score, total_correct, total_incorrect, total_unanswered, submitted_at, proctor_log, status='graded'
     const { error: updateError } = await privilegedClient
       .from("exam_attempts")
       .update({
@@ -174,6 +202,7 @@ export async function POST(
         submitted_at: submittedAt,
         status: "graded",
         is_auto_submitted: autoSubmitFlag,
+        proctor_log: finalProctorLog as unknown as import("@/lib/types/database").Json,
       })
       .eq("id", attempt_id);
 

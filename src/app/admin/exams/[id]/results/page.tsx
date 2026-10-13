@@ -680,10 +680,22 @@ export default function AdminExamResultsPage() {
                     {selectedAttemptForProctor.proctor_log_summary.head_turns || 0}
                   </span>
                 </div>
-                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800 col-span-2">
-                  <span className="text-slate-400 block text-[9px]">Total Monitored Alerts</span>
+                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
+                  <span className="text-slate-400 block text-[9px]">Looking Down</span>
+                  <span className="text-sm font-bold text-amber-300">
+                    {selectedAttemptForProctor.proctor_log_summary.looking_down || 0}
+                  </span>
+                </div>
+                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
+                  <span className="text-slate-400 block text-[9px]">Gaze Away</span>
+                  <span className="text-sm font-bold text-blue-300">
+                    {selectedAttemptForProctor.proctor_log_summary.gaze_away || 0}
+                  </span>
+                </div>
+                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
+                  <span className="text-slate-400 block text-[9px]">Total Alerts</span>
                   <span className="text-sm font-bold text-slate-200">
-                    {selectedAttemptForProctor.proctor_log_summary.total_events}
+                    {selectedAttemptForProctor.warnings_count ?? selectedAttemptForProctor.proctor_log_summary.total_events}
                   </span>
                 </div>
               </div>

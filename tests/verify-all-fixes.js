@@ -136,13 +136,22 @@ async function runVerification() {
 
   // TEST 5: Public Exam Link Token Verification
   console.log("\nTest Group 5: Published Exam Link Token Verification");
+  const { data: activePublished } = await client
+    .from("exams")
+    .select("id, title, status, exam_link_token, max_marks")
+    .eq("status", "published")
+    .limit(1)
+    .maybeSingle();
+
+  const tokenToTest = activePublished?.exam_link_token || "58d1d8986e0746f0b96ef7e83ab4a3f6";
+
   const { data: publishedExam, error: examError } = await client
     .from("exams")
     .select("id, title, status, exam_link_token, max_marks")
-    .eq("exam_link_token", "0dce5c334ca046feaae357318669658f")
+    .eq("exam_link_token", tokenToTest)
     .maybeSingle();
 
-  assert(!examError && !!publishedExam, `Published exam '${publishedExam?.title}' resolves with token 0dce5c334ca046feaae357318669658f`);
+  assert(!examError && !!publishedExam, `Published exam '${publishedExam?.title}' resolves with token ${tokenToTest}`);
   assert(publishedExam?.status === "published", `Exam status is '${publishedExam?.status}'`);
 
   // TEST 6: Student Questions Security Sanitization

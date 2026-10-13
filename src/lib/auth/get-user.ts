@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { getPrivilegedSupabaseClient } from "@/lib/supabase/admin";
 import { getCandidateSession } from "./candidate-session";
 
+import { headers } from "next/headers";
+
 export interface AuthenticatedUser {
   id: string;
   email: string;
@@ -17,9 +19,20 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
   // 1. Check Supabase Auth first
   try {
     const supabase = await createClient();
+    let bearerToken: string | undefined;
+    try {
+      const reqHeaders = await headers();
+      const authHeader = reqHeaders.get("authorization");
+      if (authHeader?.startsWith("Bearer ")) {
+        bearerToken = authHeader.slice(7).trim();
+      }
+    } catch {
+      // In environments where headers() is not available
+    }
+
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getUser(bearerToken);
 
     if (user) {
       const privileged = await getPrivilegedSupabaseClient();

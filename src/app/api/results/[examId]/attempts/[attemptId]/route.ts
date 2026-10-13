@@ -19,10 +19,15 @@ export async function GET(
     const supabase = await createClient();
 
     // 1. Require admin auth
+    const authHeader = request.headers.get("authorization");
+    const bearerToken = authHeader?.startsWith("Bearer ")
+      ? authHeader.slice(7).trim()
+      : undefined;
+
     const {
       data: { user },
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getUser(bearerToken);
 
     if (authError || !user) {
       return NextResponse.json(
@@ -106,8 +111,7 @@ export async function GET(
           option_b,
           option_c,
           option_d,
-          correct_option,
-          explanation
+          correct_option
         )
       `)
       .eq("attempt_id", attemptId)
