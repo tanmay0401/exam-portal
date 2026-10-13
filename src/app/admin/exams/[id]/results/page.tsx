@@ -44,6 +44,8 @@ import {
   TrendingDown,
   ArrowUpDown,
   Search,
+  FileText,
+  VideoOff,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -68,6 +70,7 @@ interface AttemptRecord {
     tab_switches: number;
     fullscreen_exits: number;
     face_losses: number;
+    camera_disconnects?: number;
     multiple_faces?: number;
     head_turns?: number;
     looking_down?: number;
@@ -78,6 +81,38 @@ interface AttemptRecord {
     timestamp: string;
     details?: unknown;
   }>;
+}
+
+interface QuestionResponseDetail {
+  response_id: string;
+  question_id: string;
+  question_order: number;
+  question_text: string;
+  options: {
+    A: string;
+    B: string;
+    C: string;
+    D: string;
+  };
+  selected_option: string | null;
+  correct_option: string;
+  is_correct: boolean | null;
+  marks_awarded: number;
+  explanation: string;
+}
+
+interface AttemptDetailData {
+  attempt: {
+    id: string;
+    student_name: string;
+    student_email: string;
+    score: number | null;
+    total_correct: number;
+    total_incorrect: number;
+    total_unanswered: number;
+    status: string;
+  };
+  responses: QuestionResponseDetail[];
 }
 
 interface ExamSummary {
@@ -104,6 +139,11 @@ export default function AdminExamResultsPage() {
   // Proctor details dialog
   const [selectedAttemptForProctor, setSelectedAttemptForProctor] = useState<AttemptRecord | null>(null);
 
+  // Question responses dialog
+  const [selectedAttemptForResponses, setSelectedAttemptForResponses] = useState<string | null>(null);
+  const [attemptDetail, setAttemptDetail] = useState<AttemptDetailData | null>(null);
+  const [loadingResponses, setLoadingResponses] = useState(false);
+
   // Fetch results from API
   const fetchResults = async () => {
     setLoading(true);
@@ -128,6 +168,26 @@ export default function AdminExamResultsPage() {
   useEffect(() => {
     fetchResults();
   }, [examId]);
+
+  // Fetch individual attempt responses
+  const handleViewResponses = async (attemptId: string) => {
+    setSelectedAttemptForResponses(attemptId);
+    setLoadingResponses(true);
+    setAttemptDetail(null);
+    try {
+      const res = await fetch(`/api/results/${examId}/attempts/${attemptId}`);
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || "Failed to load attempt responses");
+      } else {
+        setAttemptDetail(data);
+      }
+    } catch {
+      toast.error("Network error while loading responses");
+    } finally {
+      setLoadingResponses(false);
+    }
+  };
 
   // Filter by Tab (live vs dry run)
   const filteredByTab = useMemo(() => {
@@ -435,13 +495,14 @@ export default function AdminExamResultsPage() {
                       <TableHead className="text-slate-400 text-xs font-semibold">Submitted At</TableHead>
                       <TableHead className="text-slate-400 text-xs font-semibold text-center">Mode</TableHead>
                       <TableHead className="text-slate-400 text-xs font-semibold text-center">Proctor Warnings</TableHead>
+                      <TableHead className="text-slate-400 text-xs font-semibold text-center">Responses</TableHead>
                     </TableRow>
                   </TableHeader>
 
                   <TableBody>
                     {processedAttempts.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={9} className="text-center py-12 text-slate-400 text-xs">
+                        <TableCell colSpan={10} className="text-center py-12 text-slate-400 text-xs">
                           No attempt records match current filters.
                         </TableCell>
                       </TableRow>
@@ -464,7 +525,7 @@ export default function AdminExamResultsPage() {
                               <span
                                 className={
                                   attempt.score >= (exam?.max_marks ? exam.max_marks * 0.4 : 40)
-                                    ? "text-emerald-400"
+                                     ? "text-emerald-400"
                                     : "text-rose-400"
                                 }
                               >
@@ -539,6 +600,19 @@ export default function AdminExamResultsPage() {
                               <Eye className="size-3 ml-0.5 opacity-70" />
                             </button>
                           </TableCell>
+
+                          {/* Detailed Responses Action */}
+                          <TableCell className="text-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleViewResponses(attempt.id)}
+                              className="text-indigo-400 hover:text-indigo-300 hover:bg-indigo-950/40 text-[11px] h-7 px-2"
+                            >
+                              <FileText className="size-3 mr-1" />
+                              <span>Answers</span>
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       ))
                     )}
@@ -568,8 +642,8 @@ export default function AdminExamResultsPage() {
 
           {selectedAttemptForProctor && (
             <div className="space-y-4 py-2">
-              {/* Enhanced Categorical Summary Badges */}
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center text-xs">
+              {/* Categorical Summary Badges */}
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 text-center text-xs">
                 <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
                   <span className="text-slate-400 block text-[9px]">Tab Switches</span>
                   <span className="text-sm font-bold text-amber-400">
@@ -577,7 +651,7 @@ export default function AdminExamResultsPage() {
                   </span>
                 </div>
                 <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400 block text-[9px]">Fullscreen</span>
+                  <span className="text-slate-400 block text-[9px]">Fullscreen Exits</span>
                   <span className="text-sm font-bold text-rose-400">
                     {selectedAttemptForProctor.proctor_log_summary.fullscreen_exits}
                   </span>
@@ -586,6 +660,12 @@ export default function AdminExamResultsPage() {
                   <span className="text-slate-400 block text-[9px]">Face Losses</span>
                   <span className="text-sm font-bold text-rose-300">
                     {selectedAttemptForProctor.proctor_log_summary.face_losses}
+                  </span>
+                </div>
+                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
+                  <span className="text-slate-400 block text-[9px]">Camera Drops</span>
+                  <span className="text-sm font-bold text-rose-500">
+                    {selectedAttemptForProctor.proctor_log_summary.camera_disconnects || 0}
                   </span>
                 </div>
                 <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
@@ -600,8 +680,8 @@ export default function AdminExamResultsPage() {
                     {selectedAttemptForProctor.proctor_log_summary.head_turns || 0}
                   </span>
                 </div>
-                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400 block text-[9px]">Total Alerts</span>
+                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800 col-span-2">
+                  <span className="text-slate-400 block text-[9px]">Total Monitored Alerts</span>
                   <span className="text-sm font-bold text-slate-200">
                     {selectedAttemptForProctor.proctor_log_summary.total_events}
                   </span>
@@ -612,7 +692,7 @@ export default function AdminExamResultsPage() {
               <div className="p-2.5 rounded-lg bg-indigo-950/30 border border-indigo-500/20 text-[11px] text-indigo-300 flex items-start gap-2">
                 <Shield className="size-4 text-indigo-400 shrink-0 mt-0.5" />
                 <span>
-                  <strong>Advisory Note:</strong> AI detections highlight potential environmental changes (e.g. movement, secondary individuals). Automated flags should be reviewed with context and do not automatically confirm academic misconduct.
+                  <strong>Advisory Note:</strong> AI detections highlight potential environmental changes (e.g. movement, secondary individuals, camera interruptions). Automated flags should be reviewed with context and do not automatically confirm misconduct.
                 </span>
               </div>
 
@@ -628,6 +708,7 @@ export default function AdminExamResultsPage() {
                       "multiple_faces_detected",
                       "fullscreen_exit",
                       "background_person_detected",
+                      "camera_disconnected",
                     ].includes(log.event_type);
                     const isMediumAlert = [
                       "tab_hidden",
@@ -679,6 +760,139 @@ export default function AdminExamResultsPage() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Question-Wise Responses Dialog */}
+      <Dialog
+        open={!!selectedAttemptForResponses}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedAttemptForResponses(null);
+            setAttemptDetail(null);
+          }
+        }}
+      >
+        <DialogContent className="border-slate-800 bg-slate-900 text-slate-100 sm:max-w-2xl max-h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold text-white flex items-center gap-2">
+              <FileText className="size-4 text-indigo-400" />
+              Candidate Responses: {attemptDetail?.attempt?.student_name || "Assessment Review"}
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">
+              Question-by-question breakdown, candidate selections, answer keys, and awarded marks.
+            </DialogDescription>
+          </DialogHeader>
+
+          {loadingResponses ? (
+            <div className="flex flex-col items-center justify-center py-12 space-y-2">
+              <Loader2 className="size-8 text-indigo-400 animate-spin" />
+              <p className="text-xs text-slate-400">Loading student responses...</p>
+            </div>
+          ) : attemptDetail ? (
+            <div className="flex-1 overflow-y-auto space-y-4 py-2 pr-1">
+              {/* Summary Banner */}
+              <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div>
+                  <span className="text-slate-400">Student: </span>
+                  <strong className="text-white">{attemptDetail.attempt.student_name}</strong>
+                  <span className="text-slate-500 font-mono text-[11px] ml-1">({attemptDetail.attempt.student_email})</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs bg-indigo-500/10 text-indigo-300 border-indigo-500/20">
+                    Score: {attemptDetail.attempt.score ?? 0} / {exam?.max_marks ?? 100}
+                  </Badge>
+                  <Badge variant="outline" className="text-xs bg-emerald-500/10 text-emerald-300 border-emerald-500/20">
+                    +{attemptDetail.attempt.total_correct} Correct
+                  </Badge>
+                  <Badge variant="outline" className="text-xs bg-rose-500/10 text-rose-300 border-rose-500/20">
+                    -{attemptDetail.attempt.total_incorrect} Incorrect
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Question List */}
+              {attemptDetail.responses.length === 0 ? (
+                <div className="text-center py-8 text-xs text-slate-500">
+                  No response data recorded for this attempt.
+                </div>
+              ) : (
+                attemptDetail.responses.map((r, idx) => {
+                  const isCorrect = r.is_correct === true;
+                  const isWrong = r.is_correct === false && r.selected_option !== null;
+
+                  return (
+                    <div
+                      key={r.response_id || idx}
+                      className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2 text-xs"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="font-semibold text-slate-200">
+                          Q{r.question_order}. {r.question_text}
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] py-0 px-2 shrink-0 ${
+                            isCorrect
+                              ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
+                              : isWrong
+                              ? "bg-rose-500/10 text-rose-300 border-rose-500/30"
+                              : "bg-slate-800 text-slate-400 border-slate-700"
+                          }`}
+                        >
+                          {isCorrect
+                            ? `+${r.marks_awarded || 4} Marks`
+                            : isWrong
+                            ? `${r.marks_awarded || -1} Mark`
+                            : "0 (Unattempted)"}
+                        </Badge>
+                      </div>
+
+                      {/* Options */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
+                        {(["A", "B", "C", "D"] as const).map((optKey) => {
+                          const optText = r.options[optKey];
+                          if (!optText) return null;
+                          const isSelected = r.selected_option?.trim().toUpperCase() === optKey;
+                          const isAnswerKey = r.correct_option?.trim().toUpperCase() === optKey;
+
+                          let optClass = "border-slate-800/80 bg-slate-900/40 text-slate-400";
+                          if (isAnswerKey) {
+                            optClass = "border-emerald-500/40 bg-emerald-500/10 text-emerald-200 font-medium";
+                          } else if (isSelected && !isAnswerKey) {
+                            optClass = "border-rose-500/40 bg-rose-500/10 text-rose-200 font-medium";
+                          }
+
+                          return (
+                            <div
+                              key={optKey}
+                              className={`p-2 rounded-lg border text-[11px] flex items-center justify-between gap-1.5 ${optClass}`}
+                            >
+                              <span className="truncate">
+                                <strong className="mr-1">{optKey}.</strong> {optText}
+                              </span>
+                              {isAnswerKey && (
+                                <span className="text-[9px] text-emerald-400 font-bold shrink-0">Correct Key</span>
+                              )}
+                              {isSelected && !isAnswerKey && (
+                                <span className="text-[9px] text-rose-400 font-bold shrink-0">Candidate Choice</span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {r.explanation && (
+                        <div className="p-2 rounded bg-indigo-950/20 border border-indigo-500/10 text-[11px] text-indigo-300">
+                          <strong>Explanation:</strong> {r.explanation}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          ) : null}
         </DialogContent>
       </Dialog>
 

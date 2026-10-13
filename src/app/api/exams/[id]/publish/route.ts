@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { authenticateAdmin } from "@/lib/auth-admin";
+import { getAppBaseUrl } from "@/lib/utils";
 import crypto from "crypto";
 
 interface RouteParams {
@@ -74,12 +75,16 @@ export async function POST(
       );
     }
 
+    const baseUrl = getAppBaseUrl();
+    const shareableUrl = `${baseUrl}/exam/${token}`;
+
     return NextResponse.json({
       message: "Exam successfully published.",
       exam: updatedExam,
       token,
       exam_link_token: token,
       exam_link: `/exam/${token}`,
+      shareable_url: shareableUrl,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Failed to publish exam.";

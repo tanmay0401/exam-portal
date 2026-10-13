@@ -16,6 +16,7 @@ import {
   Search,
   Sparkles,
   RefreshCw,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -346,6 +347,16 @@ export default function ExamsListPage() {
 
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1.5">
+                          <Link href={`/admin/exams/${exam.id}/results`}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 px-2.5 text-xs text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
+                            >
+                              <BarChart3 className="size-3.5 mr-1" />
+                              <span>Results</span>
+                            </Button>
+                          </Link>
                           <Link href={`/admin/exams/${exam.id}`}>
                             <Button
                               variant="ghost"

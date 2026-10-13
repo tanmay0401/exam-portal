@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getPrivilegedSupabaseClient } from "@/lib/supabase/admin";
 
 export async function POST(
   request: NextRequest,
@@ -26,6 +27,7 @@ export async function POST(
     }
 
     const supabase = await createClient();
+    const privilegedClient = await getPrivilegedSupabaseClient();
 
     // 1. Require student auth
     const {
@@ -40,8 +42,8 @@ export async function POST(
       );
     }
 
-    // 2. Validate attempt ownership and status
-    const { data: attempt, error: attemptError } = await supabase
+    // 2. Validate attempt ownership and status via privileged client
+    const { data: attempt, error: attemptError } = await privilegedClient
       .from("exam_attempts")
       .select("id, student_id, started_at, status, score, total_correct, total_incorrect, total_unanswered, is_auto_submitted, exam_id, exams(id, title, marks_per_question, negative_marks, max_marks, ends_at, duration_minutes)")
       .eq("id", attempt_id)
@@ -111,7 +113,7 @@ export async function POST(
     }
 
     // 4. Fetch all responses for this attempt
-    const { data: responses, error: respError } = await supabase
+    const { data: responses, error: respError } = await privilegedClient
       .from("exam_responses")
       .select("question_id, selected_option")
       .eq("attempt_id", attempt_id);
@@ -123,9 +125,9 @@ export async function POST(
       );
     }
 
-    // 5. Fetch correct answers from questions table (SERVER ONLY)
+    // 5. Fetch correct answers from questions table (SERVER ONLY via elevated client)
     const questionIds = responses.map((r) => r.question_id);
-    const { data: questions, error: qError } = await supabase
+    const { data: questions, error: qError } = await privilegedClient
       .from("questions")
       .select("id, correct_option")
       .in("id", questionIds);
@@ -166,7 +168,7 @@ export async function POST(
     const submittedAt = now.toISOString();
 
     // 7. Update exam_attempt: score, total_correct, total_incorrect, total_unanswered, submitted_at, status='graded'
-    const { error: updateError } = await supabase
+    const { error: updateError } = await privilegedClient
       .from("exam_attempts")
       .update({
         score: calculatedScore,
@@ -189,9 +191,7 @@ export async function POST(
     const maxMarks = exam.max_marks || (responses.length * positiveMarks);
     const percentage = maxMarks > 0 ? Math.round((Math.max(0, calculatedScore) / maxMarks) * 1000) / 10 : 0;
 
-    // Return the score summary (WITHOUT correct answers)
-    return NextResponse.json({
-      success: true,
+    const resultPayload = {
       attempt_id: attempt.id,
       score: calculatedScore,
       total_correct: totalCorrect,
@@ -201,6 +201,14 @@ export async function POST(
       percentage,
       is_auto_submitted: autoSubmitFlag,
       submitted_at: submittedAt,
+      status: "graded",
+    };
+
+    // Return the score summary (WITHOUT correct answers) with both result and top-level fields
+    return NextResponse.json({
+      success: true,
+      result: resultPayload,
+      ...resultPayload,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Internal Server Error";

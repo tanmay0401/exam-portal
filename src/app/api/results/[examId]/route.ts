@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getPrivilegedSupabaseClient } from "@/lib/supabase/admin";
 
 export async function GET(
   request: NextRequest,
@@ -30,7 +31,9 @@ export async function GET(
       );
     }
 
-    const { data: profile } = await supabase
+    const privilegedClient = await getPrivilegedSupabaseClient();
+
+    const { data: profile } = await privilegedClient
       .from("profiles")
       .select("role")
       .eq("id", user.id)
@@ -44,7 +47,7 @@ export async function GET(
     }
 
     // 2. Fetch exam info
-    const { data: exam, error: examError } = await supabase
+    const { data: exam, error: examError } = await privilegedClient
       .from("exams")
       .select("id, title, max_marks, total_questions, duration_minutes, status")
       .eq("id", examId)
@@ -61,7 +64,7 @@ export async function GET(
     const searchParams = request.nextUrl.searchParams;
     const dryRunParam = searchParams.get("dry_run");
 
-    let query = supabase
+    let query = privilegedClient
       .from("exam_attempts")
       .select(`
         id,
@@ -115,7 +118,7 @@ export async function GET(
         ? (attempt.proctor_log as Array<{ event_type: string; timestamp: string; details?: unknown }>)
         : [];
 
-      // Calculate warnings count: tab_hidden, fullscreen_exit, face_not_detected, multiple_faces, head_turned, etc.
+      // Calculate warnings count
       const warningEvents = proctorLog.filter((log) =>
         [
           "tab_hidden",
@@ -127,6 +130,7 @@ export async function GET(
           "gaze_away",
           "background_person_detected",
           "audio_disturbance",
+          "camera_disconnected",
         ].includes(log.event_type)
       );
 
@@ -150,6 +154,7 @@ export async function GET(
           tab_switches: proctorLog.filter((l) => l.event_type === "tab_hidden").length,
           fullscreen_exits: proctorLog.filter((l) => l.event_type === "fullscreen_exit").length,
           face_losses: proctorLog.filter((l) => l.event_type === "face_not_detected").length,
+          camera_disconnects: proctorLog.filter((l) => l.event_type === "camera_disconnected").length,
           multiple_faces: proctorLog.filter((l) =>
             ["multiple_faces_detected", "background_person_detected"].includes(l.event_type)
           ).length,

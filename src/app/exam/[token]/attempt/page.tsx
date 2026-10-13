@@ -39,9 +39,16 @@ import {
   Users,
   Eye,
   UserX,
+  VideoOff,
+  RefreshCw,
+  Clock,
 } from "lucide-react";
 import { toast } from "sonner";
-import { VisionProctorDetector, VisionAnalysisResult } from "@/lib/proctoring/vision-detector";
+import {
+  VisionProctorDetector,
+  VisionAnalysisResult,
+  isBlackOrEmptyFrame,
+} from "@/lib/proctoring/vision-detector";
 
 interface QuestionItem {
   id: string;
@@ -87,8 +94,11 @@ export default function ExamAttemptPage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [cameraActive, setCameraActive] = useState<boolean>(false);
+  const [cameraBlocked, setCameraBlocked] = useState<boolean>(false);
+  const [cameraErrorDetail, setCameraErrorDetail] = useState<string>("");
   const detectorRef = useRef<VisionProctorDetector | null>(null);
   const visionIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const cameraWatchdogRef = useRef<NodeJS.Timeout | null>(null);
   const [aiVisionResult, setAiVisionResult] = useState<VisionAnalysisResult | null>(null);
   const [proctorWarningsCount, setProctorWarningsCount] = useState<number>(0);
   const [activeWarningBanner, setActiveWarningBanner] = useState<string | null>(null);
@@ -229,66 +239,121 @@ export default function ExamAttemptPage() {
     initAttempt();
   }, [token, router, supabase, enterFullscreen]);
 
+  // Failure handler for camera disconnect / occlusion / track end
+  const handleCameraFailure = useCallback(
+    (reason: string) => {
+      setCameraActive(false);
+      setCameraBlocked(true);
+      setCameraErrorDetail(reason);
+      logProctorEvent("camera_disconnected", { reason });
+      toast.error(`Mandatory Camera Interrupted: ${reason}. Test is locked until camera is restored.`);
+    },
+    [logProctorEvent]
+  );
+
   // 2. Camera feed startup and AI Computer Vision Engine Integration
-  useEffect(() => {
-    async function initCameraAndVision() {
-      try {
-        if (!navigator.mediaDevices?.getUserMedia) return;
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 480 }, height: { ideal: 360 }, facingMode: "user" },
-          audio: false,
-        });
-        streamRef.current = stream;
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.play().catch(() => {});
-        }
-        setCameraActive(true);
-
-        // Initialize Real-time AI Edge Computer Vision Detector
-        const detector = new VisionProctorDetector((warning) => {
-          setProctorWarningsCount((prev) => prev + 1);
-          setActiveWarningBanner(warning.message);
-
-          // Clear banner message after 6 seconds
-          setTimeout(() => {
-            setActiveWarningBanner((current) => (current === warning.message ? null : current));
-          }, 6000);
-
-          // Log to server audit ledger
-          logProctorEvent(warning.type, {
-            message: warning.message,
-            severity: warning.severity,
-            details: warning.details,
-          });
-
-          if (warning.severity === "alert") {
-            toast.error(`Proctor Security Alert: ${warning.message}`, { duration: 6000 });
-          } else {
-            toast.warning(`Proctor Notice: ${warning.message}`, { duration: 5000 });
-          }
-        });
-
-        const isReady = await detector.initialize();
-        if (isReady) {
-          detectorRef.current = detector;
-
-          // Start continuous analysis frame interval (every 400ms)
-          visionIntervalRef.current = setInterval(() => {
-            if (videoRef.current && detectorRef.current) {
-              const res = detectorRef.current.analyzeFrame(videoRef.current);
-              if (res) {
-                setAiVisionResult(res);
-              }
-            }
-          }, 400);
-        }
-      } catch (e) {
-        console.warn("Attempt camera init notice:", e);
-        setCameraActive(false);
+  const initCameraAndVision = useCallback(async () => {
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        handleCameraFailure("Webcam API not supported in browser");
+        return;
       }
-    }
 
+      // Stop previous tracks if any
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
+      }
+      if (visionIntervalRef.current) {
+        clearInterval(visionIntervalRef.current);
+      }
+      if (detectorRef.current) {
+        detectorRef.current.dispose();
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 480 }, height: { ideal: 360 }, facingMode: "user" },
+        audio: false,
+      });
+
+      const videoTrack = stream.getVideoTracks()[0];
+      if (!videoTrack) {
+        handleCameraFailure("No active video track provided by webcam.");
+        return;
+      }
+
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play().catch(() => {});
+      }
+
+      // Hardware lifecycle track listeners
+      videoTrack.onended = () => {
+        handleCameraFailure("Camera device ended or hardware disconnected");
+      };
+      videoTrack.onmute = () => {
+        handleCameraFailure("Camera stream was muted by operating system");
+      };
+
+      setCameraActive(true);
+      setCameraBlocked(false);
+      setCameraErrorDetail("");
+      logProctorEvent("camera_restored", { message: "Camera feed successfully active" });
+
+      // Initialize Real-time AI Edge Computer Vision Detector
+      const detector = new VisionProctorDetector((warning) => {
+        setProctorWarningsCount((prev) => prev + 1);
+        setActiveWarningBanner(warning.message);
+
+        setTimeout(() => {
+          setActiveWarningBanner((current) => (current === warning.message ? null : current));
+        }, 6000);
+
+        logProctorEvent(warning.type, {
+          message: warning.message,
+          severity: warning.severity,
+          details: warning.details,
+        });
+
+        if (warning.severity === "alert") {
+          toast.error(`Proctor Security Alert: ${warning.message}`, { duration: 6000 });
+        } else {
+          toast.warning(`Proctor Notice: ${warning.message}`, { duration: 5000 });
+        }
+      });
+
+      const isReady = await detector.initialize();
+      if (isReady) {
+        detectorRef.current = detector;
+
+        // Continuous analysis frame interval (every 400ms)
+        visionIntervalRef.current = setInterval(() => {
+          if (videoRef.current && detectorRef.current) {
+            // Check black or empty frame
+            if (isBlackOrEmptyFrame(videoRef.current)) {
+              handleCameraFailure("Camera feed is pitch black or sensor is covered");
+              return;
+            }
+
+            const res = detectorRef.current.analyzeFrame(videoRef.current);
+            if (res) {
+              setAiVisionResult(res);
+            }
+          }
+        }, 400);
+      } else {
+        handleCameraFailure("Failed to initialize AI vision proctoring engine");
+      }
+    } catch (e) {
+      console.warn("Attempt camera init notice:", e);
+      handleCameraFailure(
+        e instanceof Error ? e.message : "Camera permission denied or camera device busy"
+      );
+    }
+  }, [handleCameraFailure, logProctorEvent]);
+
+  // Initial trigger
+  useEffect(() => {
     initCameraAndVision();
 
     return () => {
@@ -302,7 +367,26 @@ export default function ExamAttemptPage() {
         detectorRef.current.dispose();
       }
     };
-  }, [logProctorEvent]);
+  }, [initCameraAndVision]);
+
+  // Watchdog monitoring active stream state
+  useEffect(() => {
+    cameraWatchdogRef.current = setInterval(() => {
+      if (cameraActive && !cameraBlocked) {
+        const stream = streamRef.current;
+        const videoTrack = stream?.getVideoTracks()[0];
+        if (!stream || !stream.active || !videoTrack || videoTrack.readyState !== "live") {
+          handleCameraFailure("Webcam track dropped in background");
+        } else if (videoRef.current && isBlackOrEmptyFrame(videoRef.current)) {
+          handleCameraFailure("Webcam produced pitch-black frames");
+        }
+      }
+    }, 1500);
+
+    return () => {
+      if (cameraWatchdogRef.current) clearInterval(cameraWatchdogRef.current);
+    };
+  }, [cameraActive, cameraBlocked, handleCameraFailure]);
 
   // 3. Proctoring Event Listeners (Tab change & Fullscreen change)
   useEffect(() => {
@@ -469,6 +553,10 @@ export default function ExamAttemptPage() {
 
   // Handle Question selection change
   const handleSelectOption = (option: string) => {
+    if (cameraBlocked) {
+      toast.error("Answering locked. Restore camera monitoring to continue.");
+      return;
+    }
     const currentQ = questions[currentIndex];
     if (!currentQ) return;
 
@@ -494,6 +582,10 @@ export default function ExamAttemptPage() {
   };
 
   const handleClearOption = () => {
+    if (cameraBlocked) {
+      toast.error("Answering locked. Restore camera monitoring to continue.");
+      return;
+    }
     const currentQ = questions[currentIndex];
     if (!currentQ) return;
 
@@ -516,6 +608,10 @@ export default function ExamAttemptPage() {
   };
 
   const handleToggleReview = (checked: boolean) => {
+    if (cameraBlocked) {
+      toast.error("Action locked. Restore camera monitoring to continue.");
+      return;
+    }
     const currentQ = questions[currentIndex];
     if (!currentQ) return;
 
@@ -631,10 +727,27 @@ export default function ExamAttemptPage() {
             <div className="flex items-center gap-2 text-[11px] text-slate-400">
               <span>Q {currentIndex + 1} of {questions.length}</span>
               <span>•</span>
-              <span className="text-emerald-400 font-medium flex items-center gap-1">
-                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                AI Proctor Active
-              </span>
+              {cameraBlocked ? (
+                <span className="text-rose-400 font-semibold flex items-center gap-1 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/30">
+                  <span className="size-1.5 rounded-full bg-rose-500 animate-ping" />
+                  Camera Blocked
+                </span>
+              ) : cameraActive && aiVisionResult?.status === "verified" ? (
+                <span className="text-emerald-400 font-medium flex items-center gap-1">
+                  <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  AI Proctor Active
+                </span>
+              ) : cameraActive ? (
+                <span className="text-amber-400 font-medium flex items-center gap-1">
+                  <span className="size-1.5 rounded-full bg-amber-400" />
+                  AI Monitoring ({aiVisionResult?.status ? aiVisionResult.status.replace(/_/g, " ") : "Calibrating"})
+                </span>
+              ) : (
+                <span className="text-rose-400 font-medium flex items-center gap-1">
+                  <span className="size-1.5 rounded-full bg-rose-400" />
+                  Proctor Inactive
+                </span>
+              )}
               {proctorWarningsCount > 0 && (
                 <span className="text-amber-400 font-semibold bg-amber-500/10 px-1.5 py-0.2 rounded border border-amber-500/20">
                   {proctorWarningsCount} {proctorWarningsCount === 1 ? "Notice" : "Notices"}
@@ -696,7 +809,37 @@ export default function ExamAttemptPage() {
       {/* 2. Main Exam Body */}
       <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Panel: Question Display (lg:col-span-8) */}
-        <div className="lg:col-span-8 flex flex-col gap-4">
+        <div className="lg:col-span-8 flex flex-col gap-4 relative">
+          {/* Answering Lock Overlay when Camera is disconnected */}
+          {cameraBlocked && (
+            <div className="absolute inset-0 z-30 bg-slate-950/95 backdrop-blur-md rounded-xl border border-rose-900/60 p-6 sm:p-10 flex flex-col items-center justify-center text-center space-y-4 shadow-2xl">
+              <div className="size-16 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 animate-pulse">
+                <VideoOff className="size-8" />
+              </div>
+              <div className="space-y-2 max-w-md">
+                <h2 className="text-xl font-bold text-white tracking-tight">
+                  Camera Monitoring Interrupted — Answering Locked
+                </h2>
+                <p className="text-xs text-rose-300 font-medium">
+                  {cameraErrorDetail || "Continuous web camera feed is disconnected or unavailable."}
+                </p>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Video proctoring is strictly mandatory throughout this examination. Answering and navigation are blocked until camera access is restored.
+                </p>
+                <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-center justify-center gap-2 font-medium">
+                  <Clock className="size-4 shrink-0" />
+                  <span>Important: Examination timer continues to run while monitoring is interrupted.</span>
+                </div>
+              </div>
+              <Button
+                onClick={initCameraAndVision}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-lg shadow-indigo-600/30 px-6 py-2.5 mt-2"
+              >
+                <RefreshCw className="size-3.5 mr-2" />
+                Reconnect Camera & Resume
+              </Button>
+            </div>
+          )}
           {currentQ && (
             <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-md">
               <CardHeader className="border-b border-slate-800/80 pb-4">
@@ -819,7 +962,11 @@ export default function ExamAttemptPage() {
                 AI Vision Proctor
               </span>
               <div className="flex items-center gap-2">
-                {aiVisionResult?.status === "multiple_faces" ? (
+                {cameraBlocked ? (
+                  <Badge variant="destructive" className="text-[10px] py-0 px-1.5 flex items-center gap-1">
+                    <VideoOff className="size-2.5" /> Disconnected
+                  </Badge>
+                ) : aiVisionResult?.status === "multiple_faces" ? (
                   <Badge variant="destructive" className="text-[10px] py-0 px-1.5 flex items-center gap-1">
                     <Users className="size-2.5" /> Multi-Face
                   </Badge>
@@ -831,10 +978,14 @@ export default function ExamAttemptPage() {
                   <Badge variant="outline" className="text-[10px] py-0 px-1.5 text-amber-300 border-amber-500/30 bg-amber-500/10">
                     Look Forward
                   </Badge>
-                ) : (
+                ) : cameraActive && aiVisionResult?.status === "verified" ? (
                   <span className="flex items-center gap-1.5 text-[10px] text-emerald-400 font-medium">
                     <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
                     Verified
+                  </span>
+                ) : (
+                  <span className="text-[10px] text-slate-400 font-medium">
+                    Initializing...
                   </span>
                 )}
               </div>
@@ -847,13 +998,23 @@ export default function ExamAttemptPage() {
                 playsInline
                 muted
                 className={`size-full object-cover transform -scale-x-100 ${
-                  cameraActive ? "block" : "hidden"
+                  cameraActive && !cameraBlocked ? "block" : "hidden"
                 }`}
               />
 
-              {!cameraActive && (
-                <div className="text-[11px] text-slate-500 text-center p-4">
-                  Camera feed active in background
+              {cameraBlocked && (
+                <div className="absolute inset-0 z-20 bg-slate-950/90 flex flex-col items-center justify-center p-3 text-center space-y-2">
+                  <VideoOff className="size-6 text-rose-400 animate-pulse" />
+                  <span className="text-xs font-semibold text-rose-200">Camera Feed Lost</span>
+                  <span className="text-[10px] text-slate-400">Monitoring interrupted</span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={initCameraAndVision}
+                    className="text-xs h-7 border-rose-500/30 text-rose-300 hover:bg-rose-500/10"
+                  >
+                    <RefreshCw className="size-3 mr-1" /> Reconnect
+                  </Button>
                 </div>
               )}
 

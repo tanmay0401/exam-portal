@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Timer,
   Clock,
@@ -26,6 +26,7 @@ import {
   AlertCircle,
   CheckCircle,
   LogIn,
+  UserPlus,
   Loader2,
   ArrowRight,
   LogOut,
@@ -62,6 +63,8 @@ export default function ExamEntryPage() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [authLoading, setAuthLoading] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [fullNameInput, setFullNameInput] = useState("");
   const [emailInput, setEmailInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [existingAttemptStatus, setExistingAttemptStatus] = useState<string | null>(null);
@@ -152,30 +155,48 @@ export default function ExamEntryPage() {
     checkExistingAttempt();
   }, [exam?.id, userId, supabase]);
 
-  // Handle Login
-  async function handleLogin(e: React.FormEvent) {
+  // Handle Candidate Login or Registration
+  async function handleAuth(e: React.FormEvent) {
     e.preventDefault();
     if (!emailInput || !passwordInput) {
       toast.error("Please fill in both email and password");
       return;
     }
 
+    if (authMode === "register" && !fullNameInput.trim()) {
+      toast.error("Please enter your full candidate name");
+      return;
+    }
+
     setAuthLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: emailInput,
-        password: passwordInput,
+      const res = await fetch("/api/auth/candidate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: authMode,
+          email: emailInput,
+          password: passwordInput,
+          full_name: fullNameInput,
+        }),
       });
 
-      if (error) {
-        toast.error(error.message);
-      } else if (data.user) {
-        toast.success("Signed in successfully");
-        setUserEmail(data.user.email ?? null);
-        setUserId(data.user.id);
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || "Authentication failed");
+      } else {
+        toast.success(
+          authMode === "register"
+            ? "Candidate registration successful and authenticated!"
+            : "Signed in successfully"
+        );
+        setUserEmail(data.user?.email || emailInput);
+        setUserId(data.user?.id);
+        await supabase.auth.getUser();
       }
     } catch {
-      toast.error("An unexpected error occurred during login");
+      toast.error("An unexpected error occurred during candidate authentication");
     } finally {
       setAuthLoading(false);
     }
@@ -460,20 +481,61 @@ export default function ExamEntryPage() {
                     </CardFooter>
                   </Card>
                 ) : (
-                  /* Student Login Form */
+                  /* Student Login / Register Form */
                   <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-md shadow-2xl">
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-base text-white flex items-center gap-2">
-                        <LogIn className="size-4 text-indigo-400" />
-                        Student Authentication
-                      </CardTitle>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-base text-white flex items-center gap-2">
+                          {authMode === "register" ? (
+                            <UserPlus className="size-4 text-indigo-400" />
+                          ) : (
+                            <LogIn className="size-4 text-indigo-400" />
+                          )}
+                          <span>Candidate Access</span>
+                        </CardTitle>
+                      </div>
                       <CardDescription className="text-slate-400 text-xs">
-                        Enter your registered student credentials to unlock this assessment
+                        {authMode === "register"
+                          ? "Register as an official candidate for this assessment"
+                          : "Enter your registered student credentials to unlock this assessment"}
                       </CardDescription>
+
+                      {/* Tabs */}
+                      <Tabs
+                        value={authMode}
+                        onValueChange={(val) => setAuthMode(val as "login" | "register")}
+                        className="w-full pt-2"
+                      >
+                        <TabsList className="grid grid-cols-2 bg-slate-950/80 border border-slate-800">
+                          <TabsTrigger value="login" className="text-xs data-active:bg-indigo-600 data-active:text-white">
+                            Sign In
+                          </TabsTrigger>
+                          <TabsTrigger value="register" className="text-xs data-active:bg-indigo-600 data-active:text-white">
+                            Register Candidate
+                          </TabsTrigger>
+                        </TabsList>
+                      </Tabs>
                     </CardHeader>
 
-                    <form onSubmit={handleLogin}>
+                    <form onSubmit={handleAuth}>
                       <CardContent className="space-y-3.5">
+                        {authMode === "register" && (
+                          <div className="space-y-1.5">
+                            <Label htmlFor="fullname" className="text-xs text-slate-300">
+                              Full Candidate Name
+                            </Label>
+                            <Input
+                              id="fullname"
+                              type="text"
+                              placeholder="e.g. Jane Doe"
+                              value={fullNameInput}
+                              onChange={(e) => setFullNameInput(e.target.value)}
+                              required={authMode === "register"}
+                              className="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-indigo-500"
+                            />
+                          </div>
+                        )}
+
                         <div className="space-y-1.5">
                           <Label htmlFor="email" className="text-xs text-slate-300">
                             Email Address
@@ -514,7 +576,12 @@ export default function ExamEntryPage() {
                           {authLoading ? (
                             <>
                               <Loader2 className="size-4 mr-2 animate-spin" />
-                              Verifying...
+                              Authenticating...
+                            </>
+                          ) : authMode === "register" ? (
+                            <>
+                              <UserPlus className="size-4 mr-2" />
+                              Register & Continue
                             </>
                           ) : (
                             <>

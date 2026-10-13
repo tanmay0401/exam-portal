@@ -25,7 +25,9 @@ import {
   Share2,
   XCircle,
   Hash,
+  BarChart3,
 } from "lucide-react";
+import { getAppBaseUrl } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -200,8 +202,8 @@ export default function ExamDetailPage() {
 
   const getShareableUrl = () => {
     if (!exam?.exam_link_token) return "";
-    const origin = typeof window !== "undefined" ? window.location.origin : "";
-    return `${origin}/exam/${exam.exam_link_token}`;
+    const base = getAppBaseUrl();
+    return `${base}/exam/${exam.exam_link_token}`;
   };
 
   const copyToClipboard = async (text: string, isLink: boolean) => {
@@ -270,6 +272,18 @@ export default function ExamDetailPage() {
 
         {/* Action Buttons Header */}
         <div className="flex items-center gap-2.5 flex-wrap">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-indigo-500/30 bg-slate-900/80 hover:bg-slate-800 text-indigo-300 hover:text-white"
+          >
+            <Link href={`/admin/exams/${exam.id}/results`}>
+              <BarChart3 className="size-3.5 mr-1.5 text-indigo-400" />
+              <span>Candidate Results</span>
+            </Link>
+          </Button>
+
           {isDraft && (
             <>
               <Button

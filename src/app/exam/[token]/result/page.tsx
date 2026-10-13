@@ -16,7 +16,6 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-  Award,
   CheckCircle,
   XCircle,
   Circle,
@@ -26,11 +25,17 @@ import {
   Loader2,
   Sparkles,
   ShieldCheck,
+  User,
+  BookOpen,
+  RefreshCw,
 } from "lucide-react";
 
 interface ExamResult {
   attempt_id: string;
   exam_title: string;
+  subject_name?: string;
+  student_name?: string;
+  student_email?: string;
   score: number;
   total_correct: number;
   total_incorrect: number;
@@ -53,31 +58,36 @@ function ExamResultContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchResult() {
-      setLoading(true);
-      setError(null);
-      try {
-        const url = attemptId
-          ? `/api/exam-link/${token}/result?attempt_id=${encodeURIComponent(attemptId)}`
-          : `/api/exam-link/${token}/result`;
+  const fetchResult = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const url = attemptId
+        ? `/api/exam-link/${token}/result?attempt_id=${encodeURIComponent(attemptId)}`
+        : `/api/exam-link/${token}/result`;
 
-        const res = await fetch(url);
-        const data = await res.json();
+      const res = await fetch(url);
+      const data = await res.json();
 
-        if (!res.ok) {
-          throw new Error(data.error || "Failed to retrieve examination scorecard");
-        }
-
-        setResult(data.result);
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : "Error loading result";
-        setError(msg);
-      } finally {
-        setLoading(false);
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to retrieve examination scorecard");
       }
-    }
 
+      const scorecard = data.result || data;
+      if (!scorecard || typeof scorecard.score === "undefined") {
+        throw new Error("Invalid scorecard format received from server");
+      }
+
+      setResult(scorecard);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Error loading result";
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (token) {
       fetchResult();
     }
@@ -133,23 +143,53 @@ function ExamResultContent() {
             <CardDescription className="text-xs text-rose-300/80 mt-1">
               {error}
             </CardDescription>
-            <Button
-              onClick={() => router.push(`/exam/${token}`)}
-              className="mt-6 bg-slate-800 hover:bg-slate-700 text-white text-xs"
-            >
-              Return to Examination Link
-            </Button>
+            <div className="mt-6 flex items-center justify-center gap-3">
+              <Button
+                onClick={fetchResult}
+                variant="outline"
+                className="border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs"
+              >
+                <RefreshCw className="size-3.5 mr-1.5" />
+                Try Again
+              </Button>
+              <Button
+                onClick={() => router.push(`/exam/${token}`)}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs"
+              >
+                Return to Examination Link
+              </Button>
+            </div>
           </Card>
         ) : result ? (
           <div className="space-y-6">
             {/* Header info */}
             <div className="text-center space-y-2">
-              <Badge className="bg-emerald-500/10 text-emerald-300 border-emerald-500/20 text-xs px-3 py-1">
-                Completed & Verified
-              </Badge>
+              <div className="flex items-center justify-center gap-2">
+                <Badge className="bg-emerald-500/10 text-emerald-300 border-emerald-500/20 text-xs px-3 py-1">
+                  Completed & Verified
+                </Badge>
+                {result.subject_name && (
+                  <Badge variant="outline" className="border-indigo-500/30 text-indigo-300 text-xs px-3 py-1 bg-indigo-500/10 flex items-center gap-1">
+                    <BookOpen className="size-3" />
+                    {result.subject_name}
+                  </Badge>
+                )}
+              </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                 {result.exam_title}
               </h1>
+
+              {/* Candidate Info Pill */}
+              {(result.student_name || result.student_email) && (
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-slate-800 text-xs text-slate-300">
+                  <User className="size-3 text-indigo-400" />
+                  <span className="font-medium text-white">{result.student_name}</span>
+                  {result.student_email && (
+                    <span className="text-slate-400">({result.student_email})</span>
+                  )}
+                </div>
+              )}
+
               <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
                 <span>Submitted at {new Date(result.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 {result.is_auto_submitted && (

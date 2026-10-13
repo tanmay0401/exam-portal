@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,9 +30,14 @@ import {
   Sparkles,
   Volume2,
   ScanFace,
+  HelpCircle,
 } from "lucide-react";
 import { toast } from "sonner";
-import { VisionProctorDetector, VisionAnalysisResult } from "@/lib/proctoring/vision-detector";
+import {
+  VisionProctorDetector,
+  VisionAnalysisResult,
+  isBlackOrEmptyFrame,
+} from "@/lib/proctoring/vision-detector";
 
 export default function SystemCheckPage() {
   const routeParams = useParams();
@@ -46,6 +51,7 @@ export default function SystemCheckPage() {
   const animFrameRef = useRef<number | null>(null);
   const detectorRef = useRef<VisionProctorDetector | null>(null);
   const visionLoopRef = useRef<number | null>(null);
+  const calibrationTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // System checks state
   const [cameraStatus, setCameraStatus] = useState<"pending" | "success" | "error">("pending");
@@ -53,8 +59,9 @@ export default function SystemCheckPage() {
   const [fullscreenStatus, setFullscreenStatus] = useState<"pending" | "success" | "error">("pending");
   const [browserStatus, setBrowserStatus] = useState<"pending" | "success" | "error">("pending");
   const [networkStatus, setNetworkStatus] = useState<"pending" | "success" | "error">("pending");
-  const [aiVisionStatus, setAiVisionStatus] = useState<"loading" | "ready" | "no_face" | "calibrated">("loading");
+  const [aiVisionStatus, setAiVisionStatus] = useState<"loading" | "ready" | "no_face" | "calibrated" | "error">("loading");
   const [isIOSDevice, setIsIOSDevice] = useState<boolean>(false);
+  const [calibrationTimeoutReached, setCalibrationTimeoutReached] = useState<boolean>(false);
 
   const [audioLevel, setAudioLevel] = useState<number>(0);
   const [cameraErrorMsg, setCameraErrorMsg] = useState<string | null>(null);
@@ -112,13 +119,76 @@ export default function SystemCheckPage() {
     }
   }, []);
 
+  const startVisionCalibrationLoop = useCallback(() => {
+    const runAnalysis = () => {
+      if (detectorRef.current && videoRef.current) {
+        // Fail-closed check: verify camera is not black or obscured
+        if (isBlackOrEmptyFrame(videoRef.current)) {
+          setCameraStatus("error");
+          setCameraErrorMsg("Camera video stream is black or covered. Ensure your camera lens is uncovered.");
+          setAiVisionStatus("no_face");
+          setVisionFeedback("⚠️ Camera feed is completely black. Cannot perform face verification.");
+          visionLoopRef.current = window.setTimeout(runAnalysis, 800);
+          return;
+        }
+
+        const result: VisionAnalysisResult | null = detectorRef.current.analyzeFrame(videoRef.current);
+        if (result) {
+          if (!result.primaryFaceDetected) {
+            setAiVisionStatus("no_face");
+            setVisionFeedback("⚠️ No face detected. Please center your face inside the framing guide.");
+          } else if (result.multipleFacesDetected) {
+            setAiVisionStatus("no_face");
+            setVisionFeedback("⚠️ Multiple faces detected. Only one candidate is allowed in frame.");
+          } else if (result.headPose.isTurnedAway) {
+            setAiVisionStatus("no_face");
+            setVisionFeedback("⚠️ Head turned away. Please look directly toward the screen.");
+          } else {
+            setAiVisionStatus("calibrated");
+            setVisionFeedback("✅ Face verified and calibrated. Positioning is optimal!");
+          }
+        }
+      }
+      visionLoopRef.current = window.setTimeout(runAnalysis, 400);
+    };
+
+    runAnalysis();
+  }, []);
+
+  // 3. Initialize AI Vision & Run calibration test in system check
+  const initializeVision = useCallback(async () => {
+    setVisionFeedback("Loading AI facial presence models...");
+    setAiVisionStatus("loading");
+    try {
+      const detector = new VisionProctorDetector();
+      const ready = await detector.initialize();
+      if (ready) {
+        detectorRef.current = detector;
+        setAiVisionStatus("ready");
+        setVisionFeedback("AI Face Detection Active. Analyzing positioning...");
+        startVisionCalibrationLoop();
+      } else {
+        // Fail closed: mandatory proctoring cannot proceed without AI model
+        setAiVisionStatus("error");
+        setVisionFeedback("❌ Failed to initialize AI vision engine. Proctoring model could not load.");
+        toast.error("Proctoring initialization failed. Mandatory monitoring requires MediaPipe.");
+      }
+    } catch (e) {
+      console.error("Vision init failure:", e);
+      setAiVisionStatus("error");
+      setVisionFeedback("❌ Error loading AI proctoring model. Please check connection and WebAssembly support.");
+      toast.error("Proctoring initialization error. Cannot proceed without monitoring.");
+    }
+  }, [startVisionCalibrationLoop]);
+
   // 2. Request and Test Camera + Microphone with Audio Analyser
-  const startDevices = async () => {
+  const startDevices = useCallback(async () => {
     setCameraStatus("pending");
     setMicStatus("pending");
     setCameraErrorMsg(null);
     setMicErrorMsg(null);
     setAiVisionStatus("loading");
+    setCalibrationTimeoutReached(false);
 
     // Clean up any existing streams
     if (streamRef.current) {
@@ -130,13 +200,24 @@ export default function SystemCheckPage() {
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current);
     }
+    if (visionLoopRef.current) {
+      clearTimeout(visionLoopRef.current);
+    }
+    if (calibrationTimerRef.current) {
+      clearTimeout(calibrationTimerRef.current);
+    }
+
+    // Set 20 second calibration timeout
+    calibrationTimerRef.current = setTimeout(() => {
+      setCalibrationTimeoutReached(true);
+    }, 20000);
 
     try {
       if (!navigator.mediaDevices?.getUserMedia) {
         throw new Error("getUserMedia is not supported by your browser");
       }
 
-      // Request video AND audio stream with fallback for iOS/iPadOS WebKit
+      // Request video AND audio stream
       let stream: MediaStream;
       try {
         stream = await navigator.mediaDevices.getUserMedia({
@@ -175,13 +256,28 @@ export default function SystemCheckPage() {
         videoRef.current.srcObject = stream;
         videoRef.current.play().catch(() => {});
       }
-      setCameraStatus("success");
+
+      // Check if video is producing real frames or black feed after settling
+      setTimeout(() => {
+        if (videoRef.current && isBlackOrEmptyFrame(videoRef.current)) {
+          setCameraStatus("error");
+          setCameraErrorMsg("Camera feed is black or obscured. Please uncover your webcam, verify lighting, and ensure no other application is using it.");
+          setAiVisionStatus("error");
+          setVisionFeedback("Camera stream is pitch black. Uncover camera lens to proceed.");
+          toast.error("Camera feed is black or obscured. Please check your camera.");
+        } else {
+          setCameraStatus("success");
+          initializeVision();
+        }
+      }, 700);
 
       // Setup Web Audio Analyser for Microphone Check
       const audioTracks = stream.getAudioTracks();
       if (audioTracks.length > 0) {
         try {
-          const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+          const AudioContextClass =
+            window.AudioContext ||
+            (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
           const audioCtx = new AudioContextClass();
           audioContextRef.current = audioCtx;
           if (audioCtx.state === "suspended") {
@@ -212,17 +308,14 @@ export default function SystemCheckPage() {
           updateAudioLevel();
           setMicStatus("success");
         } catch {
-          setMicStatus("success"); // Still permit if audio track exists
+          setMicStatus("success");
         }
       } else {
         setMicStatus("error");
         setMicErrorMsg("No active microphone track discovered.");
       }
 
-      toast.success("Camera and microphone connected successfully");
-
-      // Initialize Computer Vision Detector
-      initializeVision();
+      toast.success("Camera and audio hardware detected");
     } catch (err: unknown) {
       const msg =
         err instanceof Error
@@ -232,56 +325,11 @@ export default function SystemCheckPage() {
       setMicStatus("error");
       setCameraErrorMsg(msg);
       setMicErrorMsg(msg);
+      setAiVisionStatus("error");
+      setVisionFeedback("Cannot initialize proctoring without camera access.");
       toast.error("Device permission required. Please allow camera and microphone access.");
     }
-  };
-
-  // 3. Initialize AI Vision & Run calibration test in system check
-  const initializeVision = async () => {
-    setVisionFeedback("Loading AI facial presence models...");
-    try {
-      const detector = new VisionProctorDetector();
-      const ready = await detector.initialize();
-      if (ready) {
-        detectorRef.current = detector;
-        setAiVisionStatus("ready");
-        setVisionFeedback("AI Face Detection Active. Analyzing positioning...");
-        startVisionCalibrationLoop();
-      } else {
-        setAiVisionStatus("ready");
-        setVisionFeedback("Standard optical monitoring ready.");
-      }
-    } catch {
-      setAiVisionStatus("ready");
-      setVisionFeedback("Standard optical monitoring ready.");
-    }
-  };
-
-  const startVisionCalibrationLoop = () => {
-    const runAnalysis = () => {
-      if (detectorRef.current && videoRef.current) {
-        const result: VisionAnalysisResult | null = detectorRef.current.analyzeFrame(videoRef.current);
-        if (result) {
-          if (!result.primaryFaceDetected) {
-            setAiVisionStatus("no_face");
-            setVisionFeedback("⚠️ No face detected. Please center your face inside the framing guide.");
-          } else if (result.multipleFacesDetected) {
-            setAiVisionStatus("no_face");
-            setVisionFeedback("⚠️ Multiple faces detected. Only one candidate is allowed in frame.");
-          } else if (result.headPose.isTurnedAway) {
-            setAiVisionStatus("ready");
-            setVisionFeedback("⚠️ Head turned away. Please look directly toward the screen.");
-          } else {
-            setAiVisionStatus("calibrated");
-            setVisionFeedback("✅ Face verified and calibrated. Positioning is optimal!");
-          }
-        }
-      }
-      visionLoopRef.current = window.setTimeout(runAnalysis, 400);
-    };
-
-    runAnalysis();
-  };
+  }, [initializeVision]);
 
   useEffect(() => {
     startDevices();
@@ -299,22 +347,27 @@ export default function SystemCheckPage() {
       if (visionLoopRef.current) {
         clearTimeout(visionLoopRef.current);
       }
+      if (calibrationTimerRef.current) {
+        clearTimeout(calibrationTimerRef.current);
+      }
       if (detectorRef.current) {
         detectorRef.current.dispose();
       }
     };
-  }, []);
+  }, [startDevices]);
 
+  // Strict Fail-Closed Rule: all diagnostics AND face calibration must pass
   const allPassed =
     cameraStatus === "success" &&
     micStatus === "success" &&
     fullscreenStatus === "success" &&
     browserStatus === "success" &&
-    networkStatus === "success";
+    networkStatus === "success" &&
+    aiVisionStatus === "calibrated";
 
   const handleProceed = async () => {
     if (!allPassed) {
-      toast.error("All diagnostic security checks must pass before proceeding.");
+      toast.error("All mandatory checks including face calibration must pass before starting.");
       return;
     }
 
@@ -325,7 +378,7 @@ export default function SystemCheckPage() {
         await document.documentElement.requestFullscreen();
       }
     } catch {
-      // Ignored if user gesture requirement fails in some browsers
+      // Handled gracefully for iOS / iPadOS
     }
 
     // Stop streams before navigation so attempt page can cleanly acquire it
@@ -412,7 +465,7 @@ export default function SystemCheckPage() {
                       </span>
                     ) : (
                       <span className="text-[11px] font-medium text-rose-400">
-                        Disconnected
+                        Camera Unavailable
                       </span>
                     )}
                   </div>
@@ -441,9 +494,9 @@ export default function SystemCheckPage() {
                       <div className="size-10 rounded-full bg-rose-500/10 flex items-center justify-center">
                         <XCircle className="size-6 text-rose-400" />
                       </div>
-                      <p className="font-semibold text-rose-200">Device Access Denied</p>
+                      <p className="font-semibold text-rose-200">Camera Feed Blocked or Inactive</p>
                       <p className="text-slate-400 text-[11px]">
-                        {cameraErrorMsg || "Please allow webcam and microphone access in browser settings and retry."}
+                        {cameraErrorMsg || "Please allow webcam and microphone access in browser settings and uncover camera lens."}
                       </p>
                       <Button
                         size="sm"
@@ -478,7 +531,7 @@ export default function SystemCheckPage() {
                 </CardContent>
 
                 {/* AI Calibration Feedback Strip */}
-                <div className="py-2 px-3 bg-slate-900 border-t border-slate-800/80 flex items-center gap-2 text-xs">
+                <div className="py-2.5 px-3 bg-slate-900 border-t border-slate-800/80 flex items-center gap-2 text-xs">
                   <ScanFace className="size-3.5 text-indigo-400 shrink-0" />
                   <span className="text-slate-300 font-medium text-[11px] truncate">
                     {visionFeedback}
@@ -503,6 +556,31 @@ export default function SystemCheckPage() {
                   </div>
                 </CardFooter>
               </Card>
+
+              {/* Troubleshooting Card if calibration times out */}
+              {calibrationTimeoutReached && aiVisionStatus !== "calibrated" && (
+                <Card className="border-amber-500/30 bg-amber-950/20 text-xs p-4 space-y-2">
+                  <div className="flex items-center gap-2 font-semibold text-amber-300">
+                    <HelpCircle className="size-4" />
+                    <span>Face Verification Troubleshooting</span>
+                  </div>
+                  <ul className="text-slate-300 text-[11px] space-y-1 list-disc list-inside">
+                    <li>Ensure you are in a well-lit environment facing a light source.</li>
+                    <li>Uncover your camera lens and remove physical shutters.</li>
+                    <li>Position your face directly in the center oval of the preview.</li>
+                    <li>Ensure no secondary persons are visible behind you.</li>
+                  </ul>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={startDevices}
+                    className="w-full mt-2 border-amber-500/40 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20 text-xs"
+                  >
+                    <RefreshCw className="size-3 mr-1.5" />
+                    Re-Test Camera & AI Calibration
+                  </Button>
+                </Card>
+              )}
             </div>
 
             {/* Right Column: Diagnostic Checklist & Launch */}
@@ -533,7 +611,7 @@ export default function SystemCheckPage() {
                       </div>
                       <div>
                         <div className="text-xs font-semibold text-slate-200">Webcam Optical Feed</div>
-                        <div className="text-[11px] text-slate-400">Facial presence and identity tracking</div>
+                        <div className="text-[11px] text-slate-400">Active video track & non-black stream</div>
                       </div>
                     </div>
                     {cameraStatus === "success" ? (
@@ -575,19 +653,29 @@ export default function SystemCheckPage() {
                   <div className="p-3 rounded-lg border border-slate-800/80 bg-slate-950/40 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`size-8 rounded-lg flex items-center justify-center ${
-                        aiVisionStatus === "calibrated" || aiVisionStatus === "ready"
+                        aiVisionStatus === "calibrated"
                           ? "bg-emerald-500/10 text-emerald-400"
+                          : aiVisionStatus === "error"
+                          ? "bg-rose-500/10 text-rose-400"
                           : "bg-indigo-500/10 text-indigo-400"
                       }`}>
                         <ScanFace className="size-4" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold text-slate-200">Edge AI Vision Engine</div>
-                        <div className="text-[11px] text-slate-400">MediaPipe multi-face and pose model</div>
+                        <div className="text-xs font-semibold text-slate-200">Edge AI Face Calibration</div>
+                        <div className="text-[11px] text-slate-400">
+                          {aiVisionStatus === "calibrated"
+                            ? "Face presence & head pose verified"
+                            : aiVisionStatus === "error"
+                            ? "MediaPipe engine failed to load"
+                            : "Waiting for face alignment in frame"}
+                        </div>
                       </div>
                     </div>
-                    {aiVisionStatus === "calibrated" || aiVisionStatus === "ready" ? (
+                    {aiVisionStatus === "calibrated" ? (
                       <CheckCircle className="size-5 text-emerald-400" />
+                    ) : aiVisionStatus === "error" ? (
+                      <XCircle className="size-5 text-rose-400" />
                     ) : (
                       <Loader2 className="size-4 text-indigo-400 animate-spin" />
                     )}
@@ -664,14 +752,18 @@ export default function SystemCheckPage() {
                   </div>
                 </CardContent>
 
-                {/* Warning note */}
+                {/* Status Guidance / Action */}
                 <CardFooter className="pt-2 flex flex-col gap-3">
                   {!allPassed && (
                     <Alert className="border-amber-500/30 bg-amber-500/10 text-amber-200 py-2">
                       <AlertTriangle className="size-4 text-amber-400" />
-                      <AlertTitle className="text-xs font-medium">Diagnostic Alert</AlertTitle>
+                      <AlertTitle className="text-xs font-medium">Mandatory Verification Required</AlertTitle>
                       <AlertDescription className="text-[11px] text-amber-300/80">
-                        Camera and microphone permissions are required to unlock your examination.
+                        {cameraStatus !== "success"
+                          ? "Camera access must be granted and produce a clear video feed."
+                          : aiVisionStatus !== "calibrated"
+                          ? "Center your face in the oval guide until calibration is verified."
+                          : "All security checks must pass before starting the assessment."}
                       </AlertDescription>
                     </Alert>
                   )}
@@ -689,7 +781,7 @@ export default function SystemCheckPage() {
                       </>
                     ) : (
                       <>
-                        <span>Proceed to Exam</span>
+                        <span>{allPassed ? "Start Exam Now" : "Complete Verification to Start"}</span>
                         <ArrowRight className="size-4 ml-2" />
                       </>
                     )}

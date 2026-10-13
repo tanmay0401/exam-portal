@@ -30,6 +30,39 @@ export type VisionWarningCallback = (event: {
   details?: Record<string, unknown>;
 }) => void;
 
+/**
+ * Samples pixel luminance across the current video frame.
+ * Returns true if the video is black, obscured, or lacks valid visual frames.
+ */
+export function isBlackOrEmptyFrame(videoElement: HTMLVideoElement | null): boolean {
+  if (!videoElement) return true;
+  if (
+    videoElement.readyState < 2 ||
+    videoElement.videoWidth === 0 ||
+    videoElement.videoHeight === 0
+  ) {
+    return true;
+  }
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.width = 32;
+    canvas.height = 24;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return false;
+    ctx.drawImage(videoElement, 0, 0, 32, 24);
+    const imgData = ctx.getImageData(0, 0, 32, 24).data;
+    let sumLuminance = 0;
+    const totalPixels = imgData.length / 4;
+    for (let i = 0; i < imgData.length; i += 4) {
+      sumLuminance += 0.299 * imgData[i] + 0.587 * imgData[i + 1] + 0.114 * imgData[i + 2];
+    }
+    const avgLuminance = sumLuminance / totalPixels;
+    return avgLuminance < 8;
+  } catch {
+    return false;
+  }
+}
+
 export class VisionProctorDetector {
   private faceLandmarker: any = null;
   private isInitializing = false;

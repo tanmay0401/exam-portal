@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getPrivilegedSupabaseClient } from "@/lib/supabase/admin";
 
 export async function GET(
   request: NextRequest,
@@ -30,10 +31,12 @@ export async function GET(
       );
     }
 
-    // 2. Resolve exam by token
-    const { data: exam, error: examError } = await supabase
+    const privilegedClient = await getPrivilegedSupabaseClient();
+
+    // 2. Resolve exam by token with subject details
+    const { data: exam, error: examError } = await privilegedClient
       .from("exams")
-      .select("id, title, max_marks, marks_per_question, total_questions")
+      .select("id, title, max_marks, marks_per_question, total_questions, subject_id, subjects(name)")
       .eq("exam_link_token", token)
       .maybeSingle();
 
@@ -44,11 +47,18 @@ export async function GET(
       );
     }
 
+    // 3. Fetch candidate profile
+    const { data: profile } = await privilegedClient
+      .from("profiles")
+      .select("full_name, email")
+      .eq("id", user.id)
+      .maybeSingle();
+
     // Check optional attempt_id query parameter
     const searchParams = request.nextUrl.searchParams;
     const attemptId = searchParams.get("attempt_id");
 
-    let attemptQuery = supabase
+    let attemptQuery = privilegedClient
       .from("exam_attempts")
       .select("id, student_id, score, total_correct, total_incorrect, total_unanswered, is_auto_submitted, submitted_at, status")
       .eq("exam_id", exam.id)
@@ -79,13 +89,20 @@ export async function GET(
       );
     }
 
+    const subjectName = (exam.subjects as unknown as { name: string } | null)?.name || "General";
+    const studentName = profile?.full_name || user.user_metadata?.full_name || profile?.email || user.email || "Candidate";
+    const studentEmail = profile?.email || user.email || "";
+
     const maxMarks = exam.max_marks || ((exam.marks_per_question || 4) * (exam.total_questions || 25));
     const score = attempt.score ?? 0;
     const percentage = maxMarks > 0 ? Math.round((Math.max(0, score) / maxMarks) * 1000) / 10 : 0;
 
-    return NextResponse.json({
+    const payload = {
       attempt_id: attempt.id,
       exam_title: exam.title,
+      subject_name: subjectName,
+      student_name: studentName,
+      student_email: studentEmail,
       score: attempt.score,
       total_correct: attempt.total_correct,
       total_incorrect: attempt.total_incorrect,
@@ -95,6 +112,11 @@ export async function GET(
       is_auto_submitted: attempt.is_auto_submitted,
       submitted_at: attempt.submitted_at,
       status: attempt.status,
+    };
+
+    return NextResponse.json({
+      ...payload,
+      result: payload,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Internal Server Error";

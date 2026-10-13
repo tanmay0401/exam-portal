@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getPrivilegedSupabaseClient } from "@/lib/supabase/admin";
 
 export async function POST(
   request: NextRequest,
@@ -8,16 +9,18 @@ export async function POST(
   try {
     const { token } = await context.params;
 
-    if (!token) {
+    if (!token || typeof token !== "string" || !token.trim()) {
       return NextResponse.json(
-        { error: "Exam token is required" },
+        { error: "Examination token is required" },
         { status: 400 }
       );
     }
 
+    const cleanToken = token.trim();
     const supabase = await createClient();
+    const privilegedClient = await getPrivilegedSupabaseClient();
 
-    // 1. Require student auth
+    // 1. Require candidate authentication via active session
     const {
       data: { user },
       error: authError,
@@ -25,16 +28,28 @@ export async function POST(
 
     if (authError || !user) {
       return NextResponse.json(
-        { error: "Authentication required to start exam" },
+        {
+          error:
+            "Authentication required to start examination. Please sign in as an authorized candidate first.",
+        },
         { status: 401 }
       );
     }
 
-    // 2. Validate exam by token
-    const { data: exam, error: examError } = await supabase
+    // 2. Validate candidate profile
+    const { data: profile } = await privilegedClient
+      .from("profiles")
+      .select("id, email, full_name, role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    // 3. Validate exam by token
+    const { data: exam, error: examError } = await privilegedClient
       .from("exams")
-      .select("id, title, duration_minutes, total_questions, status, starts_at, ends_at, is_dry_run, selected_batch_id, subject_id")
-      .eq("exam_link_token", token)
+      .select(
+        "id, title, duration_minutes, total_questions, status, starts_at, ends_at, is_dry_run, selected_batch_id, subject_id"
+      )
+      .eq("exam_link_token", cleanToken)
       .maybeSingle();
 
     if (examError || !exam) {
@@ -66,8 +81,8 @@ export async function POST(
       );
     }
 
-    // 3. Check if student already has an attempt for this exam
-    const { data: existingAttempts, error: attemptCheckError } = await supabase
+    // 4. Check if candidate already has an attempt for this exam
+    const { data: existingAttempts, error: attemptCheckError } = await privilegedClient
       .from("exam_attempts")
       .select("id, status, started_at, batch_id")
       .eq("exam_id", exam.id)
@@ -76,7 +91,7 @@ export async function POST(
 
     if (attemptCheckError) {
       return NextResponse.json(
-        { error: "Failed to check previous attempts" },
+        { error: "Failed to check previous attempts: " + attemptCheckError.message },
         { status: 500 }
       );
     }
@@ -86,14 +101,14 @@ export async function POST(
     if (existingAttempt) {
       if (existingAttempt.status === "submitted" || existingAttempt.status === "graded") {
         return NextResponse.json(
-          { error: "You have already completed this exam. Retakes are not permitted." },
+          { error: "You have already completed this examination. Retakes are not permitted." },
           { status: 400 }
         );
       }
 
       if (existingAttempt.status === "in_progress") {
         // Return existing in-progress attempt to allow graceful page reload / reconnect
-        const { data: responses } = await supabase
+        const { data: responses } = await privilegedClient
           .from("exam_responses")
           .select("question_id, question_order, selected_option, is_marked_for_review")
           .eq("attempt_id", existingAttempt.id)
@@ -111,7 +126,7 @@ export async function POST(
         }> = [];
 
         if (questionIds.length > 0) {
-          const { data: questionData } = await supabase
+          const { data: questionData } = await privilegedClient
             .from("questions")
             .select("id, question_text, option_a, option_b, option_c, option_d")
             .in("id", questionIds);
@@ -146,11 +161,11 @@ export async function POST(
       }
     }
 
-    // 4. Resolve the batch to use
+    // 5. Resolve the batch to use
     let targetBatchId = exam.selected_batch_id;
 
     if (!targetBatchId) {
-      const { data: firstBatch } = await supabase
+      const { data: firstBatch } = await privilegedClient
         .from("exam_batches")
         .select("id")
         .eq("exam_id", exam.id)
@@ -163,7 +178,7 @@ export async function POST(
       }
     }
 
-    // 5. Fetch batch questions
+    // 6. Fetch batch questions using elevated server client (bypasses RLS circular attempt dependency)
     interface QuestionItem {
       id: string;
       question_text: string;
@@ -177,7 +192,7 @@ export async function POST(
     let questions: QuestionItem[] = [];
 
     if (targetBatchId) {
-      const { data: batchQuestions, error: bqError } = await supabase
+      const { data: batchQuestions, error: bqError } = await privilegedClient
         .from("exam_batch_questions")
         .select("question_id, question_order, questions(id, question_text, option_a, option_b, option_c, option_d)")
         .eq("batch_id", targetBatchId)
@@ -210,7 +225,7 @@ export async function POST(
 
     // Fallback if no batch questions found: get questions by subject
     if (questions.length === 0 && exam.subject_id) {
-      const { data: rawQuestions } = await supabase
+      const { data: rawQuestions } = await privilegedClient
         .from("questions")
         .select("id, question_text, option_a, option_b, option_c, option_d")
         .eq("subject_id", exam.subject_id)
@@ -231,9 +246,9 @@ export async function POST(
       );
     }
 
-    // 6. Create exam_attempt record
+    // 7. Create exam_attempt record bound to this candidate
     const startedAt = new Date().toISOString();
-    const { data: newAttempt, error: createAttemptError } = await supabase
+    const { data: newAttempt, error: createAttemptError } = await privilegedClient
       .from("exam_attempts")
       .insert({
         exam_id: exam.id,
@@ -259,7 +274,7 @@ export async function POST(
       );
     }
 
-    // 7. Create exam_responses records
+    // 8. Create exam_responses records
     const responsesPayload = questions.map((q, idx) => ({
       attempt_id: newAttempt.id,
       question_id: q.id,
@@ -269,19 +284,18 @@ export async function POST(
       updated_at: startedAt,
     }));
 
-    const { error: insertResponsesError } = await supabase
+    const { error: insertResponsesError } = await privilegedClient
       .from("exam_responses")
       .insert(responsesPayload);
 
     if (insertResponsesError) {
-      // rollback or report error
       return NextResponse.json(
         { error: "Failed to initialize question responses: " + insertResponsesError.message },
         { status: 500 }
       );
     }
 
-    // 8. Return attempt_id and questions (WITHOUT correct_option)
+    // 9. Return attempt_id and questions (WITHOUT correct_option answer keys)
     return NextResponse.json({
       attempt_id: newAttempt.id,
       started_at: startedAt,
