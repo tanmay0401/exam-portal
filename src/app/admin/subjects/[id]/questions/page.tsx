@@ -438,7 +438,7 @@ export default function QuestionsBankPage() {
         return (
           <Badge
             variant="secondary"
-            className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 capitalize font-medium text-[11px]"
+            className="bg-[#34C759]/10 text-[#1E7E34] border border-[#34C759]/30 capitalize font-medium text-[11px]"
           >
             Easy
           </Badge>
@@ -447,7 +447,7 @@ export default function QuestionsBankPage() {
         return (
           <Badge
             variant="secondary"
-            className="bg-amber-500/10 text-amber-400 border border-amber-500/20 capitalize font-medium text-[11px]"
+            className="bg-[#FF9500]/10 text-[#B25E00] border border-[#FF9500]/30 capitalize font-medium text-[11px]"
           >
             Medium
           </Badge>
@@ -456,14 +456,14 @@ export default function QuestionsBankPage() {
         return (
           <Badge
             variant="secondary"
-            className="bg-rose-500/10 text-rose-400 border border-rose-500/20 capitalize font-medium text-[11px]"
+            className="bg-[#FF3B30]/10 text-[#D70015] border border-[#FF3B30]/30 capitalize font-medium text-[11px]"
           >
             Hard
           </Badge>
         );
       default:
         return (
-          <Badge variant="outline" className="capitalize text-[11px]">
+          <Badge variant="outline" className="capitalize text-[11px] border-[#D2D2D7] text-[#6E6E73]">
             {diff}
           </Badge>
         );
@@ -473,28 +473,28 @@ export default function QuestionsBankPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Top Breadcrumb & Navigation */}
-      <div className="flex items-center gap-2 text-xs text-slate-400">
+      <div className="flex items-center gap-2 text-xs text-[#6E6E73]">
         <Link
           href="/admin/subjects"
-          className="hover:text-indigo-400 transition-colors inline-flex items-center gap-1"
+          className="hover:text-[#1D1D1F] transition-colors inline-flex items-center gap-1 font-medium"
         >
           <ArrowLeft className="size-3.5" />
           <span>Back to Subjects</span>
         </Link>
         <span>/</span>
-        <span className="text-slate-200 font-medium">Question Bank</span>
+        <span className="text-[#1D1D1F] font-medium">Question Bank</span>
       </div>
 
       {/* Header section with Subject Name & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-              <BookOpen className="size-7 text-indigo-400 shrink-0" />
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1D1D1F] flex items-center gap-2.5">
+              <BookOpen className="size-7 text-[#0071E3] shrink-0" />
               <span>{subject ? subject.name : "Loading Subject..."}</span>
             </h1>
           </div>
-          <p className="text-sm text-slate-400 mt-1 max-w-2xl">
+          <p className="text-sm text-[#6E6E73] mt-1 max-w-2xl">
             {subject?.description || "Manage questions, multiple choice options, and difficulty levels for this subject."}
           </p>
         </div>
@@ -503,15 +503,15 @@ export default function QuestionsBankPage() {
           <Button
             variant="outline"
             onClick={handleOpenImport}
-            className="border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-200 text-xs h-9"
+            className="border-[#D2D2D7] bg-white hover:bg-[#F5F5F7] text-[#1D1D1F] text-xs h-9 font-medium shadow-sm"
           >
-            <Upload className="size-3.5 mr-1.5 text-indigo-400" />
+            <Upload className="size-3.5 mr-1.5 text-[#0071E3]" />
             <span>Import CSV</span>
           </Button>
 
           <Button
             onClick={handleOpenAdd}
-            className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-md shadow-indigo-600/25 text-xs h-9"
+            className="bg-[#0071E3] hover:bg-[#0077ED] text-white font-medium shadow-sm text-xs h-9 transition-colors"
           >
             <Plus className="size-3.5 mr-1.5" />
             <span>Add Question</span>
@@ -521,21 +521,21 @@ export default function QuestionsBankPage() {
 
       {/* Error alert */}
       {error && (
-        <Alert variant="destructive" className="border-rose-500/30 bg-rose-500/10 text-rose-300">
-          <AlertCircle className="size-4 text-rose-400" />
-          <AlertDescription className="text-xs sm:text-sm">{error}</AlertDescription>
+        <Alert variant="destructive" className="border-[#FF3B30]/30 bg-[#FF3B30]/10 text-[#D70015]">
+          <AlertCircle className="size-4 text-[#FF3B30]" />
+          <AlertDescription className="text-xs sm:text-sm font-medium">{error}</AlertDescription>
         </Alert>
       )}
 
       {/* Main Card with filters & questions table */}
-      <Card className="border-slate-800/80 bg-slate-900/50 backdrop-blur-md shadow-xl overflow-hidden">
-        <CardHeader className="p-4 sm:p-6 border-b border-slate-800/80">
+      <Card className="border-[#D2D2D7] bg-white shadow-sm rounded-2xl overflow-hidden">
+        <CardHeader className="p-4 sm:p-6 border-b border-[#D2D2D7] bg-white">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <CardTitle className="text-base sm:text-lg font-semibold text-white">
+              <CardTitle className="text-base sm:text-lg font-semibold text-[#1D1D1F]">
                 Questions Bank ({questions.length})
               </CardTitle>
-              <CardDescription className="text-xs text-slate-400 mt-0.5">
+              <CardDescription className="text-xs text-[#6E6E73] mt-0.5">
                 Questions configured for dynamic examination batch generation.
               </CardDescription>
             </div>
@@ -544,13 +544,13 @@ export default function QuestionsBankPage() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               {/* Search input */}
               <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#86868B] pointer-events-none" />
                 <Input
                   type="text"
                   placeholder="Search questions or options..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 h-9 bg-slate-950/60 border-slate-800 text-slate-200 text-xs placeholder:text-slate-500 focus-visible:ring-indigo-500/30"
+                  className="pl-9 h-9 bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-xs placeholder:text-[#86868B] focus-visible:bg-white focus-visible:border-[#0071E3] focus-visible:ring-1 focus-visible:ring-[#0071E3] rounded-lg"
                 />
               </div>
 
@@ -560,10 +560,10 @@ export default function QuestionsBankPage() {
                   value={selectedDifficulty}
                   onValueChange={(val) => setSelectedDifficulty(val as string)}
                 >
-                  <SelectTrigger className="h-9 w-full bg-slate-950/60 border-slate-800 text-slate-200 text-xs">
+                  <SelectTrigger className="h-9 w-full bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-xs rounded-lg">
                     <SelectValue placeholder="All Difficulties" />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-900 border-slate-800 text-slate-200 text-xs">
+                  <SelectContent className="bg-white border-[#D2D2D7] text-[#1D1D1F] text-xs shadow-md">
                     <SelectItem value="all">All Difficulties</SelectItem>
                     <SelectItem value="easy">Easy</SelectItem>
                     <SelectItem value="medium">Medium</SelectItem>
@@ -580,16 +580,16 @@ export default function QuestionsBankPage() {
             /* Skeleton Loading State */
             <div className="p-4 sm:p-6 space-y-4">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="flex flex-col gap-2 py-3 border-b border-slate-800/60">
+                <div key={i} className="flex flex-col gap-2 py-3 border-b border-[#D2D2D7]/60">
                   <div className="flex items-center justify-between">
-                    <Skeleton className="h-5 w-2/3 bg-slate-800" />
-                    <Skeleton className="h-6 w-16 bg-slate-800/60 rounded-full" />
+                    <Skeleton className="h-5 w-2/3 bg-[#E8E8ED]" />
+                    <Skeleton className="h-6 w-16 bg-[#E8E8ED] rounded-full" />
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-                    <Skeleton className="h-4 bg-slate-800/40 rounded" />
-                    <Skeleton className="h-4 bg-slate-800/40 rounded" />
-                    <Skeleton className="h-4 bg-slate-800/40 rounded" />
-                    <Skeleton className="h-4 bg-slate-800/40 rounded" />
+                    <Skeleton className="h-4 bg-[#E8E8ED]/70 rounded" />
+                    <Skeleton className="h-4 bg-[#E8E8ED]/70 rounded" />
+                    <Skeleton className="h-4 bg-[#E8E8ED]/70 rounded" />
+                    <Skeleton className="h-4 bg-[#E8E8ED]/70 rounded" />
                   </div>
                 </div>
               ))}
@@ -597,15 +597,15 @@ export default function QuestionsBankPage() {
           ) : filteredQuestions.length === 0 ? (
             /* Empty State */
             <div className="py-16 px-4 text-center">
-              <div className="size-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto mb-4">
+              <div className="size-14 rounded-2xl bg-[#0071E3]/10 border border-[#0071E3]/20 text-[#0071E3] flex items-center justify-center mx-auto mb-4">
                 <HelpCircle className="size-7" />
               </div>
-              <h3 className="text-base font-semibold text-white mb-1">
+              <h3 className="text-base font-semibold text-[#1D1D1F] mb-1">
                 {searchQuery || selectedDifficulty !== "all"
                   ? "No matching questions found"
                   : "No questions in this repository yet"}
               </h3>
-              <p className="text-xs sm:text-sm text-slate-400 max-w-sm mx-auto mb-6">
+              <p className="text-xs sm:text-sm text-[#6E6E73] max-w-sm mx-auto mb-6">
                 {searchQuery || selectedDifficulty !== "all"
                   ? "Try resetting your search query or difficulty filter."
                   : "Add questions individually with full options or upload a batch via CSV."}
@@ -618,7 +618,7 @@ export default function QuestionsBankPage() {
                     setSearchQuery("");
                     setSelectedDifficulty("all");
                   }}
-                  className="border-slate-800 text-slate-300 hover:text-white text-xs"
+                  className="border-[#D2D2D7] text-[#1D1D1F] hover:bg-[#F5F5F7] text-xs font-medium"
                 >
                   Reset Filters
                 </Button>
@@ -626,7 +626,7 @@ export default function QuestionsBankPage() {
                 <div className="flex items-center justify-center gap-3">
                   <Button
                     onClick={handleOpenAdd}
-                    className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs h-9"
+                    className="bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs h-9 font-medium"
                   >
                     <Plus className="size-3.5 mr-1.5" />
                     <span>Add Question</span>
@@ -634,9 +634,9 @@ export default function QuestionsBankPage() {
                   <Button
                     variant="outline"
                     onClick={handleOpenImport}
-                    className="border-slate-800 bg-slate-900 text-slate-300 hover:text-white text-xs h-9"
+                    className="border-[#D2D2D7] bg-white text-[#1D1D1F] hover:bg-[#F5F5F7] text-xs h-9 font-medium"
                   >
-                    <Upload className="size-3.5 mr-1.5 text-indigo-400" />
+                    <Upload className="size-3.5 mr-1.5 text-[#0071E3]" />
                     <span>Import CSV</span>
                   </Button>
                 </div>
@@ -646,21 +646,21 @@ export default function QuestionsBankPage() {
             /* Questions Table */
             <div className="overflow-x-auto">
               <Table>
-                <TableHeader className="bg-slate-950/40 border-b border-slate-800">
-                  <TableRow className="border-slate-800 hover:bg-transparent">
-                    <TableHead className="text-slate-400 text-xs font-semibold py-3 px-4 w-12 text-center">
+                <TableHeader className="bg-[#F5F5F7]/80 border-b border-[#D2D2D7]">
+                  <TableRow className="border-[#D2D2D7] hover:bg-transparent">
+                    <TableHead className="text-[#6E6E73] text-xs font-semibold py-3 px-4 w-12 text-center">
                       #
                     </TableHead>
-                    <TableHead className="text-slate-400 text-xs font-semibold py-3 px-4 min-w-[280px]">
+                    <TableHead className="text-[#6E6E73] text-xs font-semibold py-3 px-4 min-w-[280px]">
                       Question Text & Options
                     </TableHead>
-                    <TableHead className="text-slate-400 text-xs font-semibold py-3 px-4 text-center w-28">
+                    <TableHead className="text-[#6E6E73] text-xs font-semibold py-3 px-4 text-center w-28">
                       Correct Key
                     </TableHead>
-                    <TableHead className="text-slate-400 text-xs font-semibold py-3 px-4 text-center w-28">
+                    <TableHead className="text-[#6E6E73] text-xs font-semibold py-3 px-4 text-center w-28">
                       Difficulty
                     </TableHead>
-                    <TableHead className="text-slate-400 text-xs font-semibold py-3 px-4 text-right w-20">
+                    <TableHead className="text-[#6E6E73] text-xs font-semibold py-3 px-4 text-right w-20">
                       Actions
                     </TableHead>
                   </TableRow>
@@ -669,34 +669,34 @@ export default function QuestionsBankPage() {
                   {filteredQuestions.map((q, idx) => (
                     <TableRow
                       key={q.id}
-                      className="border-b border-slate-800/60 hover:bg-slate-800/40 transition-colors"
+                      className="border-b border-[#D2D2D7]/60 hover:bg-[#F5F5F7]/60 transition-colors"
                     >
                       {/* Row index */}
-                      <TableCell className="py-4 px-4 text-center text-xs text-slate-500 font-mono">
+                      <TableCell className="py-4 px-4 text-center text-xs text-[#86868B] font-mono">
                         {idx + 1}
                       </TableCell>
 
                       {/* Question text and options */}
                       <TableCell className="py-4 px-4">
                         <div className="space-y-2.5">
-                          <p className="text-sm font-medium text-slate-100 line-clamp-2 leading-snug">
+                          <p className="text-sm font-medium text-[#1D1D1F] line-clamp-2 leading-snug">
                             {q.question_text}
                           </p>
 
                           {/* Options grid */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
                             <div
-                              className={`p-1.5 rounded-md border flex items-center gap-2 ${
+                              className={`p-1.5 rounded-lg border flex items-center gap-2 ${
                                 q.correct_option === "A"
-                                  ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-200"
-                                  : "bg-slate-950/40 border-slate-800/70 text-slate-400"
+                                  ? "bg-[#34C759]/10 border-[#34C759]/30 text-[#1E7E34] font-medium"
+                                  : "bg-[#F5F5F7] border-[#D2D2D7] text-[#424245]"
                               }`}
                             >
                               <span
                                 className={`size-5 rounded font-bold text-[10px] flex items-center justify-center shrink-0 ${
                                   q.correct_option === "A"
-                                    ? "bg-indigo-600 text-white"
-                                    : "bg-slate-800 text-slate-400"
+                                    ? "bg-[#34C759] text-white"
+                                    : "bg-[#E8E8ED] text-[#6E6E73]"
                                 }`}
                               >
                                 A
@@ -705,17 +705,17 @@ export default function QuestionsBankPage() {
                             </div>
 
                             <div
-                              className={`p-1.5 rounded-md border flex items-center gap-2 ${
+                              className={`p-1.5 rounded-lg border flex items-center gap-2 ${
                                 q.correct_option === "B"
-                                  ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-200"
-                                  : "bg-slate-950/40 border-slate-800/70 text-slate-400"
+                                  ? "bg-[#34C759]/10 border-[#34C759]/30 text-[#1E7E34] font-medium"
+                                  : "bg-[#F5F5F7] border-[#D2D2D7] text-[#424245]"
                               }`}
                             >
                               <span
                                 className={`size-5 rounded font-bold text-[10px] flex items-center justify-center shrink-0 ${
                                   q.correct_option === "B"
-                                    ? "bg-indigo-600 text-white"
-                                    : "bg-slate-800 text-slate-400"
+                                    ? "bg-[#34C759] text-white"
+                                    : "bg-[#E8E8ED] text-[#6E6E73]"
                                 }`}
                               >
                                 B
@@ -724,17 +724,17 @@ export default function QuestionsBankPage() {
                             </div>
 
                             <div
-                              className={`p-1.5 rounded-md border flex items-center gap-2 ${
+                              className={`p-1.5 rounded-lg border flex items-center gap-2 ${
                                 q.correct_option === "C"
-                                  ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-200"
-                                  : "bg-slate-950/40 border-slate-800/70 text-slate-400"
+                                  ? "bg-[#34C759]/10 border-[#34C759]/30 text-[#1E7E34] font-medium"
+                                  : "bg-[#F5F5F7] border-[#D2D2D7] text-[#424245]"
                               }`}
                             >
                               <span
                                 className={`size-5 rounded font-bold text-[10px] flex items-center justify-center shrink-0 ${
                                   q.correct_option === "C"
-                                    ? "bg-indigo-600 text-white"
-                                    : "bg-slate-800 text-slate-400"
+                                    ? "bg-[#34C759] text-white"
+                                    : "bg-[#E8E8ED] text-[#6E6E73]"
                                 }`}
                               >
                                 C
@@ -743,17 +743,17 @@ export default function QuestionsBankPage() {
                             </div>
 
                             <div
-                              className={`p-1.5 rounded-md border flex items-center gap-2 ${
+                              className={`p-1.5 rounded-lg border flex items-center gap-2 ${
                                 q.correct_option === "D"
-                                  ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-200"
-                                  : "bg-slate-950/40 border-slate-800/70 text-slate-400"
+                                  ? "bg-[#34C759]/10 border-[#34C759]/30 text-[#1E7E34] font-medium"
+                                  : "bg-[#F5F5F7] border-[#D2D2D7] text-[#424245]"
                               }`}
                             >
                               <span
                                 className={`size-5 rounded font-bold text-[10px] flex items-center justify-center shrink-0 ${
                                   q.correct_option === "D"
-                                    ? "bg-indigo-600 text-white"
-                                    : "bg-slate-800 text-slate-400"
+                                    ? "bg-[#34C759] text-white"
+                                    : "bg-[#E8E8ED] text-[#6E6E73]"
                                 }`}
                               >
                                 D
@@ -768,7 +768,7 @@ export default function QuestionsBankPage() {
                       <TableCell className="py-4 px-4 text-center">
                         <Badge
                           variant="secondary"
-                          className="bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 font-bold text-xs px-2.5 py-0.5"
+                          className="bg-[#0071E3]/10 text-[#0071E3] border border-[#0071E3]/30 font-semibold text-xs px-2.5 py-0.5"
                         >
                           Option {q.correct_option}
                         </Badge>
@@ -787,7 +787,7 @@ export default function QuestionsBankPage() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="size-8 text-slate-400 hover:text-white hover:bg-slate-800"
+                                className="size-8 text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-[#F5F5F7]"
                               >
                                 <MoreHorizontal className="size-4" />
                                 <span className="sr-only">Question options</span>
@@ -796,21 +796,21 @@ export default function QuestionsBankPage() {
                           />
                           <DropdownMenuContent
                             align="end"
-                            className="w-40 bg-slate-900 border-slate-800 text-slate-200"
+                            className="w-40 bg-white border-[#D2D2D7] text-[#1D1D1F] shadow-lg"
                           >
                             <DropdownMenuItem
-                              className="cursor-pointer text-xs focus:bg-slate-800 focus:text-white"
+                              className="cursor-pointer text-xs focus:bg-[#F5F5F7] focus:text-[#1D1D1F]"
                               onClick={() => handleOpenEdit(q)}
                             >
-                              <Pencil className="size-3.5 mr-2 text-amber-400" />
+                              <Pencil className="size-3.5 mr-2 text-[#FF9500]" />
                               <span>Edit Question</span>
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator className="bg-slate-800" />
+                            <DropdownMenuSeparator className="bg-[#D2D2D7]" />
                             <DropdownMenuItem
-                              className="cursor-pointer text-xs text-rose-400 focus:bg-rose-500/10 focus:text-rose-300"
+                              className="cursor-pointer text-xs text-[#FF3B30] focus:bg-[#FF3B30]/10 focus:text-[#D70015]"
                               onClick={() => handleOpenDelete(q)}
                             >
-                              <Trash2 className="size-3.5 mr-2 text-rose-400" />
+                              <Trash2 className="size-3.5 mr-2 text-[#FF3B30]" />
                               <span>Delete Question</span>
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -827,14 +827,14 @@ export default function QuestionsBankPage() {
 
       {/* CREATE QUESTION DIALOG */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="bg-slate-900 border border-slate-800 text-slate-100 sm:max-w-xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-white border border-[#D2D2D7] text-[#1D1D1F] sm:max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
           <form onSubmit={handleCreateQuestion}>
             <DialogHeader>
-              <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
-                <Plus className="size-5 text-indigo-400" />
+              <DialogTitle className="text-lg font-bold text-[#1D1D1F] flex items-center gap-2">
+                <Plus className="size-5 text-[#0071E3]" />
                 <span>Add Question to Bank</span>
               </DialogTitle>
-              <DialogDescription className="text-xs text-slate-400">
+              <DialogDescription className="text-xs text-[#6E6E73]">
                 Specify question content, 4 multiple choice choices, correct answer key, and difficulty.
               </DialogDescription>
             </DialogHeader>
@@ -842,8 +842,8 @@ export default function QuestionsBankPage() {
             <div className="space-y-4 py-4">
               {/* Question Text */}
               <div className="space-y-1.5">
-                <Label htmlFor="q-text" className="text-xs font-semibold text-slate-300">
-                  Question Text <span className="text-rose-400">*</span>
+                <Label htmlFor="q-text" className="text-xs font-semibold text-[#1D1D1F]">
+                  Question Text <span className="text-[#FF3B30]">*</span>
                 </Label>
                 <Textarea
                   id="q-text"
@@ -853,7 +853,7 @@ export default function QuestionsBankPage() {
                     setFormData({ ...formData, question_text: e.target.value })
                   }
                   rows={3}
-                  className="bg-slate-950 border-slate-800 text-slate-100 text-sm focus-visible:ring-indigo-500/30"
+                  className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-sm focus-visible:bg-white focus-visible:border-[#0071E3] rounded-lg"
                   required
                   autoFocus
                 />
@@ -862,12 +862,12 @@ export default function QuestionsBankPage() {
               {/* Options A & B */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="opt-a" className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                    <span className="size-4 rounded bg-indigo-500/20 text-indigo-300 text-[10px] flex items-center justify-center font-bold">
+                  <Label htmlFor="opt-a" className="text-xs font-semibold text-[#1D1D1F] flex items-center gap-1.5">
+                    <span className="size-4 rounded bg-[#0071E3]/15 text-[#0071E3] text-[10px] flex items-center justify-center font-bold">
                       A
                     </span>
                     <span>Option A</span>
-                    <span className="text-rose-400">*</span>
+                    <span className="text-[#FF3B30]">*</span>
                   </Label>
                   <Input
                     id="opt-a"
@@ -876,18 +876,18 @@ export default function QuestionsBankPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, option_a: e.target.value })
                     }
-                    className="bg-slate-950 border-slate-800 text-slate-100 text-sm focus-visible:ring-indigo-500/30"
+                    className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-sm focus-visible:bg-white focus-visible:border-[#0071E3] rounded-lg"
                     required
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="opt-b" className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                    <span className="size-4 rounded bg-indigo-500/20 text-indigo-300 text-[10px] flex items-center justify-center font-bold">
+                  <Label htmlFor="opt-b" className="text-xs font-semibold text-[#1D1D1F] flex items-center gap-1.5">
+                    <span className="size-4 rounded bg-[#0071E3]/15 text-[#0071E3] text-[10px] flex items-center justify-center font-bold">
                       B
                     </span>
                     <span>Option B</span>
-                    <span className="text-rose-400">*</span>
+                    <span className="text-[#FF3B30]">*</span>
                   </Label>
                   <Input
                     id="opt-b"
@@ -896,7 +896,7 @@ export default function QuestionsBankPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, option_b: e.target.value })
                     }
-                    className="bg-slate-950 border-slate-800 text-slate-100 text-sm focus-visible:ring-indigo-500/30"
+                    className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-sm focus-visible:bg-white focus-visible:border-[#0071E3] rounded-lg"
                     required
                   />
                 </div>
@@ -905,12 +905,12 @@ export default function QuestionsBankPage() {
               {/* Options C & D */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="opt-c" className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                    <span className="size-4 rounded bg-indigo-500/20 text-indigo-300 text-[10px] flex items-center justify-center font-bold">
+                  <Label htmlFor="opt-c" className="text-xs font-semibold text-[#1D1D1F] flex items-center gap-1.5">
+                    <span className="size-4 rounded bg-[#0071E3]/15 text-[#0071E3] text-[10px] flex items-center justify-center font-bold">
                       C
                     </span>
                     <span>Option C</span>
-                    <span className="text-rose-400">*</span>
+                    <span className="text-[#FF3B30]">*</span>
                   </Label>
                   <Input
                     id="opt-c"
@@ -919,18 +919,18 @@ export default function QuestionsBankPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, option_c: e.target.value })
                     }
-                    className="bg-slate-950 border-slate-800 text-slate-100 text-sm focus-visible:ring-indigo-500/30"
+                    className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-sm focus-visible:bg-white focus-visible:border-[#0071E3] rounded-lg"
                     required
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="opt-d" className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                    <span className="size-4 rounded bg-indigo-500/20 text-indigo-300 text-[10px] flex items-center justify-center font-bold">
+                  <Label htmlFor="opt-d" className="text-xs font-semibold text-[#1D1D1F] flex items-center gap-1.5">
+                    <span className="size-4 rounded bg-[#0071E3]/15 text-[#0071E3] text-[10px] flex items-center justify-center font-bold">
                       D
                     </span>
                     <span>Option D</span>
-                    <span className="text-rose-400">*</span>
+                    <span className="text-[#FF3B30]">*</span>
                   </Label>
                   <Input
                     id="opt-d"
@@ -939,7 +939,7 @@ export default function QuestionsBankPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, option_d: e.target.value })
                     }
-                    className="bg-slate-950 border-slate-800 text-slate-100 text-sm focus-visible:ring-indigo-500/30"
+                    className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-sm focus-visible:bg-white focus-visible:border-[#0071E3] rounded-lg"
                     required
                   />
                 </div>
@@ -948,8 +948,8 @@ export default function QuestionsBankPage() {
               {/* Correct Option and Difficulty */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                 <div className="space-y-1.5">
-                  <Label htmlFor="correct-opt" className="text-xs font-semibold text-slate-300">
-                    Correct Answer Key <span className="text-rose-400">*</span>
+                  <Label htmlFor="correct-opt" className="text-xs font-semibold text-[#1D1D1F]">
+                    Correct Answer Key <span className="text-[#FF3B30]">*</span>
                   </Label>
                   <Select
                     value={formData.correct_option}
@@ -960,10 +960,10 @@ export default function QuestionsBankPage() {
                       })
                     }
                   >
-                    <SelectTrigger id="correct-opt" className="h-9 w-full bg-slate-950 border-slate-800 text-slate-100 text-sm">
+                    <SelectTrigger id="correct-opt" className="h-9 w-full bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-sm rounded-lg">
                       <SelectValue placeholder="Select correct option" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-slate-800 text-slate-100">
+                    <SelectContent className="bg-white border-[#D2D2D7] text-[#1D1D1F]">
                       <SelectItem value="A">Option A</SelectItem>
                       <SelectItem value="B">Option B</SelectItem>
                       <SelectItem value="C">Option C</SelectItem>
@@ -973,8 +973,8 @@ export default function QuestionsBankPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="difficulty" className="text-xs font-semibold text-slate-300">
-                    Difficulty Level <span className="text-rose-400">*</span>
+                  <Label htmlFor="difficulty" className="text-xs font-semibold text-[#1D1D1F]">
+                    Difficulty Level <span className="text-[#FF3B30]">*</span>
                   </Label>
                   <Select
                     value={formData.difficulty}
@@ -985,10 +985,10 @@ export default function QuestionsBankPage() {
                       })
                     }
                   >
-                    <SelectTrigger id="difficulty" className="h-9 w-full bg-slate-950 border-slate-800 text-slate-100 text-sm">
+                    <SelectTrigger id="difficulty" className="h-9 w-full bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-sm rounded-lg">
                       <SelectValue placeholder="Select difficulty" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-slate-800 text-slate-100">
+                    <SelectContent className="bg-white border-[#D2D2D7] text-[#1D1D1F]">
                       <SelectItem value="easy">Easy</SelectItem>
                       <SelectItem value="medium">Medium</SelectItem>
                       <SelectItem value="hard">Hard</SelectItem>
@@ -998,14 +998,14 @@ export default function QuestionsBankPage() {
               </div>
             </div>
 
-            <DialogFooter className="bg-slate-950/60 border-t border-slate-800/80 gap-2 sm:gap-0">
+            <DialogFooter className="bg-[#F5F5F7]/80 -mx-6 -mb-6 p-4 rounded-b-2xl border-t border-[#D2D2D7] gap-2 sm:gap-0">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setIsAddOpen(false)}
                 disabled={isSubmitting}
-                className="border-slate-800 text-slate-300 hover:text-white text-xs"
+                className="border-[#D2D2D7] text-[#1D1D1F] hover:bg-white text-xs font-medium"
               >
                 Cancel
               </Button>
@@ -1013,7 +1013,7 @@ export default function QuestionsBankPage() {
                 type="submit"
                 size="sm"
                 disabled={isSubmitting}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs"
+                className="bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-medium"
               >
                 {isSubmitting ? (
                   <>
@@ -1031,14 +1031,14 @@ export default function QuestionsBankPage() {
 
       {/* EDIT QUESTION DIALOG */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="bg-slate-900 border border-slate-800 text-slate-100 sm:max-w-xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-white border border-[#D2D2D7] text-[#1D1D1F] sm:max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
           <form onSubmit={handleUpdateQuestion}>
             <DialogHeader>
-              <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
-                <Pencil className="size-5 text-amber-400" />
+              <DialogTitle className="text-lg font-bold text-[#1D1D1F] flex items-center gap-2">
+                <Pencil className="size-5 text-[#FF9500]" />
                 <span>Edit Question</span>
               </DialogTitle>
-              <DialogDescription className="text-xs text-slate-400">
+              <DialogDescription className="text-xs text-[#6E6E73]">
                 Update prompt, options, answer key, or difficulty.
               </DialogDescription>
             </DialogHeader>
@@ -1046,8 +1046,8 @@ export default function QuestionsBankPage() {
             <div className="space-y-4 py-4">
               {/* Question Text */}
               <div className="space-y-1.5">
-                <Label htmlFor="edit-q-text" className="text-xs font-semibold text-slate-300">
-                  Question Text <span className="text-rose-400">*</span>
+                <Label htmlFor="edit-q-text" className="text-xs font-semibold text-[#1D1D1F]">
+                  Question Text <span className="text-[#FF3B30]">*</span>
                 </Label>
                 <Textarea
                   id="edit-q-text"
@@ -1056,7 +1056,7 @@ export default function QuestionsBankPage() {
                     setFormData({ ...formData, question_text: e.target.value })
                   }
                   rows={3}
-                  className="bg-slate-950 border-slate-800 text-slate-100 text-sm focus-visible:ring-indigo-500/30"
+                  className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-sm focus-visible:bg-white focus-visible:border-[#0071E3] rounded-lg"
                   required
                 />
               </div>
@@ -1064,12 +1064,12 @@ export default function QuestionsBankPage() {
               {/* Options A & B */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="edit-opt-a" className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                    <span className="size-4 rounded bg-indigo-500/20 text-indigo-300 text-[10px] flex items-center justify-center font-bold">
+                  <Label htmlFor="edit-opt-a" className="text-xs font-semibold text-[#1D1D1F] flex items-center gap-1.5">
+                    <span className="size-4 rounded bg-[#0071E3]/15 text-[#0071E3] text-[10px] flex items-center justify-center font-bold">
                       A
                     </span>
                     <span>Option A</span>
-                    <span className="text-rose-400">*</span>
+                    <span className="text-[#FF3B30]">*</span>
                   </Label>
                   <Input
                     id="edit-opt-a"
@@ -1077,18 +1077,18 @@ export default function QuestionsBankPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, option_a: e.target.value })
                     }
-                    className="bg-slate-950 border-slate-800 text-slate-100 text-sm focus-visible:ring-indigo-500/30"
+                    className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-sm focus-visible:bg-white focus-visible:border-[#0071E3] rounded-lg"
                     required
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="edit-opt-b" className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                    <span className="size-4 rounded bg-indigo-500/20 text-indigo-300 text-[10px] flex items-center justify-center font-bold">
+                  <Label htmlFor="edit-opt-b" className="text-xs font-semibold text-[#1D1D1F] flex items-center gap-1.5">
+                    <span className="size-4 rounded bg-[#0071E3]/15 text-[#0071E3] text-[10px] flex items-center justify-center font-bold">
                       B
                     </span>
                     <span>Option B</span>
-                    <span className="text-rose-400">*</span>
+                    <span className="text-[#FF3B30]">*</span>
                   </Label>
                   <Input
                     id="edit-opt-b"
@@ -1096,7 +1096,7 @@ export default function QuestionsBankPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, option_b: e.target.value })
                     }
-                    className="bg-slate-950 border-slate-800 text-slate-100 text-sm focus-visible:ring-indigo-500/30"
+                    className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-sm focus-visible:bg-white focus-visible:border-[#0071E3] rounded-lg"
                     required
                   />
                 </div>
@@ -1105,12 +1105,12 @@ export default function QuestionsBankPage() {
               {/* Options C & D */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="edit-opt-c" className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                    <span className="size-4 rounded bg-indigo-500/20 text-indigo-300 text-[10px] flex items-center justify-center font-bold">
+                  <Label htmlFor="edit-opt-c" className="text-xs font-semibold text-[#1D1D1F] flex items-center gap-1.5">
+                    <span className="size-4 rounded bg-[#0071E3]/15 text-[#0071E3] text-[10px] flex items-center justify-center font-bold">
                       C
                     </span>
                     <span>Option C</span>
-                    <span className="text-rose-400">*</span>
+                    <span className="text-[#FF3B30]">*</span>
                   </Label>
                   <Input
                     id="edit-opt-c"
@@ -1118,18 +1118,18 @@ export default function QuestionsBankPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, option_c: e.target.value })
                     }
-                    className="bg-slate-950 border-slate-800 text-slate-100 text-sm focus-visible:ring-indigo-500/30"
+                    className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-sm focus-visible:bg-white focus-visible:border-[#0071E3] rounded-lg"
                     required
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="edit-opt-d" className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                    <span className="size-4 rounded bg-indigo-500/20 text-indigo-300 text-[10px] flex items-center justify-center font-bold">
+                  <Label htmlFor="edit-opt-d" className="text-xs font-semibold text-[#1D1D1F] flex items-center gap-1.5">
+                    <span className="size-4 rounded bg-[#0071E3]/15 text-[#0071E3] text-[10px] flex items-center justify-center font-bold">
                       D
                     </span>
                     <span>Option D</span>
-                    <span className="text-rose-400">*</span>
+                    <span className="text-[#FF3B30]">*</span>
                   </Label>
                   <Input
                     id="edit-opt-d"
@@ -1137,7 +1137,7 @@ export default function QuestionsBankPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, option_d: e.target.value })
                     }
-                    className="bg-slate-950 border-slate-800 text-slate-100 text-sm focus-visible:ring-indigo-500/30"
+                    className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-sm focus-visible:bg-white focus-visible:border-[#0071E3] rounded-lg"
                     required
                   />
                 </div>
@@ -1146,8 +1146,8 @@ export default function QuestionsBankPage() {
               {/* Correct Option and Difficulty */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                 <div className="space-y-1.5">
-                  <Label htmlFor="edit-correct-opt" className="text-xs font-semibold text-slate-300">
-                    Correct Answer Key <span className="text-rose-400">*</span>
+                  <Label htmlFor="edit-correct-opt" className="text-xs font-semibold text-[#1D1D1F]">
+                    Correct Answer Key <span className="text-[#FF3B30]">*</span>
                   </Label>
                   <Select
                     value={formData.correct_option}
@@ -1158,10 +1158,10 @@ export default function QuestionsBankPage() {
                       })
                     }
                   >
-                    <SelectTrigger id="edit-correct-opt" className="h-9 w-full bg-slate-950 border-slate-800 text-slate-100 text-sm">
+                    <SelectTrigger id="edit-correct-opt" className="h-9 w-full bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-sm rounded-lg">
                       <SelectValue placeholder="Select correct option" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-slate-800 text-slate-100">
+                    <SelectContent className="bg-white border-[#D2D2D7] text-[#1D1D1F]">
                       <SelectItem value="A">Option A</SelectItem>
                       <SelectItem value="B">Option B</SelectItem>
                       <SelectItem value="C">Option C</SelectItem>
@@ -1171,8 +1171,8 @@ export default function QuestionsBankPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="edit-diff" className="text-xs font-semibold text-slate-300">
-                    Difficulty Level <span className="text-rose-400">*</span>
+                  <Label htmlFor="edit-diff" className="text-xs font-semibold text-[#1D1D1F]">
+                    Difficulty Level <span className="text-[#FF3B30]">*</span>
                   </Label>
                   <Select
                     value={formData.difficulty}
@@ -1183,10 +1183,10 @@ export default function QuestionsBankPage() {
                       })
                     }
                   >
-                    <SelectTrigger id="edit-diff" className="h-9 w-full bg-slate-950 border-slate-800 text-slate-100 text-sm">
+                    <SelectTrigger id="edit-diff" className="h-9 w-full bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-sm rounded-lg">
                       <SelectValue placeholder="Select difficulty" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-slate-800 text-slate-100">
+                    <SelectContent className="bg-white border-[#D2D2D7] text-[#1D1D1F]">
                       <SelectItem value="easy">Easy</SelectItem>
                       <SelectItem value="medium">Medium</SelectItem>
                       <SelectItem value="hard">Hard</SelectItem>
@@ -1196,14 +1196,14 @@ export default function QuestionsBankPage() {
               </div>
             </div>
 
-            <DialogFooter className="bg-slate-950/60 border-t border-slate-800/80 gap-2 sm:gap-0">
+            <DialogFooter className="bg-[#F5F5F7]/80 -mx-6 -mb-6 p-4 rounded-b-2xl border-t border-[#D2D2D7] gap-2 sm:gap-0">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setIsEditOpen(false)}
                 disabled={isSubmitting}
-                className="border-slate-800 text-slate-300 hover:text-white text-xs"
+                className="border-[#D2D2D7] text-[#1D1D1F] hover:bg-white text-xs font-medium"
               >
                 Cancel
               </Button>
@@ -1211,7 +1211,7 @@ export default function QuestionsBankPage() {
                 type="submit"
                 size="sm"
                 disabled={isSubmitting}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs"
+                className="bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-medium"
               >
                 {isSubmitting ? (
                   <>
@@ -1229,36 +1229,36 @@ export default function QuestionsBankPage() {
 
       {/* DELETE CONFIRMATION DIALOG */}
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <DialogContent className="bg-slate-900 border border-slate-800 text-slate-100 sm:max-w-md">
+        <DialogContent className="bg-white border border-[#D2D2D7] text-[#1D1D1F] sm:max-w-md rounded-2xl shadow-xl">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-rose-400 flex items-center gap-2">
+            <DialogTitle className="text-lg font-bold text-[#FF3B30] flex items-center gap-2">
               <Trash2 className="size-5" />
               <span>Delete Question</span>
             </DialogTitle>
-            <DialogDescription className="text-xs text-slate-300">
+            <DialogDescription className="text-xs text-[#6E6E73]">
               Are you sure you want to permanently remove this question from the bank?
             </DialogDescription>
           </DialogHeader>
 
           <div className="py-2 space-y-2">
-            <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 font-medium">
+            <div className="p-3 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7] text-xs text-[#1D1D1F] font-medium">
               &quot;{deletingQuestion?.question_text}&quot;
             </div>
 
-            <div className="text-xs text-rose-300 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-lg flex items-start gap-2">
-              <AlertCircle className="size-4 text-rose-400 shrink-0 mt-0.5" />
+            <div className="text-xs text-[#D70015] bg-[#FF3B30]/10 border border-[#FF3B30]/20 p-2.5 rounded-xl flex items-start gap-2">
+              <AlertCircle className="size-4 text-[#FF3B30] shrink-0 mt-0.5" />
               <span>This question will not be included in future exam batch generation.</span>
             </div>
           </div>
 
-          <DialogFooter className="bg-slate-950/60 border-t border-slate-800/80 gap-2 sm:gap-0">
+          <DialogFooter className="bg-[#F5F5F7]/80 -mx-6 -mb-6 p-4 rounded-b-2xl border-t border-[#D2D2D7] gap-2 sm:gap-0">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => setIsDeleteOpen(false)}
               disabled={isSubmitting}
-              className="border-slate-800 text-slate-300 hover:text-white text-xs"
+              className="border-[#D2D2D7] text-[#1D1D1F] hover:bg-white text-xs font-medium"
             >
               Cancel
             </Button>
@@ -1267,7 +1267,7 @@ export default function QuestionsBankPage() {
               size="sm"
               onClick={handleDeleteQuestion}
               disabled={isSubmitting}
-              className="bg-rose-600 hover:bg-rose-500 text-white text-xs"
+              className="bg-[#FF3B30] hover:bg-[#D70015] text-white text-xs font-medium"
             >
               {isSubmitting ? (
                 <>
@@ -1284,23 +1284,23 @@ export default function QuestionsBankPage() {
 
       {/* CSV IMPORT DIALOG */}
       <Dialog open={isImportOpen} onOpenChange={setIsImportOpen}>
-        <DialogContent className="bg-slate-900 border border-slate-800 text-slate-100 sm:max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-white border border-[#D2D2D7] text-[#1D1D1F] sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
           <form onSubmit={handleImportCsv}>
             <DialogHeader>
-              <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
-                <FileSpreadsheet className="size-5 text-indigo-400" />
+              <DialogTitle className="text-lg font-bold text-[#1D1D1F] flex items-center gap-2">
+                <FileSpreadsheet className="size-5 text-[#0071E3]" />
                 <span>Import Questions via CSV</span>
               </DialogTitle>
-              <DialogDescription className="text-xs text-slate-400">
+              <DialogDescription className="text-xs text-[#6E6E73]">
                 Bulk upload multiple choice questions for &quot;{subject?.name}&quot;.
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 py-4">
               {/* Template Download Prompt */}
-              <div className="p-3 rounded-lg border border-indigo-500/20 bg-indigo-500/10 flex items-center justify-between gap-3">
-                <div className="text-xs text-indigo-200">
-                  <span className="font-semibold block text-indigo-100">Need a CSV template?</span>
+              <div className="p-3.5 rounded-xl border border-[#0071E3]/20 bg-[#0071E3]/5 flex items-center justify-between gap-3">
+                <div className="text-xs text-[#1D1D1F]">
+                  <span className="font-semibold block text-[#1D1D1F]">Need a CSV template?</span>
                   Download the sample template with pre-configured headers and example rows.
                 </div>
                 <Button
@@ -1308,7 +1308,7 @@ export default function QuestionsBankPage() {
                   variant="outline"
                   size="sm"
                   onClick={handleDownloadSampleCsv}
-                  className="shrink-0 h-8 text-xs border-indigo-500/40 text-indigo-300 hover:text-white hover:bg-indigo-600"
+                  className="shrink-0 h-8 text-xs border-[#0071E3]/30 text-[#0071E3] hover:text-white hover:bg-[#0071E3] font-medium"
                 >
                   <Download className="size-3 mr-1" />
                   <span>Sample CSV</span>
@@ -1316,27 +1316,27 @@ export default function QuestionsBankPage() {
               </div>
 
               {/* Required Columns Guide */}
-              <div className="p-3 rounded-lg border border-slate-800 bg-slate-950/60 text-xs space-y-1.5 text-slate-400">
-                <span className="font-semibold text-slate-200 block">Required CSV Column Headers:</span>
-                <div className="flex flex-wrap gap-1 font-mono text-[11px] text-slate-300">
-                  <code className="bg-slate-800 px-1.5 py-0.5 rounded text-indigo-300">question_text</code>
-                  <code className="bg-slate-800 px-1.5 py-0.5 rounded text-indigo-300">option_a</code>
-                  <code className="bg-slate-800 px-1.5 py-0.5 rounded text-indigo-300">option_b</code>
-                  <code className="bg-slate-800 px-1.5 py-0.5 rounded text-indigo-300">option_c</code>
-                  <code className="bg-slate-800 px-1.5 py-0.5 rounded text-indigo-300">option_d</code>
-                  <code className="bg-slate-800 px-1.5 py-0.5 rounded text-indigo-300">correct_option</code>
-                  <code className="bg-slate-800 px-1.5 py-0.5 rounded text-indigo-300">difficulty</code>
+              <div className="p-3.5 rounded-xl border border-[#D2D2D7] bg-[#F5F5F7] text-xs space-y-1.5 text-[#6E6E73]">
+                <span className="font-semibold text-[#1D1D1F] block">Required CSV Column Headers:</span>
+                <div className="flex flex-wrap gap-1 font-mono text-[11px] text-[#1D1D1F]">
+                  <code className="bg-[#E8E8ED] px-1.5 py-0.5 rounded text-[#0071E3]">question_text</code>
+                  <code className="bg-[#E8E8ED] px-1.5 py-0.5 rounded text-[#0071E3]">option_a</code>
+                  <code className="bg-[#E8E8ED] px-1.5 py-0.5 rounded text-[#0071E3]">option_b</code>
+                  <code className="bg-[#E8E8ED] px-1.5 py-0.5 rounded text-[#0071E3]">option_c</code>
+                  <code className="bg-[#E8E8ED] px-1.5 py-0.5 rounded text-[#0071E3]">option_d</code>
+                  <code className="bg-[#E8E8ED] px-1.5 py-0.5 rounded text-[#0071E3]">correct_option</code>
+                  <code className="bg-[#E8E8ED] px-1.5 py-0.5 rounded text-[#0071E3]">difficulty</code>
                 </div>
-                <p className="text-[11px] text-slate-500 pt-1">
-                  * <span className="text-slate-400">correct_option</span> must be A, B, C, or D.
-                  * <span className="text-slate-400">difficulty</span> can be easy, medium, or hard.
+                <p className="text-[11px] text-[#86868B] pt-1">
+                  * <span className="text-[#1D1D1F]">correct_option</span> must be A, B, C, or D.
+                  * <span className="text-[#1D1D1F]">difficulty</span> can be easy, medium, or hard.
                 </p>
               </div>
 
               {/* File input */}
               <div className="space-y-1.5">
-                <Label htmlFor="csv-file-input" className="text-xs font-semibold text-slate-300">
-                  Select CSV File <span className="text-rose-400">*</span>
+                <Label htmlFor="csv-file-input" className="text-xs font-semibold text-[#1D1D1F]">
+                  Select CSV File <span className="text-[#FF3B30]">*</span>
                 </Label>
                 <Input
                   id="csv-file-input"
@@ -1348,31 +1348,31 @@ export default function QuestionsBankPage() {
                     setCsvFile(file);
                     setImportSummary(null);
                   }}
-                  className="bg-slate-950 border-slate-800 text-slate-200 file:text-indigo-400 file:bg-slate-800 file:hover:bg-slate-750 file:border-0 file:rounded-md file:text-xs file:font-semibold text-xs cursor-pointer"
+                  className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] file:text-[#0071E3] file:bg-[#E8E8ED] file:hover:bg-[#D2D2D7] file:border-0 file:rounded-md file:text-xs file:font-medium text-xs cursor-pointer rounded-lg"
                 />
               </div>
 
               {/* Import Results Summary if available */}
               {importSummary && (
                 <div className="space-y-2 pt-1">
-                  <div className="p-3 rounded-lg border border-slate-800 bg-slate-950 text-xs space-y-1">
-                    <div className="flex items-center gap-2 text-emerald-400 font-semibold">
-                      <CheckCircle2 className="size-4" />
+                  <div className="p-3 rounded-xl border border-[#D2D2D7] bg-[#F5F5F7] text-xs space-y-1">
+                    <div className="flex items-center gap-2 text-[#1E7E34] font-semibold">
+                      <CheckCircle2 className="size-4 text-[#34C759]" />
                       <span>{importSummary.imported} Questions Imported Successfully</span>
                     </div>
                     {importSummary.skipped > 0 && (
-                      <div className="flex items-center gap-2 text-amber-400 font-semibold pt-1">
-                        <AlertCircle className="size-4" />
+                      <div className="flex items-center gap-2 text-[#B25E00] font-semibold pt-1">
+                        <AlertCircle className="size-4 text-[#FF9500]" />
                         <span>{importSummary.skipped} Questions Skipped (Validation Errors)</span>
                       </div>
                     )}
                   </div>
 
                   {importSummary.errors.length > 0 && (
-                    <div className="p-2.5 rounded-lg border border-rose-500/20 bg-rose-500/10 text-xs text-rose-300 max-h-36 overflow-y-auto space-y-1">
-                      <div className="font-semibold text-rose-200">Error Details:</div>
+                    <div className="p-2.5 rounded-xl border border-[#FF3B30]/20 bg-[#FF3B30]/10 text-xs text-[#D70015] max-h-36 overflow-y-auto space-y-1">
+                      <div className="font-semibold text-[#D70015]">Error Details:</div>
                       {importSummary.errors.map((err, i) => (
-                        <div key={i} className="text-[11px] text-rose-300/90 font-mono">
+                        <div key={i} className="text-[11px] text-[#D70015] font-mono">
                           • {err}
                         </div>
                       ))}
@@ -1382,14 +1382,14 @@ export default function QuestionsBankPage() {
               )}
             </div>
 
-            <DialogFooter className="bg-slate-950/60 border-t border-slate-800/80 gap-2 sm:gap-0">
+            <DialogFooter className="bg-[#F5F5F7]/80 -mx-6 -mb-6 p-4 rounded-b-2xl border-t border-[#D2D2D7] gap-2 sm:gap-0">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setIsImportOpen(false)}
                 disabled={isImporting}
-                className="border-slate-800 text-slate-300 hover:text-white text-xs"
+                className="border-[#D2D2D7] text-[#1D1D1F] hover:bg-white text-xs font-medium"
               >
                 Close
               </Button>
@@ -1397,7 +1397,7 @@ export default function QuestionsBankPage() {
                 type="submit"
                 size="sm"
                 disabled={isImporting || !csvFile}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs"
+                className="bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-medium"
               >
                 {isImporting ? (
                   <>
