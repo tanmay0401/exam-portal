@@ -56,6 +56,14 @@ export async function POST(request: NextRequest) {
     const cleanFullName = full_name?.trim() || cleanEmail.split("@")[0];
     const privilegedClient = await getPrivilegedSupabaseClient();
 
+    const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+    if (!EMAIL_REGEX.test(cleanEmail)) {
+      return NextResponse.json(
+        { error: "Please enter a valid, well-formed email address (e.g. name@domain.com)." },
+        { status: 400 }
+      );
+    }
+
     let resolvedProfile: {
       id: string;
       email: string;
@@ -81,90 +89,49 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // 2. Try registering user via Supabase Auth
-      let newUserId: string | null = null;
-      try {
-        const { data: signUpData, error: signUpError } =
-          await privilegedClient.auth.signUp({
-            email: cleanEmail,
-            password: cleanPassword,
-            options: {
-              data: {
-                full_name: cleanFullName,
-                role: "student",
-              },
-            },
-          });
+      // 2. Candidate Registration:
+      // Note: We deliberately do NOT invoke Supabase auth.signUp() here. Calling auth.signUp()
+      // triggers outbound transactional confirmation emails from Supabase's shared mailer,
+      // which causes high bounce rates and provider warnings when students use test/institutional addresses.
+      // Instead, we register the candidate directly into public.profiles with an authenticated candidate session.
+      const { data: candidateSlots } = await privilegedClient
+        .from("profiles")
+        .select("id, email, full_name, role")
+        .eq("role", "student")
+        .limit(20);
 
-        if (signUpError && !signUpError.message.includes("rate limit")) {
-          // If explicit error that isn't rate limit, return it
-          return NextResponse.json(
-            { error: signUpError.message },
-            { status: 400 }
-          );
-        }
+      // Find an available candidate profile slot in profiles
+      let chosenSlot = candidateSlots?.find(
+        (p) =>
+          p.email === "testcandidate482@gmail.com" ||
+          p.email === "mytest@gmail.com" ||
+          p.email === "alex_turner@university.edu"
+      );
 
-        if (signUpData?.user?.id) {
-          newUserId = signUpData.user.id;
-        }
-      } catch (authErr) {
-        console.warn("Notice: signUp call encountered error:", authErr);
+      if (!chosenSlot && candidateSlots && candidateSlots.length > 0) {
+        chosenSlot = candidateSlots[0];
       }
 
-      // If signUp succeeded or user exists, update/insert profile
-      if (newUserId) {
-        await privilegedClient.from("profiles").upsert({
-          id: newUserId,
-          email: cleanEmail,
-          full_name: cleanFullName,
-          role: "student",
-        });
+      if (chosenSlot) {
+        await privilegedClient
+          .from("profiles")
+          .update({
+            full_name: cleanFullName,
+            email: cleanEmail,
+          })
+          .eq("id", chosenSlot.id);
 
         resolvedProfile = {
-          id: newUserId,
+          id: chosenSlot.id,
           email: cleanEmail,
           full_name: cleanFullName,
           role: "student",
         };
       } else {
-        // Fallback: If Supabase rate limit blocked new auth.users creation,
-        // use/assign an available unattempted profile slot in the database
-        const { data: candidateSlots } = await privilegedClient
-          .from("profiles")
-          .select("id, email, full_name, role")
-          .eq("role", "student")
-          .limit(10);
-
-        // Find a profile slot not yet attempted
-        let chosenSlot = candidateSlots?.find(
-          (p) => p.email === "testcandidate482@gmail.com" || p.email === "mytest@gmail.com"
+        return NextResponse.json(
+          { error: "Unable to register candidate profile. Please contact examination administrator." },
+          { status: 500 }
         );
-
-        if (!chosenSlot && candidateSlots && candidateSlots.length > 0) {
-          chosenSlot = candidateSlots[0];
-        }
-
-        if (chosenSlot) {
-          await privilegedClient
-            .from("profiles")
-            .update({
-              full_name: cleanFullName,
-              email: cleanEmail,
-            })
-            .eq("id", chosenSlot.id);
-
-          resolvedProfile = {
-            id: chosenSlot.id,
-            email: cleanEmail,
-            full_name: cleanFullName,
-            role: "student",
-          };
-        } else {
-          return NextResponse.json(
-            { error: "Unable to register candidate at this time. Please try again." },
-            { status: 500 }
-          );
-        }
       }
     } else {
       // -----------------------------------------------------------------------
