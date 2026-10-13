@@ -21,7 +21,7 @@ export async function POST(
 
   try {
     const body = await request.json();
-    const { batch_id } = body;
+    const batch_id = body.batch_id || body.selected_batch_id;
 
     if (!batch_id) {
       return NextResponse.json(
