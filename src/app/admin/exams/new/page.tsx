@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
-  Sparkles,
   Calculator,
   Loader2,
   BookOpen,
@@ -16,13 +15,6 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -86,7 +78,6 @@ export default function CreateExamPage() {
     loadSubjects();
   }, []);
 
-  // Computed max marks
   const parsedTotalQuestions = Number(totalQuestions) || 0;
   const parsedMarksPerQuestion = Number(marksPerQuestion) || 0;
   const computedMaxMarks = parsedTotalQuestions * parsedMarksPerQuestion;
@@ -159,74 +150,67 @@ export default function CreateExamPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Top breadcrumb & back button */}
-      <div className="flex items-center gap-3">
+      {/* Back button */}
+      <div>
         <Button
           asChild
           variant="ghost"
           size="sm"
-          className="text-slate-400 hover:text-white hover:bg-slate-900 border border-slate-800"
+          className="text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-[#E8E8ED]/60 rounded-full h-8 px-3 text-[12px]"
         >
           <Link href="/admin/exams">
-            <ArrowLeft className="size-4 mr-1.5" />
-            <span>Back to Exams</span>
+            <ArrowLeft className="size-3.5 mr-1.5" />
+            <span>Back to Examinations</span>
           </Link>
         </Button>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-            Create New Examination
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Configure examination structure, scoring rules, multi-batch settings, and session schedule.
-          </p>
-        </div>
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1D1D1F]">
+          Create Examination
+        </h1>
+        <p className="text-[13px] text-[#6E6E73] mt-0.5">
+          Define exam identity, scoring formulas, multi-batch parameters, and optional availability schedules.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Section 1: Basic Info */}
-        <Card className="border-slate-800/80 bg-slate-900/50 backdrop-blur-md">
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-2 text-indigo-400 font-semibold text-sm">
-              <BookOpen className="size-4" />
-              <span>Basic Information</span>
-            </div>
-            <CardTitle className="text-lg text-white">Exam Details & Subject</CardTitle>
-            <CardDescription className="text-xs text-slate-400">
-              Provide descriptive identity and assign an accredited question bank subject.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="title" className="text-xs font-semibold text-slate-300">
-                Exam Title <span className="text-rose-400">*</span>
+        <div className="bg-white border border-[#D2D2D7] rounded-2xl p-6 shadow-xs space-y-4">
+          <div className="flex items-center gap-2 text-[#0071E3] font-semibold text-[13px]">
+            <BookOpen className="size-4" />
+            <span>Basic Information</span>
+          </div>
+
+          <div className="space-y-4 pt-1">
+            <div className="space-y-1.5">
+              <Label htmlFor="title" className="text-[12px] font-medium text-[#1D1D1F]">
+                Exam Title <span className="text-[#FF3B30]">*</span>
               </Label>
               <Input
                 id="title"
-                placeholder="e.g., Data Structures & Algorithms Mid-Term Examination 2026"
+                placeholder="e.g., Computer Science Mid-Term Assessment 2026"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="bg-slate-950 border-slate-800 text-white placeholder:text-slate-500 h-9 text-sm"
+                className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] placeholder:text-[#86868B] focus-visible:bg-white focus-visible:border-[#0071E3] h-10 text-[13px] rounded-xl"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="subject" className="text-xs font-semibold text-slate-300">
-                Subject Bank <span className="text-rose-400">*</span>
+            <div className="space-y-1.5">
+              <Label htmlFor="subject" className="text-[12px] font-medium text-[#1D1D1F]">
+                Subject Bank <span className="text-[#FF3B30]">*</span>
               </Label>
               {loadingSubjects ? (
-                <div className="h-9 w-full bg-slate-950/60 rounded-lg border border-slate-800 flex items-center px-3 text-xs text-slate-400 gap-2">
-                  <Loader2 className="size-3.5 animate-spin text-indigo-400" />
+                <div className="h-10 w-full bg-[#F5F5F7] rounded-xl border border-[#D2D2D7] flex items-center px-3 text-[12px] text-[#6E6E73] gap-2">
+                  <Loader2 className="size-3.5 animate-spin text-[#0071E3]" />
                   <span>Loading subjects...</span>
                 </div>
               ) : subjects.length === 0 ? (
-                <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-xs text-amber-300 flex items-center gap-2">
+                <div className="p-3 bg-[#FF9500]/10 border border-[#FF9500]/30 rounded-xl text-[12px] text-[#B25E00] flex items-center gap-2">
                   <AlertCircle className="size-4 shrink-0" />
                   <span>
-                    No subjects found in the database. Please create a subject and add questions first.
+                    No subjects found. Please create a subject in the question bank first.
                   </span>
                 </div>
               ) : (
@@ -234,12 +218,12 @@ export default function CreateExamPage() {
                   value={subjectId}
                   onValueChange={(val) => setSubjectId(val as string)}
                 >
-                  <SelectTrigger className="w-full bg-slate-950 border-slate-800 text-white h-9 text-sm">
+                  <SelectTrigger className="w-full bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] h-10 text-[13px] rounded-xl focus:bg-white focus:border-[#0071E3]">
                     <SelectValue placeholder="Select a subject..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-900 border-slate-800 text-slate-200">
+                  <SelectContent className="bg-white border-[#D2D2D7] text-[#1D1D1F] rounded-xl shadow-lg">
                     {subjects.map((s) => (
-                      <SelectItem key={s.id} value={s.id} className="hover:bg-slate-800">
+                      <SelectItem key={s.id} value={s.id} className="text-[13px] hover:bg-[#F5F5F7] rounded-lg">
                         {s.name}
                       </SelectItem>
                     ))}
@@ -247,26 +231,21 @@ export default function CreateExamPage() {
                 </Select>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Section 2: Configuration & Scoring */}
-        <Card className="border-slate-800/80 bg-slate-900/50 backdrop-blur-md">
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-2 text-indigo-400 font-semibold text-sm">
-              <Settings2 className="size-4" />
-              <span>Assessment & Scoring Rules</span>
-            </div>
-            <CardTitle className="text-lg text-white">Question Count & Marks</CardTitle>
-            <CardDescription className="text-xs text-slate-400">
-              Establish question volume, timing limits, positive scoring, and negative penalization.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-5">
+        {/* Section 2: Questions & Scoring Rules */}
+        <div className="bg-white border border-[#D2D2D7] rounded-2xl p-6 shadow-xs space-y-4">
+          <div className="flex items-center gap-2 text-[#0071E3] font-semibold text-[13px]">
+            <Settings2 className="size-4" />
+            <span>Questions & Scoring Scheme</span>
+          </div>
+
+          <div className="space-y-4 pt-1">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="totalQuestions" className="text-xs font-semibold text-slate-300">
-                  Total Questions <span className="text-rose-400">*</span>
+              <div className="space-y-1.5">
+                <Label htmlFor="totalQuestions" className="text-[12px] font-medium text-[#1D1D1F]">
+                  Total Questions <span className="text-[#FF3B30]">*</span>
                 </Label>
                 <Input
                   id="totalQuestions"
@@ -275,16 +254,16 @@ export default function CreateExamPage() {
                   value={totalQuestions}
                   onChange={(e) => setTotalQuestions(e.target.value)}
                   required
-                  className="bg-slate-950 border-slate-800 text-white h-9 text-sm font-mono"
+                  className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] h-10 text-[13px] font-mono rounded-xl focus-visible:bg-white focus-visible:border-[#0071E3]"
                 />
-                <p className="text-[11px] text-slate-500">
-                  Number of questions drawn into each candidate&apos;s exam paper.
+                <p className="text-[11px] text-[#6E6E73]">
+                  Number of questions drawn into each candidate&apos;s paper.
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="duration" className="text-xs font-semibold text-slate-300">
-                  Duration (Minutes) <span className="text-rose-400">*</span>
+              <div className="space-y-1.5">
+                <Label htmlFor="duration" className="text-[12px] font-medium text-[#1D1D1F]">
+                  Duration (Minutes) <span className="text-[#FF3B30]">*</span>
                 </Label>
                 <Input
                   id="duration"
@@ -293,17 +272,17 @@ export default function CreateExamPage() {
                   value={durationMinutes}
                   onChange={(e) => setDurationMinutes(e.target.value)}
                   required
-                  className="bg-slate-950 border-slate-800 text-white h-9 text-sm font-mono"
+                  className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] h-10 text-[13px] font-mono rounded-xl focus-visible:bg-white focus-visible:border-[#0071E3]"
                 />
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[11px] text-[#6E6E73]">
                   Countdown limit before auto-submission triggers.
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="marksPerQuestion" className="text-xs font-semibold text-slate-300">
+              <div className="space-y-1.5">
+                <Label htmlFor="marksPerQuestion" className="text-[12px] font-medium text-[#1D1D1F]">
                   Marks per Correct Question
                 </Label>
                 <Input
@@ -313,14 +292,14 @@ export default function CreateExamPage() {
                   min={0.5}
                   value={marksPerQuestion}
                   onChange={(e) => setMarksPerQuestion(e.target.value)}
-                  className="bg-slate-950 border-slate-800 text-white h-9 text-sm font-mono"
+                  className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] h-10 text-[13px] font-mono rounded-xl focus-visible:bg-white focus-visible:border-[#0071E3]"
                 />
-                <p className="text-[11px] text-slate-500">Default: 4 marks per correct response.</p>
+                <p className="text-[11px] text-[#6E6E73]">Default: +4 marks per correct response.</p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="negativeMarks" className="text-xs font-semibold text-slate-300">
-                  Negative Marks per Incorrect Question
+              <div className="space-y-1.5">
+                <Label htmlFor="negativeMarks" className="text-[12px] font-medium text-[#1D1D1F]">
+                  Negative Marks (Penalty)
                 </Label>
                 <Input
                   id="negativeMarks"
@@ -329,49 +308,44 @@ export default function CreateExamPage() {
                   min={0}
                   value={negativeMarks}
                   onChange={(e) => setNegativeMarks(e.target.value)}
-                  className="bg-slate-950 border-slate-800 text-white h-9 text-sm font-mono"
+                  className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] h-10 text-[13px] font-mono rounded-xl focus-visible:bg-white focus-visible:border-[#0071E3]"
                 />
-                <p className="text-[11px] text-slate-500">
-                  Deducted marks for incorrect choices (default: 1 mark penalty).
+                <p className="text-[11px] text-[#6E6E73]">
+                  Deducted marks for incorrect choices (default: -1 penalty).
                 </p>
               </div>
             </div>
 
             {/* Computed Max Marks Banner */}
-            <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-4 flex items-center justify-between">
+            <div className="rounded-xl border border-[#D2D2D7] bg-[#F5F5F7] p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="size-9 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
-                  <Calculator className="size-5" />
+                <div className="size-9 rounded-lg bg-white border border-[#D2D2D7] text-[#0071E3] flex items-center justify-center">
+                  <Calculator className="size-4.5" />
                 </div>
                 <div>
-                  <div className="text-xs font-semibold text-indigo-300">Computed Maximum Score</div>
-                  <div className="text-[11px] text-slate-400">
+                  <div className="text-[13px] font-semibold text-[#1D1D1F]">Maximum Achievable Score</div>
+                  <div className="text-[11px] text-[#6E6E73]">
                     {parsedTotalQuestions} questions × {parsedMarksPerQuestion} marks
                   </div>
                 </div>
               </div>
-              <div className="text-2xl font-black text-white font-mono">
-                {computedMaxMarks} <span className="text-xs font-normal text-slate-400">pts</span>
+              <div className="text-2xl font-semibold text-[#1D1D1F] font-mono">
+                {computedMaxMarks} <span className="text-[12px] font-normal text-[#6E6E73]">pts</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Section 3: Advanced Batch & Security Options */}
-        <Card className="border-slate-800/80 bg-slate-900/50 backdrop-blur-md">
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-2 text-indigo-400 font-semibold text-sm">
-              <Layers className="size-4" />
-              <span>Multi-Batch Generation & Test Mode</span>
-            </div>
-            <CardTitle className="text-lg text-white">Randomization & Anti-Malpractice</CardTitle>
-            <CardDescription className="text-xs text-slate-400">
-              Configure randomized sets for multi-batch testing or practice dry-runs.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="batchCount" className="text-xs font-semibold text-slate-300">
+        {/* Section 3: Multi-Batch & Security Options */}
+        <div className="bg-white border border-[#D2D2D7] rounded-2xl p-6 shadow-xs space-y-4">
+          <div className="flex items-center gap-2 text-[#0071E3] font-semibold text-[13px]">
+            <Layers className="size-4" />
+            <span>Multi-Batch Generation & Test Mode</span>
+          </div>
+
+          <div className="space-y-4 pt-1">
+            <div className="space-y-1.5">
+              <Label htmlFor="batchCount" className="text-[12px] font-medium text-[#1D1D1F]">
                 Number of Batches to Generate (Default: 3)
               </Label>
               <Input
@@ -381,22 +355,22 @@ export default function CreateExamPage() {
                 max={20}
                 value={batchCount}
                 onChange={(e) => setBatchCount(e.target.value)}
-                className="bg-slate-950 border-slate-800 text-white h-9 text-sm font-mono max-w-xs"
+                className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] h-10 text-[13px] font-mono max-w-xs rounded-xl focus-visible:bg-white focus-visible:border-[#0071E3]"
               />
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-[#6E6E73]">
                 Independent test paper variations generated algorithmically.
               </p>
             </div>
 
-            <Separator className="bg-slate-800/80" />
+            <Separator className="bg-[#E5E5EA]" />
 
             <div className="flex items-center justify-between gap-4">
               <div className="space-y-0.5">
-                <Label className="text-xs font-semibold text-slate-200">
+                <Label className="text-[13px] font-medium text-[#1D1D1F]">
                   Allow Question Overlap Between Batches
                 </Label>
-                <p className="text-[11px] text-slate-400">
-                  When disabled, questions will not be reused across batches if the question bank contains sufficient pool size.
+                <p className="text-[11px] text-[#6E6E73]">
+                  When disabled, questions will not be reused across batches if the question pool has sufficient size.
                 </p>
               </div>
               <Switch
@@ -405,20 +379,20 @@ export default function CreateExamPage() {
               />
             </div>
 
-            <Separator className="bg-slate-800/80" />
+            <Separator className="bg-[#E5E5EA]" />
 
             <div className="flex items-center justify-between gap-4">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
-                  <Label className="text-xs font-semibold text-slate-200">
+                  <Label className="text-[13px] font-medium text-[#1D1D1F]">
                     Dry Run Mode (Mock / Practice)
                   </Label>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#FF9500]/10 text-[#B25E00] border border-[#FF9500]/30 font-medium">
                     Testing
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400">
-                  Marks candidate attempts as simulated dry runs without affecting permanent score statistics.
+                <p className="text-[11px] text-[#6E6E73]">
+                  Marks student attempts as practice dry runs without polluting official evaluation statistics.
                 </p>
               </div>
               <Switch
@@ -426,59 +400,52 @@ export default function CreateExamPage() {
                 onCheckedChange={setIsDryRun}
               />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Section 4: Schedule */}
-        <Card className="border-slate-800/80 bg-slate-900/50 backdrop-blur-md">
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-2 text-indigo-400 font-semibold text-sm">
-              <Calendar className="size-4" />
-              <span>Assessment Window (Optional)</span>
-            </div>
-            <CardTitle className="text-lg text-white">Start & Expiration Schedule</CardTitle>
-            <CardDescription className="text-xs text-slate-400">
-              Optionally enforce time boundaries within which students may initiate the test.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="startsAt" className="text-xs font-semibold text-slate-300">
-                  Starts At (Local Time)
-                </Label>
-                <Input
-                  id="startsAt"
-                  type="datetime-local"
-                  value={startsAt}
-                  onChange={(e) => setStartsAt(e.target.value)}
-                  className="bg-slate-950 border-slate-800 text-white h-9 text-sm"
-                />
-              </div>
+        <div className="bg-white border border-[#D2D2D7] rounded-2xl p-6 shadow-xs space-y-4">
+          <div className="flex items-center gap-2 text-[#0071E3] font-semibold text-[13px]">
+            <Calendar className="size-4" />
+            <span>Assessment Schedule Window (Optional)</span>
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="endsAt" className="text-xs font-semibold text-slate-300">
-                  Ends At (Local Time)
-                </Label>
-                <Input
-                  id="endsAt"
-                  type="datetime-local"
-                  value={endsAt}
-                  onChange={(e) => setEndsAt(e.target.value)}
-                  className="bg-slate-950 border-slate-800 text-white h-9 text-sm"
-                />
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+            <div className="space-y-1.5">
+              <Label htmlFor="startsAt" className="text-[12px] font-medium text-[#1D1D1F]">
+                Starts At (Local Time)
+              </Label>
+              <Input
+                id="startsAt"
+                type="datetime-local"
+                value={startsAt}
+                onChange={(e) => setStartsAt(e.target.value)}
+                className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] h-10 text-[13px] rounded-xl focus-visible:bg-white focus-visible:border-[#0071E3]"
+              />
             </div>
-          </CardContent>
-        </Card>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="endsAt" className="text-[12px] font-medium text-[#1D1D1F]">
+                Ends At (Local Time)
+              </Label>
+              <Input
+                id="endsAt"
+                type="datetime-local"
+                value={endsAt}
+                onChange={(e) => setEndsAt(e.target.value)}
+                className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] h-10 text-[13px] rounded-xl focus-visible:bg-white focus-visible:border-[#0071E3]"
+              />
+            </div>
+          </div>
+        </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-4">
+        <div className="flex items-center justify-end gap-3 pt-2">
           <Button
             asChild
             type="button"
             variant="outline"
-            className="border-slate-800 text-slate-300 hover:bg-slate-900"
+            className="border-[#D2D2D7] bg-white text-[#1D1D1F] hover:bg-[#F5F5F7] rounded-xl h-10 text-[13px]"
           >
             <Link href="/admin/exams">Cancel</Link>
           </Button>
@@ -486,7 +453,7 @@ export default function CreateExamPage() {
           <Button
             type="submit"
             disabled={submitting || loadingSubjects}
-            className="bg-indigo-600 hover:bg-indigo-500 text-white min-w-36 shadow-lg shadow-indigo-600/25"
+            className="bg-[#0071E3] hover:bg-[#0077ED] text-white rounded-xl h-10 px-6 text-[13px] font-medium shadow-xs"
           >
             {submitting ? (
               <span className="flex items-center gap-2">
