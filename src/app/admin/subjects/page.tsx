@@ -18,13 +18,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Table,
   TableBody,
   TableCell,
@@ -51,7 +44,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 
@@ -93,8 +85,8 @@ export default function SubjectsPage() {
       }
       const data = await res.json();
       setSubjects(Array.isArray(data) ? data : data.subjects || []);
-    } catch (err: any) {
-      const msg = err.message || "Failed to load subjects";
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to load subjects";
       setError(msg);
       toast.error(msg);
     } finally {
@@ -106,7 +98,6 @@ export default function SubjectsPage() {
     fetchSubjects();
   }, [fetchSubjects]);
 
-  // Filtered subjects
   const filteredSubjects = useMemo(() => {
     if (!searchQuery.trim()) return subjects;
     const query = searchQuery.toLowerCase();
@@ -117,13 +108,11 @@ export default function SubjectsPage() {
     );
   }, [subjects, searchQuery]);
 
-  // Open Create Dialog
   const handleOpenAdd = () => {
     setFormData({ name: "", description: "" });
     setIsAddOpen(true);
   };
 
-  // Open Edit Dialog
   const handleOpenEdit = (subject: SubjectItem) => {
     setEditingSubject(subject);
     setFormData({
@@ -133,17 +122,15 @@ export default function SubjectsPage() {
     setIsEditOpen(true);
   };
 
-  // Open Delete Confirmation Dialog
   const handleOpenDelete = (subject: SubjectItem) => {
     setDeletingSubject(subject);
     setIsDeleteOpen(true);
   };
 
-  // Submit Create Subject
   const handleCreateSubject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) {
-      toast.error("Please enter a subject name");
+      toast.error("Subject name is required");
       return;
     }
 
@@ -167,21 +154,17 @@ export default function SubjectsPage() {
       setIsAddOpen(false);
       setFormData({ name: "", description: "" });
       fetchSubjects();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to create subject");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to create subject";
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Submit Edit Subject
   const handleUpdateSubject = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingSubject) return;
-    if (!formData.name.trim()) {
-      toast.error("Please enter a subject name");
-      return;
-    }
+    if (!editingSubject || !formData.name.trim()) return;
 
     setIsSubmitting(true);
     try {
@@ -203,14 +186,14 @@ export default function SubjectsPage() {
       setIsEditOpen(false);
       setEditingSubject(null);
       fetchSubjects();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update subject");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to update subject";
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Submit Delete Subject
   const handleDeleteSubject = async () => {
     if (!deletingSubject) return;
 
@@ -229,8 +212,9 @@ export default function SubjectsPage() {
       setIsDeleteOpen(false);
       setDeletingSubject(null);
       fetchSubjects();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to delete subject");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to delete subject";
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -251,20 +235,19 @@ export default function SubjectsPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
-            <BookOpen className="size-7 text-indigo-400" />
-            <span>Subject Management</span>
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1D1D1F]">
+            Subjects & Question Banks
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Organize academic courses, syllabi, and question bank repositories.
+          <p className="text-[13px] text-[#6E6E73] mt-0.5">
+            Organize academic curriculum domains and author question pools for randomized batch papers.
           </p>
         </div>
 
         <Button
           onClick={handleOpenAdd}
-          className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-md shadow-indigo-600/25 text-sm h-10 self-start sm:self-auto"
+          className="bg-[#0071E3] hover:bg-[#0077ED] text-white font-medium text-[13px] h-9 px-4 rounded-xl shadow-xs self-start sm:self-auto"
         >
           <Plus className="size-4 mr-1.5" />
           <span>Add Subject</span>
@@ -273,287 +256,281 @@ export default function SubjectsPage() {
 
       {/* Error alert */}
       {error && (
-        <Alert variant="destructive" className="border-rose-500/30 bg-rose-500/10 text-rose-300">
-          <AlertCircle className="size-4 text-rose-400" />
-          <AlertDescription className="text-xs sm:text-sm">
-            {error}
-          </AlertDescription>
-        </Alert>
+        <div className="rounded-xl border border-[#FF3B30]/30 bg-[#FF3B30]/10 p-4 text-[#D70015] flex items-center justify-between text-[13px]">
+          <div className="flex items-center gap-2.5">
+            <AlertCircle className="size-4.5 shrink-0" />
+            <span>{error}</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={fetchSubjects}
+            className="text-[#D70015] hover:bg-[#FF3B30]/20 text-[12px] h-7 px-2"
+          >
+            Retry
+          </Button>
+        </div>
       )}
 
-      {/* Main Card with search and table */}
-      <Card className="border-slate-800/80 bg-slate-900/50 backdrop-blur-md shadow-xl overflow-hidden">
-        <CardHeader className="p-4 sm:p-6 border-b border-slate-800/80">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <CardTitle className="text-base sm:text-lg font-semibold text-white">
-                All Subjects ({subjects.length})
-              </CardTitle>
-              <CardDescription className="text-xs text-slate-400 mt-0.5">
-                Manage subject definitions and access associated question banks.
-              </CardDescription>
-            </div>
-
-            {/* Search Input */}
-            <div className="relative w-full sm:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
-              <Input
-                type="text"
-                placeholder="Search subjects..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-9 bg-slate-950/60 border-slate-800 text-slate-200 text-xs placeholder:text-slate-500 focus-visible:ring-indigo-500/30"
-              />
-            </div>
+      {/* Main Table Container */}
+      <div className="bg-white border border-[#D2D2D7] rounded-2xl shadow-xs overflow-hidden">
+        {/* Table Header / Search Bar */}
+        <div className="p-4 sm:p-5 border-b border-[#E5E5EA] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 className="text-[15px] font-semibold text-[#1D1D1F]">
+              All Subjects ({subjects.length})
+            </h2>
+            <p className="text-[12px] text-[#6E6E73]">
+              Click a subject to manage and author its question items.
+            </p>
           </div>
-        </CardHeader>
 
-        <CardContent className="p-0">
-          {isLoading ? (
-            /* Loading Skeleton */
-            <div className="p-4 sm:p-6 space-y-4">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="flex items-center justify-between gap-4 py-3">
-                  <div className="space-y-2 flex-1">
-                    <Skeleton className="h-5 w-48 bg-slate-800" />
-                    <Skeleton className="h-4 w-72 bg-slate-800/60" />
-                  </div>
-                  <Skeleton className="h-6 w-24 bg-slate-800/80 rounded-full hidden sm:block" />
-                  <Skeleton className="h-5 w-20 bg-slate-800/50 hidden md:block" />
-                  <Skeleton className="h-8 w-8 bg-slate-800 rounded-lg" />
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3 top-2.5 size-3.5 text-[#86868B] pointer-events-none" />
+            <Input
+              type="text"
+              placeholder="Search subjects..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-8.5 bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-[13px] placeholder:text-[#86868B] rounded-xl focus-visible:bg-white focus-visible:border-[#0071E3]"
+            />
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="p-6 space-y-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex items-center justify-between gap-4 py-3">
+                <div className="space-y-1.5 flex-1">
+                  <Skeleton className="h-4 w-44 bg-[#E8E8ED]" />
+                  <Skeleton className="h-3 w-64 bg-[#E8E8ED]/70" />
                 </div>
-              ))}
-            </div>
-          ) : filteredSubjects.length === 0 ? (
-            /* Empty State */
-            <div className="py-16 px-4 text-center">
-              <div className="size-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="size-7" />
+                <Skeleton className="h-6 w-20 bg-[#E8E8ED] rounded-full" />
+                <Skeleton className="h-8 w-8 bg-[#E8E8ED] rounded-lg" />
               </div>
-              <h3 className="text-base font-semibold text-white mb-1">
+            ))}
+          </div>
+        ) : filteredSubjects.length === 0 ? (
+          <div className="py-20 px-4 text-center max-w-md mx-auto space-y-3">
+            <div className="size-11 rounded-2xl bg-[#F5F5F7] border border-[#E5E5EA] text-[#6E6E73] flex items-center justify-center mx-auto">
+              <BookOpen className="size-5" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-[15px] font-semibold text-[#1D1D1F]">
                 {searchQuery ? "No matching subjects found" : "No subjects yet"}
               </h3>
-              <p className="text-xs sm:text-sm text-slate-400 max-w-sm mx-auto mb-6">
+              <p className="text-[12px] text-[#6E6E73]">
                 {searchQuery
                   ? "Try adjusting your search terms or clear the filter."
-                  : "Get started by adding your first subject to create examinations and organize questions."}
+                  : "Add your first subject to begin building an accredited question bank."}
               </p>
-              {searchQuery ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSearchQuery("")}
-                  className="border-slate-800 text-slate-300 hover:text-white"
-                >
-                  Clear Search
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleOpenAdd}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs h-9"
-                >
-                  <Plus className="size-3.5 mr-1.5" />
-                  <span>Create Subject</span>
-                </Button>
-              )}
             </div>
-          ) : (
-            /* Subjects Table */
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader className="bg-slate-950/40 border-b border-slate-800">
-                  <TableRow className="border-slate-800 hover:bg-transparent">
-                    <TableHead className="text-slate-400 text-xs font-semibold py-3 px-4 sm:px-6">
-                      Subject Name
-                    </TableHead>
-                    <TableHead className="text-slate-400 text-xs font-semibold py-3 px-4 hidden md:table-cell">
-                      Description
-                    </TableHead>
-                    <TableHead className="text-slate-400 text-xs font-semibold py-3 px-4 text-center">
-                      Questions
-                    </TableHead>
-                    <TableHead className="text-slate-400 text-xs font-semibold py-3 px-4 hidden lg:table-cell">
-                      Created Date
-                    </TableHead>
-                    <TableHead className="text-slate-400 text-xs font-semibold py-3 px-4 text-right">
-                      Actions
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredSubjects.map((subject) => (
-                    <TableRow
-                      key={subject.id}
-                      className="border-b border-slate-800/60 hover:bg-slate-800/40 transition-colors"
-                    >
-                      {/* Name & Quick Link */}
-                      <TableCell className="py-4 px-4 sm:px-6">
-                        <div className="flex flex-col">
-                          <Link
-                            href={`/admin/subjects/${subject.id}/questions`}
-                            className="font-semibold text-sm text-slate-100 hover:text-indigo-400 transition-colors inline-flex items-center gap-1.5 group"
-                          >
-                            <span>{subject.name}</span>
-                            <ArrowRight className="size-3 text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all" />
-                          </Link>
-                          {subject.description && (
-                            <span className="text-xs text-slate-400 line-clamp-1 mt-0.5 md:hidden">
-                              {subject.description}
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-
-                      {/* Description (desktop) */}
-                      <TableCell className="py-4 px-4 text-slate-300 text-xs hidden md:table-cell max-w-xs truncate">
-                        {subject.description || (
-                          <span className="text-slate-500 italic">No description</span>
-                        )}
-                      </TableCell>
-
-                      {/* Questions count badge */}
-                      <TableCell className="py-4 px-4 text-center">
-                        <Link href={`/admin/subjects/${subject.id}/questions`}>
-                          <Badge
-                            variant="secondary"
-                            className="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 hover:bg-indigo-500/20 transition cursor-pointer text-xs font-medium px-2.5 py-0.5 inline-flex items-center gap-1.5"
-                          >
-                            <HelpCircle className="size-3 text-indigo-400" />
-                            <span>{subject.question_count} {subject.question_count === 1 ? "question" : "questions"}</span>
-                          </Badge>
+            {searchQuery ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSearchQuery("")}
+                className="border-[#D2D2D7] bg-white text-[#1D1D1F] rounded-xl text-[12px]"
+              >
+                Clear Search
+              </Button>
+            ) : (
+              <Button
+                onClick={handleOpenAdd}
+                className="bg-[#0071E3] hover:bg-[#0077ED] text-white text-[12px] rounded-xl mt-1"
+              >
+                <Plus className="size-3.5 mr-1" />
+                <span>Create Subject</span>
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-[#F5F5F7]/80 border-b border-[#D2D2D7]">
+                <TableRow className="border-[#D2D2D7] hover:bg-transparent">
+                  <TableHead className="text-[12px] font-medium text-[#6E6E73] py-3 px-4 sm:px-6">
+                    Subject Name
+                  </TableHead>
+                  <TableHead className="text-[12px] font-medium text-[#6E6E73] py-3 px-4 hidden md:table-cell">
+                    Description
+                  </TableHead>
+                  <TableHead className="text-[12px] font-medium text-[#6E6E73] py-3 px-4 text-center">
+                    Questions
+                  </TableHead>
+                  <TableHead className="text-[12px] font-medium text-[#6E6E73] py-3 px-4 hidden lg:table-cell">
+                    Created
+                  </TableHead>
+                  <TableHead className="text-[12px] font-medium text-[#6E6E73] py-3 px-4 text-right">
+                    Actions
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredSubjects.map((subject) => (
+                  <TableRow
+                    key={subject.id}
+                    className="border-b border-[#E5E5EA] hover:bg-[#F5F5F7]/50 transition-colors"
+                  >
+                    <TableCell className="py-4 px-4 sm:px-6">
+                      <div className="flex flex-col">
+                        <Link
+                          href={`/admin/subjects/${subject.id}/questions`}
+                          className="font-semibold text-[14px] text-[#1D1D1F] hover:text-[#0071E3] transition-colors inline-flex items-center gap-1.5 group"
+                        >
+                          <span>{subject.name}</span>
+                          <ArrowRight className="size-3 text-[#86868B] group-hover:text-[#0071E3] group-hover:translate-x-0.5 transition-all" />
                         </Link>
-                      </TableCell>
+                        {subject.description && (
+                          <span className="text-[12px] text-[#6E6E73] line-clamp-1 mt-0.5 md:hidden">
+                            {subject.description}
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
 
-                      {/* Created date */}
-                      <TableCell className="py-4 px-4 text-slate-400 text-xs hidden lg:table-cell">
-                        <div className="flex items-center gap-1.5 text-slate-400">
-                          <Calendar className="size-3 text-slate-500" />
-                          <span>{formatDate(subject.created_at)}</span>
-                        </div>
-                      </TableCell>
+                    <TableCell className="py-4 px-4 text-[#6E6E73] text-[13px] hidden md:table-cell max-w-xs truncate">
+                      {subject.description || (
+                        <span className="text-[#86868B] italic">No description</span>
+                      )}
+                    </TableCell>
 
-                      {/* Actions dropdown */}
-                      <TableCell className="py-4 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <Link href={`/admin/subjects/${subject.id}/questions`} className="hidden sm:inline-flex">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 px-2 text-xs text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10"
-                            >
-                              <span>Questions</span>
-                            </Button>
-                          </Link>
+                    <TableCell className="py-4 px-4 text-center">
+                      <Link href={`/admin/subjects/${subject.id}/questions`}>
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#0071E3]/10 text-[#0071E3] border border-[#0071E3]/20 hover:bg-[#0071E3]/20 transition text-[11px] font-medium inline-flex items-center gap-1">
+                          <HelpCircle className="size-3" />
+                          <span>{subject.question_count} {subject.question_count === 1 ? "question" : "questions"}</span>
+                        </span>
+                      </Link>
+                    </TableCell>
 
-                          <DropdownMenu>
-                            <DropdownMenuTrigger
-                              render={
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="size-8 text-slate-400 hover:text-white hover:bg-slate-800"
-                                >
-                                  <MoreHorizontal className="size-4" />
-                                  <span className="sr-only">Subject options</span>
-                                </Button>
+                    <TableCell className="py-4 px-4 text-[#6E6E73] text-[12px] hidden lg:table-cell">
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="size-3 text-[#86868B]" />
+                        <span>{formatDate(subject.created_at)}</span>
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="py-4 px-4 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <Link href={`/admin/subjects/${subject.id}/questions`}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2.5 text-[12px] text-[#0071E3] hover:bg-[#0071E3]/10 rounded-lg"
+                          >
+                            <span>Questions</span>
+                          </Button>
+                        </Link>
+
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            render={
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="size-7 text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-[#E8E8ED]/60 rounded-lg"
+                              >
+                                <MoreHorizontal className="size-4" />
+                                <span className="sr-only">Options</span>
+                              </Button>
+                            }
+                          />
+                          <DropdownMenuContent
+                            align="end"
+                            className="w-44 bg-white border-[#D2D2D7] text-[#1D1D1F] rounded-xl shadow-lg"
+                          >
+                            <DropdownMenuItem
+                              className="cursor-pointer text-[12px] focus:bg-[#F5F5F7] rounded-lg"
+                              onClick={() =>
+                                (window.location.href = `/admin/subjects/${subject.id}/questions`)
                               }
-                            />
-                            <DropdownMenuContent
-                              align="end"
-                              className="w-48 bg-slate-900 border-slate-800 text-slate-200"
                             >
-                              <DropdownMenuItem
-                                className="cursor-pointer text-xs focus:bg-slate-800 focus:text-white"
-                                onClick={() =>
-                                  (window.location.href = `/admin/subjects/${subject.id}/questions`)
-                                }
-                              >
-                                <Layers className="size-3.5 mr-2 text-indigo-400" />
-                                <span>Question Bank</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                className="cursor-pointer text-xs focus:bg-slate-800 focus:text-white"
-                                onClick={() => handleOpenEdit(subject)}
-                              >
-                                <Pencil className="size-3.5 mr-2 text-amber-400" />
-                                <span>Edit Subject</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator className="bg-slate-800" />
-                              <DropdownMenuItem
-                                className="cursor-pointer text-xs text-rose-400 focus:bg-rose-500/10 focus:text-rose-300"
-                                onClick={() => handleOpenDelete(subject)}
-                              >
-                                <Trash2 className="size-3.5 mr-2 text-rose-400" />
-                                <span>Delete Subject</span>
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                              <Layers className="size-3.5 mr-2 text-[#0071E3]" />
+                              <span>Question Bank</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="cursor-pointer text-[12px] focus:bg-[#F5F5F7] rounded-lg"
+                              onClick={() => handleOpenEdit(subject)}
+                            >
+                              <Pencil className="size-3.5 mr-2 text-[#B25E00]" />
+                              <span>Edit Subject</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator className="bg-[#E5E5EA]" />
+                            <DropdownMenuItem
+                              className="cursor-pointer text-[12px] text-[#D70015] focus:bg-[#FF3B30]/10 rounded-lg"
+                              onClick={() => handleOpenDelete(subject)}
+                            >
+                              <Trash2 className="size-3.5 mr-2" />
+                              <span>Delete Subject</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </div>
 
       {/* CREATE SUBJECT DIALOG */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="bg-slate-900 border border-slate-800 text-slate-100 sm:max-w-md">
+        <DialogContent className="bg-white border-[#D2D2D7] text-[#1D1D1F] sm:max-w-md rounded-2xl p-6 shadow-lg">
           <form onSubmit={handleCreateSubject}>
             <DialogHeader>
-              <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
-                <BookOpen className="size-5 text-indigo-400" />
+              <DialogTitle className="text-[17px] font-semibold text-[#1D1D1F] flex items-center gap-2">
+                <BookOpen className="size-5 text-[#0071E3]" />
                 <span>Create New Subject</span>
               </DialogTitle>
-              <DialogDescription className="text-xs text-slate-400">
+              <DialogDescription className="text-[12px] text-[#6E6E73] pt-0.5">
                 Add an academic subject or topic to group examination questions.
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 py-4">
               <div className="space-y-1.5">
-                <Label htmlFor="create-name" className="text-xs font-semibold text-slate-300">
-                  Subject Name <span className="text-rose-400">*</span>
+                <Label htmlFor="create-name" className="text-[12px] font-medium text-[#1D1D1F]">
+                  Subject Name <span className="text-[#FF3B30]">*</span>
                 </Label>
                 <Input
                   id="create-name"
-                  placeholder="e.g. Mathematics, Data Structures"
+                  placeholder="e.g. Mathematics, Operating Systems"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="bg-slate-950 border-slate-800 text-slate-100 text-sm focus-visible:ring-indigo-500/30"
+                  className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-[13px] rounded-xl focus-visible:bg-white focus-visible:border-[#0071E3]"
                   required
                   autoFocus
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="create-desc" className="text-xs font-semibold text-slate-300">
-                  Description <span className="text-slate-500">(Optional)</span>
+                <Label htmlFor="create-desc" className="text-[12px] font-medium text-[#1D1D1F]">
+                  Description <span className="text-[#86868B] font-normal">(Optional)</span>
                 </Label>
                 <Textarea
                   id="create-desc"
-                  placeholder="Brief overview or curriculum scope for this subject..."
+                  placeholder="Brief curriculum scope or syllabus overview..."
                   value={formData.description}
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
                   rows={3}
-                  className="bg-slate-950 border-slate-800 text-slate-100 text-sm focus-visible:ring-indigo-500/30"
+                  className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-[13px] rounded-xl focus-visible:bg-white focus-visible:border-[#0071E3]"
                 />
               </div>
             </div>
 
-            <DialogFooter className="bg-slate-950/60 border-t border-slate-800/80 gap-2 sm:gap-0">
+            <DialogFooter className="border-t border-[#E5E5EA] pt-3 gap-2">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setIsAddOpen(false)}
                 disabled={isSubmitting}
-                className="border-slate-800 text-slate-300 hover:text-white text-xs"
+                className="border-[#D2D2D7] bg-white text-[#1D1D1F] text-[12px] rounded-xl"
               >
                 Cancel
               </Button>
@@ -561,7 +538,7 @@ export default function SubjectsPage() {
                 type="submit"
                 size="sm"
                 disabled={isSubmitting}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs"
+                className="bg-[#0071E3] hover:bg-[#0077ED] text-white text-[12px] rounded-xl font-medium"
               >
                 {isSubmitting ? (
                   <>
@@ -579,35 +556,35 @@ export default function SubjectsPage() {
 
       {/* EDIT SUBJECT DIALOG */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="bg-slate-900 border border-slate-800 text-slate-100 sm:max-w-md">
+        <DialogContent className="bg-white border-[#D2D2D7] text-[#1D1D1F] sm:max-w-md rounded-2xl p-6 shadow-lg">
           <form onSubmit={handleUpdateSubject}>
             <DialogHeader>
-              <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
-                <Pencil className="size-5 text-amber-400" />
+              <DialogTitle className="text-[17px] font-semibold text-[#1D1D1F] flex items-center gap-2">
+                <Pencil className="size-4.5 text-[#B25E00]" />
                 <span>Edit Subject</span>
               </DialogTitle>
-              <DialogDescription className="text-xs text-slate-400">
+              <DialogDescription className="text-[12px] text-[#6E6E73] pt-0.5">
                 Modify title or description for &quot;{editingSubject?.name}&quot;.
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 py-4">
               <div className="space-y-1.5">
-                <Label htmlFor="edit-name" className="text-xs font-semibold text-slate-300">
-                  Subject Name <span className="text-rose-400">*</span>
+                <Label htmlFor="edit-name" className="text-[12px] font-medium text-[#1D1D1F]">
+                  Subject Name <span className="text-[#FF3B30]">*</span>
                 </Label>
                 <Input
                   id="edit-name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="bg-slate-950 border-slate-800 text-slate-100 text-sm focus-visible:ring-indigo-500/30"
+                  className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-[13px] rounded-xl focus-visible:bg-white focus-visible:border-[#0071E3]"
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="edit-desc" className="text-xs font-semibold text-slate-300">
-                  Description <span className="text-slate-500">(Optional)</span>
+                <Label htmlFor="edit-desc" className="text-[12px] font-medium text-[#1D1D1F]">
+                  Description <span className="text-[#86868B] font-normal">(Optional)</span>
                 </Label>
                 <Textarea
                   id="edit-desc"
@@ -616,19 +593,19 @@ export default function SubjectsPage() {
                     setFormData({ ...formData, description: e.target.value })
                   }
                   rows={3}
-                  className="bg-slate-950 border-slate-800 text-slate-100 text-sm focus-visible:ring-indigo-500/30"
+                  className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] text-[13px] rounded-xl focus-visible:bg-white focus-visible:border-[#0071E3]"
                 />
               </div>
             </div>
 
-            <DialogFooter className="bg-slate-950/60 border-t border-slate-800/80 gap-2 sm:gap-0">
+            <DialogFooter className="border-t border-[#E5E5EA] pt-3 gap-2">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setIsEditOpen(false)}
                 disabled={isSubmitting}
-                className="border-slate-800 text-slate-300 hover:text-white text-xs"
+                className="border-[#D2D2D7] bg-white text-[#1D1D1F] text-[12px] rounded-xl"
               >
                 Cancel
               </Button>
@@ -636,7 +613,7 @@ export default function SubjectsPage() {
                 type="submit"
                 size="sm"
                 disabled={isSubmitting}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs"
+                className="bg-[#0071E3] hover:bg-[#0077ED] text-white text-[12px] rounded-xl font-medium"
               >
                 {isSubmitting ? (
                   <>
@@ -654,33 +631,32 @@ export default function SubjectsPage() {
 
       {/* DELETE CONFIRMATION DIALOG */}
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <DialogContent className="bg-slate-900 border border-slate-800 text-slate-100 sm:max-w-md">
+        <DialogContent className="bg-white border-[#D2D2D7] text-[#1D1D1F] sm:max-w-md rounded-2xl p-6 shadow-lg">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-rose-400 flex items-center gap-2">
+            <DialogTitle className="text-[17px] font-semibold text-[#D70015] flex items-center gap-2">
               <Trash2 className="size-5" />
               <span>Delete Subject</span>
             </DialogTitle>
-            <DialogDescription className="text-xs text-slate-300">
-              Are you sure you want to delete{" "}
-              <strong className="text-white">&quot;{deletingSubject?.name}&quot;</strong>?
+            <DialogDescription className="text-[13px] text-[#6E6E73] pt-1 leading-relaxed">
+              Are you sure you want to delete <strong className="text-[#1D1D1F]">&quot;{deletingSubject?.name}&quot;</strong>?
             </DialogDescription>
           </DialogHeader>
 
-          <div className="py-3 text-xs text-slate-400 bg-rose-500/10 border border-rose-500/20 p-3 rounded-lg flex items-start gap-2.5">
-            <AlertCircle className="size-4 text-rose-400 shrink-0 mt-0.5" />
+          <div className="py-3 text-[12px] text-[#D70015] bg-[#FF3B30]/10 border border-[#FF3B30]/20 p-3 rounded-xl flex items-start gap-2.5">
+            <AlertCircle className="size-4 text-[#FF3B30] shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              This action cannot be undone. Associated questions ({deletingSubject?.question_count || 0}) will also be affected or deleted according to database constraints.
+              This action cannot be undone. Associated questions ({deletingSubject?.question_count || 0}) in this repository will also be affected.
             </p>
           </div>
 
-          <DialogFooter className="bg-slate-950/60 border-t border-slate-800/80 gap-2 sm:gap-0">
+          <DialogFooter className="border-t border-[#E5E5EA] pt-3 gap-2">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => setIsDeleteOpen(false)}
               disabled={isSubmitting}
-              className="border-slate-800 text-slate-300 hover:text-white text-xs"
+              className="border-[#D2D2D7] bg-white text-[#1D1D1F] text-[12px] rounded-xl"
             >
               Cancel
             </Button>
@@ -689,7 +665,7 @@ export default function SubjectsPage() {
               size="sm"
               onClick={handleDeleteSubject}
               disabled={isSubmitting}
-              className="bg-rose-600 hover:bg-rose-500 text-white text-xs"
+              className="bg-[#FF3B30] hover:bg-[#E03126] text-white text-[12px] rounded-xl font-medium"
             >
               {isSubmitting ? (
                 <>
