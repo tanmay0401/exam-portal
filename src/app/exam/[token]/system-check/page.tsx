@@ -396,48 +396,40 @@ export default function SystemCheckPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-indigo-500/30 selection:text-indigo-200">
-      {/* Background Glows */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-gradient-to-tr from-indigo-600/15 via-purple-600/15 to-blue-600/10 blur-[130px]" />
-        <div className="absolute bottom-0 right-0 h-[400px] w-[500px] rounded-full bg-blue-600/10 blur-[120px]" />
-      </div>
-
+    <div className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F] flex flex-col justify-between selection:bg-[#0071E3]/20 selection:text-[#0071E3]">
       {/* Top Header */}
-      <header className="relative z-10 border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-xl">
+      <header className="border-b border-[#D2D2D7]/80 bg-white/80 backdrop-blur-md sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="size-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5 shadow-md shadow-indigo-500/20">
-              <div className="size-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                <Shield className="size-4.5 text-indigo-400" />
-              </div>
+            <div className="size-9 rounded-xl bg-[#0071E3] text-white flex items-center justify-center shadow-sm">
+              <Shield className="size-5" />
             </div>
             <div>
-              <span className="font-bold text-base tracking-tight text-white block leading-none">
+              <span className="font-semibold text-base tracking-tight text-[#1D1D1F] block leading-none">
                 ExamPortal
               </span>
-              <span className="text-[11px] text-slate-400 block mt-0.5">
+              <span className="text-[11px] text-[#6E6E73] block mt-0.5 font-medium truncate max-w-[200px] sm:max-w-md">
                 {examTitle}
               </span>
             </div>
           </div>
 
-          <Badge variant="outline" className="border-indigo-500/30 text-indigo-300 text-xs py-1 px-3 bg-indigo-500/10">
-            <Sparkles className="size-3 mr-1.5" />
+          <Badge variant="outline" className="border-[#D2D2D7] text-[#1D1D1F] text-xs py-1 px-3 bg-white shadow-sm font-medium">
+            <Sparkles className="size-3 mr-1.5 text-[#0071E3]" />
             Stage 2 of 3: Pre-Exam Readiness Diagnostics
           </Badge>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="relative z-10 flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-10">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-10">
         <div className="space-y-6">
           {/* Headline */}
           <div className="text-center max-w-xl mx-auto space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#1D1D1F] tracking-tight">
               Pre-Exam System Readiness
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400">
+            <p className="text-xs sm:text-sm text-[#6E6E73]">
               Verify your camera, microphone, and AI proctoring calibration before unlocking your question paper.
             </p>
           </div>
@@ -446,32 +438,32 @@ export default function SystemCheckPage() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
             {/* Left Column: Live Camera Preview & AI Feedback */}
             <div className="md:col-span-6 space-y-4">
-              <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-md overflow-hidden">
-                <CardHeader className="pb-3 border-b border-slate-800/80">
+              <Card className="border-[#D2D2D7] bg-white shadow-sm rounded-2xl overflow-hidden">
+                <CardHeader className="pb-3 border-b border-[#D2D2D7]/80 bg-[#F5F5F7]/40">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm font-semibold text-white flex items-center gap-2">
-                      <Camera className="size-4 text-indigo-400" />
+                    <CardTitle className="text-sm font-semibold text-[#1D1D1F] flex items-center gap-2">
+                      <Camera className="size-4 text-[#0071E3]" />
                       Candidate Optical Stream
                     </CardTitle>
                     {cameraStatus === "success" ? (
-                      <span className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-400">
-                        <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="flex items-center gap-1.5 text-[11px] font-semibold text-[#1E7E34]">
+                        <span className="size-2 rounded-full bg-[#34C759] animate-pulse" />
                         Live Feed Active
                       </span>
                     ) : cameraStatus === "pending" ? (
-                      <span className="flex items-center gap-1.5 text-[11px] font-medium text-amber-400">
-                        <Loader2 className="size-3 animate-spin" />
+                      <span className="flex items-center gap-1.5 text-[11px] font-medium text-[#B25E00]">
+                        <Loader2 className="size-3 animate-spin text-[#FF9500]" />
                         Requesting...
                       </span>
                     ) : (
-                      <span className="text-[11px] font-medium text-rose-400">
+                      <span className="text-[11px] font-semibold text-[#D70015]">
                         Camera Unavailable
                       </span>
                     )}
                   </div>
                 </CardHeader>
 
-                <CardContent className="p-0 bg-slate-950 relative aspect-[4/3] flex items-center justify-center">
+                <CardContent className="p-0 bg-black relative aspect-[4/3] flex items-center justify-center overflow-hidden">
                   <video
                     ref={videoRef}
                     autoPlay
@@ -483,28 +475,28 @@ export default function SystemCheckPage() {
                   />
 
                   {cameraStatus === "pending" && (
-                    <div className="flex flex-col items-center gap-2 text-slate-400 text-xs p-6 text-center">
-                      <Loader2 className="size-8 text-indigo-400 animate-spin" />
+                    <div className="flex flex-col items-center gap-2 text-[#86868B] text-xs p-6 text-center">
+                      <Loader2 className="size-8 text-[#0071E3] animate-spin" />
                       <p>Waiting for webcam and microphone permission prompt...</p>
                     </div>
                   )}
 
                   {cameraStatus === "error" && (
-                    <div className="flex flex-col items-center gap-3 text-rose-400 text-xs p-6 text-center max-w-sm">
-                      <div className="size-10 rounded-full bg-rose-500/10 flex items-center justify-center">
-                        <XCircle className="size-6 text-rose-400" />
+                    <div className="flex flex-col items-center gap-3 text-[#D70015] text-xs p-6 text-center max-w-sm">
+                      <div className="size-10 rounded-full bg-[#FF3B30]/10 flex items-center justify-center">
+                        <XCircle className="size-6 text-[#FF3B30]" />
                       </div>
-                      <p className="font-semibold text-rose-200">Camera Feed Blocked or Inactive</p>
-                      <p className="text-slate-400 text-[11px]">
+                      <p className="font-semibold text-[#1D1D1F]">Camera Feed Blocked or Inactive</p>
+                      <p className="text-[#6E6E73] text-[11px]">
                         {cameraErrorMsg || "Please allow webcam and microphone access in browser settings and uncover camera lens."}
                       </p>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={startDevices}
-                        className="mt-2 border-slate-700 bg-slate-800 text-slate-200 hover:text-white"
+                        className="mt-2 border-[#D2D2D7] bg-white text-[#1D1D1F] hover:bg-[#F5F5F7] font-medium text-xs"
                       >
-                        <RefreshCw className="size-3 mr-1.5" />
+                        <RefreshCw className="size-3 mr-1.5 text-[#0071E3]" />
                         Retry Permissions
                       </Button>
                     </div>
@@ -514,15 +506,15 @@ export default function SystemCheckPage() {
                   {cameraStatus === "success" && (
                     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
                       <div
-                        className={`w-44 h-56 rounded-[40%] border-2 border-dashed transition-colors flex items-center justify-center ${
+                        className={`w-44 h-56 rounded-[40%] border-2 border-dashed transition-all flex items-center justify-center ${
                           aiVisionStatus === "calibrated"
-                            ? "border-emerald-400/80 bg-emerald-500/5 shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                            ? "border-[#34C759] bg-[#34C759]/10 shadow-[0_0_20px_rgba(52,199,89,0.3)]"
                             : aiVisionStatus === "no_face"
-                            ? "border-rose-400/70 bg-rose-500/5"
-                            : "border-indigo-400/40"
+                            ? "border-[#FF3B30] bg-[#FF3B30]/10"
+                            : "border-[#0071E3]/70"
                         }`}
                       >
-                        <span className="text-[10px] text-slate-200 bg-slate-950/80 px-2.5 py-0.5 rounded-full backdrop-blur-sm border border-slate-800">
+                        <span className="text-[10px] font-semibold text-[#1D1D1F] bg-white/90 px-2.5 py-0.5 rounded-full backdrop-blur-sm border border-[#D2D2D7] shadow-sm">
                           {aiVisionStatus === "calibrated" ? "Face Calibrated ✓" : "Keep Face Centered"}
                         </span>
                       </div>
@@ -531,40 +523,40 @@ export default function SystemCheckPage() {
                 </CardContent>
 
                 {/* AI Calibration Feedback Strip */}
-                <div className="py-2.5 px-3 bg-slate-900 border-t border-slate-800/80 flex items-center gap-2 text-xs">
-                  <ScanFace className="size-3.5 text-indigo-400 shrink-0" />
-                  <span className="text-slate-300 font-medium text-[11px] truncate">
+                <div className="py-2.5 px-4 bg-[#F5F5F7] border-t border-[#D2D2D7] flex items-center gap-2 text-xs">
+                  <ScanFace className="size-3.5 text-[#0071E3] shrink-0" />
+                  <span className="text-[#1D1D1F] font-medium text-[11px] truncate">
                     {visionFeedback}
                   </span>
                 </div>
 
                 {/* Live Microphone Audio Level Visualizer */}
-                <CardFooter className="py-2.5 px-4 bg-slate-900/90 border-t border-slate-800 text-[11px] text-slate-400 flex flex-col gap-1.5">
+                <CardFooter className="py-2.5 px-4 bg-white border-t border-[#D2D2D7] text-[11px] text-[#6E6E73] flex flex-col gap-1.5">
                   <div className="flex items-center justify-between w-full">
-                    <span className="flex items-center gap-1.5 font-medium text-slate-300">
-                      <Mic className="size-3 text-indigo-400" />
+                    <span className="flex items-center gap-1.5 font-medium text-[#1D1D1F]">
+                      <Mic className="size-3 text-[#0071E3]" />
                       Microphone Audio Input
                     </span>
-                    <span className="text-[10px] font-mono text-indigo-300">
+                    <span className="text-[10px] font-mono text-[#6E6E73]">
                       {audioLevel > 5 ? "Audio Detected" : "Quiet Room"}
                     </span>
                   </div>
                   <div className="w-full flex items-center gap-2">
-                    <Volume2 className="size-3 text-slate-400 shrink-0" />
-                    <Progress value={Math.max(5, audioLevel * 1.5)} className="h-1.5 bg-slate-800 flex-1" />
-                    <span className="text-[10px] text-slate-400 font-mono w-6 text-right">{audioLevel}%</span>
+                    <Volume2 className="size-3 text-[#6E6E73] shrink-0" />
+                    <Progress value={Math.max(5, audioLevel * 1.5)} className="h-1.5 bg-[#E8E8ED] flex-1" />
+                    <span className="text-[10px] text-[#6E6E73] font-mono w-6 text-right">{audioLevel}%</span>
                   </div>
                 </CardFooter>
               </Card>
 
               {/* Troubleshooting Card if calibration times out */}
               {calibrationTimeoutReached && aiVisionStatus !== "calibrated" && (
-                <Card className="border-amber-500/30 bg-amber-950/20 text-xs p-4 space-y-2">
-                  <div className="flex items-center gap-2 font-semibold text-amber-300">
-                    <HelpCircle className="size-4" />
+                <Card className="border-[#FF9500]/30 bg-[#FF9500]/10 text-xs p-4 space-y-2 rounded-2xl shadow-sm">
+                  <div className="flex items-center gap-2 font-semibold text-[#B25E00]">
+                    <HelpCircle className="size-4 text-[#FF9500]" />
                     <span>Face Verification Troubleshooting</span>
                   </div>
-                  <ul className="text-slate-300 text-[11px] space-y-1 list-disc list-inside">
+                  <ul className="text-[#424245] text-[11px] space-y-1 list-disc list-inside">
                     <li>Ensure you are in a well-lit environment facing a light source.</li>
                     <li>Uncover your camera lens and remove physical shutters.</li>
                     <li>Position your face directly in the center oval of the preview.</li>
@@ -574,9 +566,9 @@ export default function SystemCheckPage() {
                     size="sm"
                     variant="outline"
                     onClick={startDevices}
-                    className="w-full mt-2 border-amber-500/40 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20 text-xs"
+                    className="w-full mt-2 border-[#FF9500]/40 bg-white text-[#B25E00] hover:bg-[#FF9500]/15 text-xs font-medium"
                   >
-                    <RefreshCw className="size-3 mr-1.5" />
+                    <RefreshCw className="size-3 mr-1.5 text-[#FF9500]" />
                     Re-Test Camera & AI Calibration
                   </Button>
                 </Card>
@@ -585,85 +577,85 @@ export default function SystemCheckPage() {
 
             {/* Right Column: Diagnostic Checklist & Launch */}
             <div className="md:col-span-6 space-y-4">
-              <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-md">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base text-white flex items-center gap-2">
-                    <Monitor className="size-4 text-indigo-400" />
+              <Card className="border-[#D2D2D7] bg-white shadow-sm rounded-2xl overflow-hidden">
+                <CardHeader className="pb-3 border-b border-[#D2D2D7]/80 bg-[#F5F5F7]/40">
+                  <CardTitle className="text-base text-[#1D1D1F] font-bold flex items-center gap-2">
+                    <Monitor className="size-4 text-[#0071E3]" />
                     Security Diagnostic Checklist
                   </CardTitle>
-                  <CardDescription className="text-slate-400 text-xs">
+                  <CardDescription className="text-[#6E6E73] text-xs">
                     All environmental conditions must be satisfied before your test paper can be unlocked.
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="space-y-2.5">
+                <CardContent className="space-y-2.5 pt-4">
                   {/* Item 1: Camera */}
-                  <div className="p-3 rounded-lg border border-slate-800/80 bg-slate-950/40 flex items-center justify-between">
+                  <div className="p-3 rounded-xl border border-[#D2D2D7] bg-[#F5F5F7]/60 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`size-8 rounded-lg flex items-center justify-center ${
                         cameraStatus === "success"
-                          ? "bg-emerald-500/10 text-emerald-400"
+                          ? "bg-[#34C759]/15 text-[#1E7E34]"
                           : cameraStatus === "error"
-                          ? "bg-rose-500/10 text-rose-400"
-                          : "bg-slate-800 text-slate-400"
+                          ? "bg-[#FF3B30]/15 text-[#D70015]"
+                          : "bg-[#E8E8ED] text-[#6E6E73]"
                       }`}>
                         <Camera className="size-4" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold text-slate-200">Webcam Optical Feed</div>
-                        <div className="text-[11px] text-slate-400">Active video track & non-black stream</div>
+                        <div className="text-xs font-semibold text-[#1D1D1F]">Webcam Optical Feed</div>
+                        <div className="text-[11px] text-[#6E6E73]">Active video track & non-black stream</div>
                       </div>
                     </div>
                     {cameraStatus === "success" ? (
-                      <CheckCircle className="size-5 text-emerald-400" />
+                      <CheckCircle className="size-5 text-[#34C759]" />
                     ) : cameraStatus === "error" ? (
-                      <XCircle className="size-5 text-rose-400" />
+                      <XCircle className="size-5 text-[#FF3B30]" />
                     ) : (
-                      <Loader2 className="size-4 text-slate-400 animate-spin" />
+                      <Loader2 className="size-4 text-[#0071E3] animate-spin" />
                     )}
                   </div>
 
                   {/* Item 2: Microphone */}
-                  <div className="p-3 rounded-lg border border-slate-800/80 bg-slate-950/40 flex items-center justify-between">
+                  <div className="p-3 rounded-xl border border-[#D2D2D7] bg-[#F5F5F7]/60 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`size-8 rounded-lg flex items-center justify-center ${
                         micStatus === "success"
-                          ? "bg-emerald-500/10 text-emerald-400"
+                          ? "bg-[#34C759]/15 text-[#1E7E34]"
                           : micStatus === "error"
-                          ? "bg-rose-500/10 text-rose-400"
-                          : "bg-slate-800 text-slate-400"
+                          ? "bg-[#FF3B30]/15 text-[#D70015]"
+                          : "bg-[#E8E8ED] text-[#6E6E73]"
                       }`}>
                         <Mic className="size-4" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold text-slate-200">Microphone Input</div>
-                        <div className="text-[11px] text-slate-400">Acoustic environment disturbance check</div>
+                        <div className="text-xs font-semibold text-[#1D1D1F]">Microphone Input</div>
+                        <div className="text-[11px] text-[#6E6E73]">Acoustic environment disturbance check</div>
                       </div>
                     </div>
                     {micStatus === "success" ? (
-                      <CheckCircle className="size-5 text-emerald-400" />
+                      <CheckCircle className="size-5 text-[#34C759]" />
                     ) : micStatus === "error" ? (
-                      <XCircle className="size-5 text-rose-400" />
+                      <XCircle className="size-5 text-[#FF3B30]" />
                     ) : (
-                      <Loader2 className="size-4 text-slate-400 animate-spin" />
+                      <Loader2 className="size-4 text-[#0071E3] animate-spin" />
                     )}
                   </div>
 
                   {/* Item 3: AI Face Verification Calibration */}
-                  <div className="p-3 rounded-lg border border-slate-800/80 bg-slate-950/40 flex items-center justify-between">
+                  <div className="p-3 rounded-xl border border-[#D2D2D7] bg-[#F5F5F7]/60 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`size-8 rounded-lg flex items-center justify-center ${
                         aiVisionStatus === "calibrated"
-                          ? "bg-emerald-500/10 text-emerald-400"
+                          ? "bg-[#34C759]/15 text-[#1E7E34]"
                           : aiVisionStatus === "error"
-                          ? "bg-rose-500/10 text-rose-400"
-                          : "bg-indigo-500/10 text-indigo-400"
+                          ? "bg-[#FF3B30]/15 text-[#D70015]"
+                          : "bg-[#0071E3]/15 text-[#0071E3]"
                       }`}>
                         <ScanFace className="size-4" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold text-slate-200">Edge AI Face Calibration</div>
-                        <div className="text-[11px] text-slate-400">
+                        <div className="text-xs font-semibold text-[#1D1D1F]">Edge AI Face Calibration</div>
+                        <div className="text-[11px] text-[#6E6E73]">
                           {aiVisionStatus === "calibrated"
                             ? "Face presence & head pose verified"
                             : aiVisionStatus === "error"
@@ -673,92 +665,92 @@ export default function SystemCheckPage() {
                       </div>
                     </div>
                     {aiVisionStatus === "calibrated" ? (
-                      <CheckCircle className="size-5 text-emerald-400" />
+                      <CheckCircle className="size-5 text-[#34C759]" />
                     ) : aiVisionStatus === "error" ? (
-                      <XCircle className="size-5 text-rose-400" />
+                      <XCircle className="size-5 text-[#FF3B30]" />
                     ) : (
-                      <Loader2 className="size-4 text-indigo-400 animate-spin" />
+                      <Loader2 className="size-4 text-[#0071E3] animate-spin" />
                     )}
                   </div>
 
                   {/* Item 4: Fullscreen */}
-                  <div className="p-3 rounded-lg border border-slate-800/80 bg-slate-950/40 flex items-center justify-between">
+                  <div className="p-3 rounded-xl border border-[#D2D2D7] bg-[#F5F5F7]/60 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`size-8 rounded-lg flex items-center justify-center ${
                         fullscreenStatus === "success"
-                          ? "bg-emerald-500/10 text-emerald-400"
-                          : "bg-rose-500/10 text-rose-400"
+                          ? "bg-[#34C759]/15 text-[#1E7E34]"
+                          : "bg-[#FF3B30]/15 text-[#D70015]"
                       }`}>
                         <Maximize className="size-4" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold text-slate-200">
+                        <div className="text-xs font-semibold text-[#1D1D1F]">
                           {isIOSDevice ? "Window Confinement Protocol" : "Fullscreen Protocol"}
                         </div>
-                        <div className="text-[11px] text-slate-400">
+                        <div className="text-[11px] text-[#6E6E73]">
                           {isIOSDevice ? "Active window & visibility tracking enabled" : "Window confinement enforcement"}
                         </div>
                       </div>
                     </div>
                     {fullscreenStatus === "success" ? (
-                      <CheckCircle className="size-5 text-emerald-400" />
+                      <CheckCircle className="size-5 text-[#34C759]" />
                     ) : (
-                      <XCircle className="size-5 text-rose-400" />
+                      <XCircle className="size-5 text-[#FF3B30]" />
                     )}
                   </div>
 
                   {/* Item 5: Browser */}
-                  <div className="p-3 rounded-lg border border-slate-800/80 bg-slate-950/40 flex items-center justify-between">
+                  <div className="p-3 rounded-xl border border-[#D2D2D7] bg-[#F5F5F7]/60 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`size-8 rounded-lg flex items-center justify-center ${
                         browserStatus === "success"
-                          ? "bg-emerald-500/10 text-emerald-400"
-                          : "bg-rose-500/10 text-rose-400"
+                          ? "bg-[#34C759]/15 text-[#1E7E34]"
+                          : "bg-[#FF3B30]/15 text-[#D70015]"
                       }`}>
                         <Monitor className="size-4" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold text-slate-200">Browser Compatibility</div>
-                        <div className="text-[11px] text-slate-400">WebRTC, WebAssembly & Canvas verified</div>
+                        <div className="text-xs font-semibold text-[#1D1D1F]">Browser Compatibility</div>
+                        <div className="text-[11px] text-[#6E6E73]">WebRTC, WebAssembly & Canvas verified</div>
                       </div>
                     </div>
                     {browserStatus === "success" ? (
-                      <CheckCircle className="size-5 text-emerald-400" />
+                      <CheckCircle className="size-5 text-[#34C759]" />
                     ) : (
-                      <XCircle className="size-5 text-rose-400" />
+                      <XCircle className="size-5 text-[#FF3B30]" />
                     )}
                   </div>
 
                   {/* Item 6: Network */}
-                  <div className="p-3 rounded-lg border border-slate-800/80 bg-slate-950/40 flex items-center justify-between">
+                  <div className="p-3 rounded-xl border border-[#D2D2D7] bg-[#F5F5F7]/60 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`size-8 rounded-lg flex items-center justify-center ${
                         networkStatus === "success"
-                          ? "bg-emerald-500/10 text-emerald-400"
-                          : "bg-rose-500/10 text-rose-400"
+                          ? "bg-[#34C759]/15 text-[#1E7E34]"
+                          : "bg-[#FF3B30]/15 text-[#D70015]"
                       }`}>
                         <Wifi className="size-4" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold text-slate-200">Network Connectivity</div>
-                        <div className="text-[11px] text-slate-400">Active server connection confirmed</div>
+                        <div className="text-xs font-semibold text-[#1D1D1F]">Network Connectivity</div>
+                        <div className="text-[11px] text-[#6E6E73]">Active server connection confirmed</div>
                       </div>
                     </div>
                     {networkStatus === "success" ? (
-                      <CheckCircle className="size-5 text-emerald-400" />
+                      <CheckCircle className="size-5 text-[#34C759]" />
                     ) : (
-                      <XCircle className="size-5 text-rose-400" />
+                      <XCircle className="size-5 text-[#FF3B30]" />
                     )}
                   </div>
                 </CardContent>
 
                 {/* Status Guidance / Action */}
-                <CardFooter className="pt-2 flex flex-col gap-3">
+                <CardFooter className="pt-2 pb-6 px-6 flex flex-col gap-3">
                   {!allPassed && (
-                    <Alert className="border-amber-500/30 bg-amber-500/10 text-amber-200 py-2">
-                      <AlertTriangle className="size-4 text-amber-400" />
+                    <Alert className="border-[#FF9500]/30 bg-[#FF9500]/10 text-[#B25E00] py-2 rounded-xl">
+                      <AlertTriangle className="size-4 text-[#FF9500]" />
                       <AlertTitle className="text-xs font-medium">Mandatory Verification Required</AlertTitle>
-                      <AlertDescription className="text-[11px] text-amber-300/80">
+                      <AlertDescription className="text-[11px] text-[#B25E00] mt-0.5">
                         {cameraStatus !== "success"
                           ? "Camera access must be granted and produce a clear video feed."
                           : aiVisionStatus !== "calibrated"
@@ -772,7 +764,7 @@ export default function SystemCheckPage() {
                     onClick={handleProceed}
                     disabled={!allPassed || isLoading}
                     size="lg"
-                    className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold shadow-lg shadow-indigo-500/25 transition-all disabled:opacity-50"
+                    className="w-full bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold rounded-xl h-11 shadow-sm transition-all disabled:opacity-50 disabled:bg-[#D2D2D7] disabled:text-[#86868B]"
                   >
                     {isLoading ? (
                       <>
@@ -794,7 +786,7 @@ export default function SystemCheckPage() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-slate-800/60 bg-slate-950/40 py-4 text-center text-xs text-slate-500">
+      <footer className="border-t border-[#D2D2D7]/80 bg-white py-4 text-center text-xs text-[#86868B]">
         <p>ExamPortal Diagnostics & AI Proctoring Engine • Confidential Examination</p>
       </footer>
     </div>
