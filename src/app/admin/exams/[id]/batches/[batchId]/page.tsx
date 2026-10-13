@@ -6,9 +6,7 @@ import { useParams } from "next/navigation";
 import {
   ArrowLeft,
   CheckCircle2,
-  HelpCircle,
   Loader2,
-  FileText,
   Clock,
   Award,
   Hash,
@@ -16,14 +14,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 interface QuestionData {
@@ -58,14 +48,14 @@ interface BatchData {
     total_questions: number;
     subjects?: {
       name: string;
-    } | null;
-  } | null;
+    };
+  };
 }
 
 export default function BatchPreviewPage() {
-  const routeParams = useParams();
-  const id = (routeParams?.id as string) || "";
-  const batchId = (routeParams?.batchId as string) || "";
+  const params = useParams();
+  const id = params.id as string;
+  const batchId = params.batchId as string;
 
   const [batch, setBatch] = useState<BatchData | null>(null);
   const [questions, setQuestions] = useState<BatchQuestionItem[]>([]);
@@ -100,19 +90,19 @@ export default function BatchPreviewPage() {
     switch (diff) {
       case "easy":
         return (
-          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#34C759]/10 text-[#1E7E34] border border-[#34C759]/30">
             Easy
           </span>
         );
       case "medium":
         return (
-          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#FF9500]/10 text-[#B25E00] border border-[#FF9500]/30">
             Medium
           </span>
         );
       case "hard":
         return (
-          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#FF3B30]/10 text-[#D70015] border border-[#FF3B30]/30">
             Hard
           </span>
         );
@@ -121,22 +111,22 @@ export default function BatchPreviewPage() {
 
   if (loading) {
     return (
-      <div className="py-24 flex flex-col items-center justify-center text-slate-400 space-y-3">
-        <Loader2 className="size-8 animate-spin text-indigo-500" />
-        <p className="text-sm">Generating paper preview for Batch...</p>
+      <div className="py-24 flex flex-col items-center justify-center text-[#6E6E73] space-y-2">
+        <Loader2 className="size-6 animate-spin text-[#0071E3]" />
+        <p className="text-[13px]">Generating test paper preview...</p>
       </div>
     );
   }
 
   if (!batch) {
     return (
-      <div className="py-20 text-center space-y-4 max-w-md mx-auto">
-        <AlertCircle className="size-10 text-rose-500 mx-auto" />
-        <h2 className="text-lg font-bold text-white">Batch Not Found</h2>
-        <p className="text-xs text-slate-400">
+      <div className="py-20 text-center space-y-3 max-w-md mx-auto">
+        <AlertCircle className="size-10 text-[#FF3B30] mx-auto" />
+        <h2 className="text-[17px] font-semibold text-[#1D1D1F]">Batch Not Found</h2>
+        <p className="text-[13px] text-[#6E6E73]">
           The requested test paper batch could not be found for this examination.
         </p>
-        <Button asChild size="sm" className="bg-indigo-600 hover:bg-indigo-500 text-white">
+        <Button asChild size="sm" className="bg-[#0071E3] hover:bg-[#0077ED] text-white rounded-xl">
           <Link href={`/admin/exams/${id}`}>Return to Exam</Link>
         </Button>
       </div>
@@ -147,109 +137,103 @@ export default function BatchPreviewPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Top Bar with Back Button */}
+      {/* Top Bar */}
       <div className="flex items-center justify-between">
         <Button
           asChild
           variant="ghost"
           size="sm"
-          className="text-slate-400 hover:text-white hover:bg-slate-900 border border-slate-800"
+          className="text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-[#E8E8ED]/60 rounded-full h-8 px-3 text-[12px]"
         >
           <Link href={`/admin/exams/${id}`}>
-            <ArrowLeft className="size-4 mr-1.5" />
+            <ArrowLeft className="size-3.5 mr-1.5" />
             <span>Back to Exam Detail</span>
           </Link>
         </Button>
 
-        <span className="text-xs text-slate-400">
-          Generated Paper • Admin Answer Key Visible
+        <span className="text-[12px] text-[#6E6E73]">
+          Admin Preview Mode • Answer Keys Revealed
         </span>
       </div>
 
       {/* Paper Header / Metadata Card */}
-      <Card className="border-slate-800/80 bg-slate-900/60 backdrop-blur-xl">
-        <CardHeader className="pb-4 border-b border-slate-800">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2 mb-1.5">
-                <Badge variant="outline" className="bg-indigo-500/10 text-indigo-300 border-indigo-500/30">
-                  Batch #{batch.batch_number} Paper
-                </Badge>
-                {examInfo?.subjects && (
-                  <Badge variant="outline" className="bg-slate-800 text-slate-300 border-slate-700">
-                    {examInfo.subjects.name}
-                  </Badge>
-                )}
-              </div>
-              <CardTitle className="text-2xl font-black text-white tracking-tight">
-                {examInfo?.title || "Examination Paper Preview"}
-              </CardTitle>
-              <CardDescription className="text-xs text-slate-400 mt-1">
-                Full examination question set as rendered to examinees assigned to this randomized batch.
-              </CardDescription>
-            </div>
+      <div className="bg-white border border-[#D2D2D7] rounded-2xl p-6 shadow-xs space-y-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#0071E3]/10 text-[#0071E3] border border-[#0071E3]/20">
+              Batch #{batch.batch_number} Paper
+            </span>
+            {examInfo?.subjects && (
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#F5F5F7] text-[#1D1D1F] border border-[#E5E5EA]">
+                {examInfo.subjects.name}
+              </span>
+            )}
           </div>
-        </CardHeader>
+          <h1 className="text-2xl font-semibold tracking-tight text-[#1D1D1F]">
+            {examInfo?.title || "Examination Paper Preview"}
+          </h1>
+          <p className="text-[13px] text-[#6E6E73] mt-0.5">
+            Full examination question set as rendered to examinees assigned to this randomized batch.
+          </p>
+        </div>
 
-        <CardContent className="pt-4">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-              <span className="text-slate-400 flex items-center gap-1.5">
-                <Hash className="size-3.5 text-indigo-400" />
-                <span>Paper Length</span>
-              </span>
-              <span className="text-base font-bold text-white font-mono mt-1 block">
-                {questions.length} Questions
-              </span>
-            </div>
-
-            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-              <span className="text-slate-400 flex items-center gap-1.5">
-                <Clock className="size-3.5 text-indigo-400" />
-                <span>Allotted Time</span>
-              </span>
-              <span className="text-base font-bold text-white font-mono mt-1 block">
-                {examInfo?.duration_minutes ?? 60} mins
-              </span>
-            </div>
-
-            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-              <span className="text-slate-400 flex items-center gap-1.5">
-                <Award className="size-3.5 text-indigo-400" />
-                <span>Scoring Value</span>
-              </span>
-              <span className="text-base font-bold text-white font-mono mt-1 block">
-                +{examInfo?.marks_per_question ?? 4} / -{examInfo?.negative_marks ?? 1}
-              </span>
-            </div>
-
-            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-              <span className="text-slate-400 flex items-center gap-1.5">
-                <Sparkles className="size-3.5 text-indigo-400" />
-                <span>Maximum Marks</span>
-              </span>
-              <span className="text-base font-bold text-white font-mono mt-1 block">
-                {(examInfo?.marks_per_question ?? 4) * questions.length} pts
-              </span>
-            </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-[12px]">
+          <div className="p-3.5 rounded-xl bg-[#F5F5F7] border border-[#E5E5EA]">
+            <span className="text-[#6E6E73] flex items-center gap-1.5">
+              <Hash className="size-3.5 text-[#0071E3]" />
+              <span>Questions</span>
+            </span>
+            <span className="text-xl font-semibold text-[#1D1D1F] font-mono mt-1 block">
+              {questions.length}
+            </span>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="p-3.5 rounded-xl bg-[#F5F5F7] border border-[#E5E5EA]">
+            <span className="text-[#6E6E73] flex items-center gap-1.5">
+              <Clock className="size-3.5 text-[#0071E3]" />
+              <span>Duration</span>
+            </span>
+            <span className="text-xl font-semibold text-[#1D1D1F] font-mono mt-1 block">
+              {examInfo?.duration_minutes ?? 60} mins
+            </span>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-[#F5F5F7] border border-[#E5E5EA]">
+            <span className="text-[#6E6E73] flex items-center gap-1.5">
+              <Award className="size-3.5 text-[#0071E3]" />
+              <span>Scoring</span>
+            </span>
+            <span className="text-xl font-semibold text-[#1D1D1F] font-mono mt-1 block">
+              +{examInfo?.marks_per_question ?? 4} / -{examInfo?.negative_marks ?? 1}
+            </span>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-[#F5F5F7] border border-[#E5E5EA]">
+            <span className="text-[#6E6E73] flex items-center gap-1.5">
+              <Sparkles className="size-3.5 text-[#0071E3]" />
+              <span>Max Marks</span>
+            </span>
+            <span className="text-xl font-semibold text-[#1D1D1F] font-mono mt-1 block">
+              {(examInfo?.marks_per_question ?? 4) * questions.length} pts
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* Question Paper List */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between text-xs text-slate-400 px-1">
-          <span className="font-semibold text-slate-300 uppercase tracking-wider text-[11px]">
-            Examination Questions ({questions.length})
+        <div className="flex items-center justify-between text-[12px] text-[#6E6E73] px-1">
+          <span className="font-semibold text-[#1D1D1F]">
+            Questions in this Batch ({questions.length})
           </span>
-          <span className="flex items-center gap-1.5 text-emerald-400">
-            <CheckCircle2 className="size-3.5" />
+          <span className="flex items-center gap-1.5 text-[#1E7E34]">
+            <CheckCircle2 className="size-3.5 text-[#34C759]" />
             <span>Green border indicates registered correct key</span>
           </span>
         </div>
 
         {questions.length === 0 ? (
-          <div className="p-10 text-center rounded-xl border border-slate-800 bg-slate-900/30 text-slate-400 text-xs">
+          <div className="p-10 text-center rounded-2xl border border-[#D2D2D7] bg-white text-[#6E6E73] text-[13px]">
             No questions linked to this batch paper.
           </div>
         ) : (
@@ -265,76 +249,73 @@ export default function BatchPreviewPage() {
             ];
 
             return (
-              <Card
+              <div
                 key={item.id}
-                className="border-slate-800/80 bg-slate-900/50 backdrop-blur-md transition-all hover:border-slate-700"
+                className="bg-white border border-[#D2D2D7] rounded-2xl p-6 shadow-xs space-y-4"
               >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-2">
-                      <span className="size-7 rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center font-mono font-bold text-xs">
-                        Q{item.question_order || index + 1}
-                      </span>
-                      {getDifficultyBadge(q.difficulty)}
-                    </div>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="size-7 rounded-lg bg-[#F5F5F7] border border-[#E5E5EA] text-[#1D1D1F] flex items-center justify-center font-mono font-semibold text-[12px]">
+                      Q{item.question_order || index + 1}
+                    </span>
+                    {getDifficultyBadge(q.difficulty)}
                   </div>
-                  <CardTitle className="text-base font-medium text-slate-100 mt-2 leading-relaxed whitespace-pre-wrap">
-                    {q.question_text}
-                  </CardTitle>
-                </CardHeader>
+                </div>
 
-                <CardContent className="pt-1">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    {options.map((opt) => {
-                      const isCorrect = q.correct_option === opt.key;
-                      return (
-                        <div
-                          key={opt.key}
-                          className={`p-3 rounded-lg border text-xs flex items-center justify-between transition-colors ${
-                            isCorrect
-                              ? "bg-emerald-500/10 border-emerald-500 text-emerald-200 shadow-sm shadow-emerald-500/10"
-                              : "bg-slate-950/60 border-slate-800 text-slate-300"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <span
-                              className={`size-6 rounded-md flex items-center justify-center font-mono font-bold text-xs ${
-                                isCorrect
-                                  ? "bg-emerald-500 text-slate-950"
-                                  : "bg-slate-800 text-slate-300"
-                              }`}
-                            >
-                              {opt.key}
-                            </span>
-                            <span className="leading-snug">{opt.text}</span>
-                          </div>
+                <div className="text-[15px] font-normal text-[#1D1D1F] leading-relaxed whitespace-pre-wrap">
+                  {q.question_text}
+                </div>
 
-                          {isCorrect && (
-                            <span className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 shrink-0 ml-2">
-                              Correct Key
-                            </span>
-                          )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                  {options.map((opt) => {
+                    const isCorrect = q.correct_option === opt.key;
+                    return (
+                      <div
+                        key={opt.key}
+                        className={`p-3.5 rounded-xl border text-[13px] flex items-center justify-between transition-colors ${
+                          isCorrect
+                            ? "bg-[#34C759]/10 border-[#34C759] text-[#1E7E34]"
+                            : "bg-[#F5F5F7] border-[#E5E5EA] text-[#1D1D1F]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span
+                            className={`size-6 rounded-md flex items-center justify-center font-mono font-semibold text-[12px] ${
+                              isCorrect
+                                ? "bg-[#34C759] text-white"
+                                : "bg-white border border-[#D2D2D7] text-[#1D1D1F]"
+                            }`}
+                          >
+                            {opt.key}
+                          </span>
+                          <span className="leading-snug">{opt.text}</span>
                         </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
+
+                        {isCorrect && (
+                          <span className="text-[10px] font-medium uppercase px-2 py-0.5 rounded-full bg-[#34C759]/20 text-[#1E7E34] shrink-0 ml-2">
+                            Correct
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             );
           })
         )}
       </div>
 
-      {/* Bottom Back Button */}
+      {/* Return button */}
       <div className="flex justify-center pt-4 pb-12">
         <Button
           asChild
           variant="outline"
           size="sm"
-          className="border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-slate-300"
+          className="border-[#D2D2D7] bg-white hover:bg-[#F5F5F7] text-[#1D1D1F] rounded-xl h-9 px-4 text-[13px]"
         >
           <Link href={`/admin/exams/${id}`}>
-            <ArrowLeft className="size-4 mr-1.5" />
+            <ArrowLeft className="size-3.5 mr-1.5" />
             <span>Return to Exam Overview</span>
           </Link>
         </Button>
