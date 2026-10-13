@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Shuffle,
   Timer,
@@ -6,183 +10,202 @@ import {
   ShieldCheck,
   ArrowRight,
   GraduationCap,
-  Sparkles,
   Lock,
-  BarChart3,
-  Users,
+  Search,
+  ExternalLink,
+  Laptop,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function HomePage() {
+  const router = useRouter();
+  const [tokenInput, setTokenInput] = useState("");
+
+  const handleLaunchByToken = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!tokenInput.trim()) return;
+    let cleanToken = tokenInput.trim();
+    // Support pasting full URL or token
+    if (cleanToken.includes("/exam/")) {
+      const match = cleanToken.match(/\/exam\/([^/?#]+)/);
+      if (match && match[1]) cleanToken = match[1];
+    }
+    router.push(`/exam/${cleanToken}`);
+  };
+
   const features = [
     {
-      title: "Randomized Papers",
+      title: "Randomized Multi-Batch Papers",
       description:
-        "Automated multi-batch question distribution ensures unique yet balanced question sets for every examinee, effectively preventing malpractice.",
+        "Balanced question distribution across parallel cohorts prevents collaboration while preserving statistical fairness.",
       icon: Shuffle,
-      gradient: "from-blue-500/20 to-cyan-500/20",
-      iconColor: "text-blue-400",
-      badge: "Anti-Cheating",
-    },
-    {
-      title: "Timed Exams",
-      description:
-        "Precision countdown timers with automatic submission upon deadline expiry. Built-in network tolerance ensures no progress is lost.",
-      icon: Timer,
-      gradient: "from-amber-500/20 to-orange-500/20",
-      iconColor: "text-amber-400",
-      badge: "Precision Timing",
-    },
-    {
-      title: "Auto-Grading",
-      description:
-        "Instant score evaluation with comprehensive analytics, accuracy breakdown, and negative marking support calculated dynamically upon submission.",
-      icon: CheckCircle2,
-      gradient: "from-emerald-500/20 to-green-500/20",
-      iconColor: "text-emerald-400",
-      badge: "Instant Insights",
-    },
-    {
-      title: "Live Proctoring",
-      description:
-        "Proctor logging tracking tab switches, fullscreen departures, and suspicious activity logs to guarantee assessment credibility.",
-      icon: ShieldCheck,
-      gradient: "from-purple-500/20 to-pink-500/20",
-      iconColor: "text-purple-400",
       badge: "Integrity",
+    },
+    {
+      title: "Precision Timed Execution",
+      description:
+        "Fail-closed countdown timers with automatic submission upon deadline expiry. Real-time background sync guarantees zero data loss.",
+      icon: Timer,
+      badge: "Real-Time",
+    },
+    {
+      title: "Live Computer Vision Proctoring",
+      description:
+        "Client-side MediaPipe analysis monitors candidate face presence, head-pose deviations, gaze angles, and fullscreen continuity.",
+      icon: ShieldCheck,
+      badge: "Proctoring",
+    },
+    {
+      title: "Instant Evaluator & Audit Ledger",
+      description:
+        "Immediate score calculation with negative marking formula (+4 / -1) and comprehensive timeline audit logs for institution reviews.",
+      icon: CheckCircle2,
+      badge: "Automated",
     },
   ];
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-indigo-500/30 selection:text-indigo-200">
-      {/* Background Glows / Ambient Mesh */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-gradient-to-tr from-indigo-600/20 via-purple-600/20 to-blue-600/10 blur-[130px]" />
-      <div className="pointer-events-none absolute bottom-0 right-0 h-[400px] w-[500px] rounded-full bg-blue-600/10 blur-[120px]" />
-      <div className="pointer-events-none absolute top-1/3 left-10 h-[300px] w-[350px] rounded-full bg-purple-600/10 blur-[100px]" />
-
-      {/* Grid Pattern overlay */}
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#1e293b0a_1px,transparent_1px),linear-gradient(to_bottom,#1e293b0a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-
+    <div className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F] flex flex-col justify-between selection:bg-[#0071E3]/15 selection:text-[#0071E3]">
       {/* Navigation Header */}
-      <header className="relative z-10 border-b border-slate-800/60 bg-slate-950/40 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5 font-bold text-lg tracking-tight group">
-            <div className="size-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5 shadow-md shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition">
-              <div className="size-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                <GraduationCap className="size-5 text-indigo-400 group-hover:scale-110 transition" />
-              </div>
+      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-[#D2D2D7]/80">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="size-8 rounded-lg bg-[#1D1D1F] text-white flex items-center justify-center transition-transform group-hover:scale-105">
+              <GraduationCap className="size-4.5" />
             </div>
-            <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent text-xl font-extrabold tracking-tight">
+            <span className="text-[17px] font-semibold tracking-tight text-[#1D1D1F]">
               ExamPortal
             </span>
           </Link>
 
-          <div className="flex items-center gap-3">
+          <nav className="flex items-center gap-2.5">
             <Link href="/login?role=student">
               <Button
                 variant="ghost"
-                className="text-slate-300 hover:text-white hover:bg-slate-800/60 text-sm"
+                size="sm"
+                className="text-[13px] font-medium text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-[#E8E8ED]/60 rounded-full px-4 h-8"
               >
-                Student Access
+                Student Sign In
               </Button>
             </Link>
             <Link href="/login?role=admin">
               <Button
-                className="bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/25 text-sm"
+                size="sm"
+                className="text-[13px] font-medium bg-[#1D1D1F] hover:bg-[#333336] text-white rounded-full px-4 h-8 shadow-xs"
               >
-                Admin Portal
+                Admin Console
               </Button>
             </Link>
-          </div>
+          </nav>
         </div>
       </header>
 
-      {/* Main Hero & Content */}
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center max-w-7xl mx-auto px-6 py-16 sm:py-24">
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col items-center justify-center max-w-6xl w-full mx-auto px-6 py-16 sm:py-20 space-y-16">
         {/* Hero Section */}
-        <div className="text-center max-w-3xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-medium backdrop-blur-md">
-            <Sparkles className="size-3.5 text-indigo-400" />
-            <span>Next-Generation Evaluation Infrastructure</span>
+        <div className="text-center max-w-3xl mx-auto space-y-5">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#D2D2D7] text-[#6E6E73] text-[12px] font-medium shadow-xs">
+            <span className="size-1.5 rounded-full bg-[#0071E3]" />
+            <span>Academic & Institutional Assessment Platform</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1]">
-            Empower Examinations with{" "}
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">
-              ExamPortal
-            </span>
+          <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight text-[#1D1D1F] leading-[1.1]">
+            Examinations built for precision, integrity, and focus.
           </h1>
 
-          <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Secure, scalable online examinations. Seamless assessment authoring, algorithmic question randomization, and robust proctoring for institutions and educators.
+          <p className="text-[17px] sm:text-[19px] text-[#6E6E73] max-w-2xl mx-auto font-normal leading-relaxed">
+            A calm, distraction-free examination experience for candidates, backed by real-time computer vision proctoring and automated paper generation.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/login?role=student" className="w-full sm:w-auto">
+          {/* Primary Action Row */}
+          <div className="pt-3 flex flex-wrap items-center justify-center gap-3">
+            <Link href="/login?role=student">
               <Button
                 size="lg"
-                className="w-full sm:w-auto h-12 px-7 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-medium shadow-xl shadow-indigo-500/25 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2"
+                className="h-11 px-6 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white text-[14px] font-medium shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center gap-2"
               >
-                <GraduationCap className="size-5" />
-                <span>Take an Exam</span>
-                <ArrowRight className="size-4 ml-1" />
+                <span>Candidate Portal</span>
+                <ArrowRight className="size-4" />
               </Button>
             </Link>
-
-            <Link href="/login?role=admin" className="w-full sm:w-auto">
+            <Link href="/login?role=admin">
               <Button
                 size="lg"
                 variant="outline"
-                className="w-full sm:w-auto h-12 px-7 rounded-xl border-slate-700/80 bg-slate-900/60 hover:bg-slate-800/80 text-slate-200 hover:text-white backdrop-blur-md transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2"
+                className="h-11 px-6 rounded-full bg-white border-[#D2D2D7] text-[#1D1D1F] hover:bg-[#E8E8ED]/50 text-[14px] font-medium shadow-xs transition-all"
               >
-                <Lock className="size-4 text-indigo-400" />
+                <Lock className="size-3.5 mr-1.5 text-[#6E6E73]" />
                 <span>Admin Login</span>
               </Button>
             </Link>
           </div>
+
+          {/* Direct Token Launch Card */}
+          <div className="pt-4 max-w-md mx-auto">
+            <form
+              onSubmit={handleLaunchByToken}
+              className="flex items-center gap-2 p-1.5 bg-white border border-[#D2D2D7] rounded-full shadow-xs focus-within:border-[#0071E3] focus-within:ring-2 focus-within:ring-[#0071E3]/20 transition-all"
+            >
+              <div className="pl-3 text-[#6E6E73]">
+                <Search className="size-4" />
+              </div>
+              <input
+                type="text"
+                placeholder="Enter exam link token to launch..."
+                value={tokenInput}
+                onChange={(e) => setTokenInput(e.target.value)}
+                className="flex-1 bg-transparent text-[13px] text-[#1D1D1F] placeholder:text-[#86868B] outline-none px-1"
+              />
+              <Button
+                type="submit"
+                size="sm"
+                disabled={!tokenInput.trim()}
+                className="h-8 px-4 rounded-full bg-[#1D1D1F] hover:bg-[#333336] text-white text-[12px] font-medium transition"
+              >
+                Launch
+              </Button>
+            </form>
+          </div>
         </div>
 
-        {/* Feature Highlights Grid */}
-        <div className="mt-20 w-full">
-          <div className="text-center mb-10 space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-              Built for Academic & Enterprise Rigor
+        {/* Feature Cards Grid */}
+        <div className="w-full space-y-6">
+          <div className="text-center space-y-1">
+            <h2 className="text-2xl font-semibold tracking-tight text-[#1D1D1F]">
+              Designed for serious examinations
             </h2>
-            <p className="text-slate-400 text-sm sm:text-base">
-              Everything needed to conduct high-stakes assessments securely at scale.
+            <p className="text-[14px] text-[#6E6E73]">
+              Every component engineered to ensure credibility, security, and a fair candidate experience.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {features.map((item, idx) => {
               const Icon = item.icon;
               return (
                 <div
                   key={idx}
-                  className="group relative rounded-2xl border border-slate-800/80 bg-slate-900/40 p-6 backdrop-blur-xl transition-all duration-300 hover:border-slate-700 hover:bg-slate-900/70 hover:shadow-2xl hover:shadow-indigo-500/10 flex flex-col justify-between"
+                  className="bg-white border border-[#D2D2D7] rounded-2xl p-6 shadow-xs hover:border-[#B0B0B8] hover:shadow-md transition-all flex flex-col justify-between"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className={`size-12 rounded-xl bg-gradient-to-br ${item.gradient} border border-slate-700/50 flex items-center justify-center transition-transform group-hover:scale-105`}>
-                        <Icon className={`size-6 ${item.iconColor}`} />
+                      <div className="size-10 rounded-xl bg-[#F5F5F7] border border-[#E5E5EA] flex items-center justify-center text-[#1D1D1F]">
+                        <Icon className="size-5 text-[#0071E3]" />
                       </div>
-                      <span className="text-[11px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                      <span className="text-[11px] font-medium tracking-wide uppercase px-2 py-0.5 rounded-full bg-[#F5F5F7] text-[#6E6E73] border border-[#E5E5EA]">
                         {item.badge}
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-semibold text-white tracking-tight group-hover:text-indigo-300 transition-colors">
+                    <h3 className="text-[16px] font-semibold text-[#1D1D1F] tracking-tight">
                       {item.title}
                     </h3>
 
-                    <p className="text-sm text-slate-400 leading-relaxed">
+                    <p className="text-[13px] text-[#6E6E73] leading-relaxed">
                       {item.description}
                     </p>
-                  </div>
-
-                  <div className="mt-6 pt-4 border-t border-slate-800/60 flex items-center text-xs font-medium text-slate-500 group-hover:text-indigo-400 transition-colors">
-                    Enterprise Grade &rarr;
                   </div>
                 </div>
               );
@@ -190,34 +213,49 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Secondary Trust / Stats Banner */}
-        <div className="mt-16 w-full max-w-4xl mx-auto rounded-2xl border border-slate-800/60 bg-slate-900/30 backdrop-blur-md p-6 sm:p-8 flex flex-wrap items-center justify-around gap-6 text-center">
-          <div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-white">99.9%</div>
-            <div className="text-xs sm:text-sm text-slate-400 mt-1">Uptime SLA</div>
+        {/* Technical Principles Strip */}
+        <div className="w-full bg-white border border-[#D2D2D7] rounded-2xl p-6 sm:p-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-left shadow-xs">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-[14px] font-semibold text-[#1D1D1F]">
+              <Check className="size-4 text-[#34C759]" />
+              <span>Edge Computer Vision</span>
+            </div>
+            <p className="text-[12px] text-[#6E6E73] leading-relaxed">
+              Real-time MediaPipe face presence, multi-face alerts, and head-pose monitoring without server bandwidth bottlenecks.
+            </p>
           </div>
-          <div className="h-8 w-px bg-slate-800 hidden sm:block" />
-          <div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-white">0s Latency</div>
-            <div className="text-xs sm:text-sm text-slate-400 mt-1">Instant Auto-Grading</div>
+
+          <div className="space-y-1 md:border-l md:border-[#E5E5EA] md:pl-6">
+            <div className="flex items-center gap-2 text-[14px] font-semibold text-[#1D1D1F]">
+              <Check className="size-4 text-[#34C759]" />
+              <span>Full Device Compatibility</span>
+            </div>
+            <p className="text-[12px] text-[#6E6E73] leading-relaxed">
+              Tested on desktop Chrome, iPadOS Safari/Chrome, and laptops with responsive Quizrr-style question canvas.
+            </p>
           </div>
-          <div className="h-8 w-px bg-slate-800 hidden sm:block" />
-          <div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-white">100%</div>
-            <div className="text-xs sm:text-sm text-slate-400 mt-1">Tamper Resistant</div>
+
+          <div className="space-y-1 md:border-l md:border-[#E5E5EA] md:pl-6">
+            <div className="flex items-center gap-2 text-[14px] font-semibold text-[#1D1D1F]">
+              <Check className="size-4 text-[#34C759]" />
+              <span>Fail-Closed Reliability</span>
+            </div>
+            <p className="text-[12px] text-[#6E6E73] leading-relaxed">
+              Camera disconnections instantly lock answering while the timer runs, maintaining absolute assessment credibility.
+            </p>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-slate-800/60 bg-slate-950/60 backdrop-blur-md py-6 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="bg-white border-t border-[#D2D2D7] py-8 text-[12px] text-[#6E6E73]">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© {new Date().getFullYear()} ExamPortal. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <Link href="/login?role=student" className="hover:text-slate-300 transition">
-              Student Login
+            <Link href="/login?role=student" className="hover:text-[#1D1D1F] transition">
+              Candidate Login
             </Link>
-            <Link href="/login?role=admin" className="hover:text-slate-300 transition">
+            <Link href="/login?role=admin" className="hover:text-[#1D1D1F] transition">
               Administrator Console
             </Link>
           </div>
