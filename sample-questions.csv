@@ -1,0 +1,11 @@
+question_text,option_a,option_b,option_c,option_d,correct_option,difficulty
+"Which data structure operates on a Last-In, First-Out (LIFO) basis?","Queue","Stack","Array","Linked List","B","easy"
+"What is the average time complexity of searching an element in a balanced Binary Search Tree?","O(1)","O(n)","O(log n)","O(n log n)","C","medium"
+"Which protocol is used to securely transfer hypertext documents over the World Wide Web?","HTTP","FTP","SMTP","HTTPS","D","easy"
+"What does SQL stand for?","Structured Query Language","Simple Question Language","Sequential Query List","Standard Query Logic","A","easy"
+"In relational databases, which normal form eliminates transitive functional dependencies?","1NF","2NF","3NF","BCNF","C","hard"
+"Which component of an operating system coordinates process scheduling and manages CPU allocation?","Shell","Kernel","Compiler","File System","B","medium"
+"What is the hexadecimal representation of the binary byte 11001010?","CA","BA","DA","FA","A","medium"
+"Which sorting algorithm has a worst-case time complexity of O(n^2)?","Merge Sort","Heap Sort","Quick Sort","Bucket Sort","C","medium"
+"What is the primary function of an Address Resolution Protocol (ARP)?","Map IP address to MAC address","Map MAC to IP address","Resolve domain names to IP","Route packets between subnets","A","medium"
+"Which algorithmic paradigm is utilized by Dijkstra's shortest path algorithm?","Divide and Conquer","Greedy Algorithm","Dynamic Programming","Backtracking","B","hard"
