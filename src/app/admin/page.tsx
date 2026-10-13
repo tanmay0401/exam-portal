@@ -12,14 +12,13 @@ import {
   ArrowUpRight,
   RefreshCw,
   AlertCircle,
-  CheckCircle2,
   Clock,
-  Sparkles,
+  Layers,
+  CheckCircle2,
 } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -65,7 +64,6 @@ export default function AdminDashboardPage() {
     try {
       const supabase = createClient();
 
-      // Parallel queries for fast, robust count resolution
       const [
         subjectsRes,
         questionsRes,
@@ -102,17 +100,16 @@ export default function AdminDashboardPage() {
       });
 
       if (recentExamsRes.data) {
-        setRecentExams(recentExamsRes.data as RecentExam[]);
+        setRecentExams(recentExamsRes.data);
       }
 
       if (isManualRefresh) {
         toast.success("Dashboard metrics updated.");
       }
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to load dashboard data";
-      setError(message);
-      toast.error(message);
+      const msg = err instanceof Error ? err.message : "Failed to load dashboard metrics";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -129,39 +126,27 @@ export default function AdminDashboardPage() {
       value: stats.totalSubjects,
       description: "Academic courses configured",
       icon: BookOpen,
-      iconColor: "text-blue-400",
-      bgColor: "bg-blue-500/10",
-      borderColor: "border-blue-500/20",
       href: "/admin/subjects",
     },
     {
       title: "Total Questions",
       value: stats.totalQuestions,
-      description: "Question bank repository",
+      description: "Question repository bank",
       icon: HelpCircle,
-      iconColor: "text-emerald-400",
-      bgColor: "bg-emerald-500/10",
-      borderColor: "border-emerald-500/20",
       href: "/admin/subjects",
     },
     {
       title: "Active Exams",
       value: stats.activeExams,
-      description: "Published & ready for students",
+      description: "Published & available sessions",
       icon: FileText,
-      iconColor: "text-amber-400",
-      bgColor: "bg-amber-500/10",
-      borderColor: "border-amber-500/20",
       href: "/admin/exams",
     },
     {
-      title: "Total Attempts",
+      title: "Candidate Attempts",
       value: stats.totalAttempts,
-      description: "Submissions & sessions",
+      description: "Submitted student tests",
       icon: Users,
-      iconColor: "text-purple-400",
-      bgColor: "bg-purple-500/10",
-      borderColor: "border-purple-500/20",
       href: "/admin/exams",
     },
   ];
@@ -171,35 +156,35 @@ export default function AdminDashboardPage() {
       {/* Header section with greetings and quick actions */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-            Admin Dashboard
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1D1D1F]">
+            Overview
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Real-time status overview of test banks, examinations, and student attempts.
+          <p className="text-[14px] text-[#6E6E73] mt-0.5">
+            Real-time status of academic subjects, question repositories, and assessment sessions.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <Button
             variant="outline"
             size="sm"
             onClick={() => fetchDashboardData(true)}
             disabled={isLoading || isRefreshing}
-            className="border-slate-800 bg-slate-900/80 text-slate-300 hover:text-white hover:bg-slate-800 text-xs h-9"
+            className="border-[#D2D2D7] bg-white text-[#1D1D1F] hover:bg-[#F5F5F7] text-[13px] h-9 rounded-xl shadow-xs"
           >
             <RefreshCw
-              className={`size-3.5 mr-2 ${isRefreshing ? "animate-spin" : ""}`}
+              className={`size-3.5 mr-1.5 ${isRefreshing ? "animate-spin text-[#0071E3]" : "text-[#6E6E73]"}`}
             />
             <span>Refresh</span>
           </Button>
 
-          <Link href="/admin/exams">
+          <Link href="/admin/exams/new">
             <Button
               size="sm"
-              className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-md shadow-indigo-600/25 text-xs h-9"
+              className="bg-[#0071E3] hover:bg-[#0077ED] text-white font-medium text-[13px] h-9 px-4 rounded-xl shadow-xs"
             >
-              <Plus className="size-3.5 mr-1.5" />
-              <span>Create Exam</span>
+              <Plus className="size-4 mr-1.5" />
+              <span>New Exam</span>
             </Button>
           </Link>
         </div>
@@ -207,205 +192,191 @@ export default function AdminDashboardPage() {
 
       {/* Error Banner */}
       {error && (
-        <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-rose-300 flex items-center justify-between">
-          <div className="flex items-center gap-3 text-sm">
-            <AlertCircle className="size-5 shrink-0 text-rose-400" />
+        <div className="rounded-xl border border-[#FF3B30]/30 bg-[#FF3B30]/10 p-4 text-[#D70015] flex items-center justify-between text-[13px]">
+          <div className="flex items-center gap-2.5">
+            <AlertCircle className="size-4.5 shrink-0" />
             <span>{error}</span>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => fetchDashboardData()}
-            className="text-rose-300 hover:text-rose-100 hover:bg-rose-500/20 text-xs"
+            className="text-[#D70015] hover:bg-[#FF3B30]/20 text-[12px] h-7 px-2"
           >
             Retry
           </Button>
         </div>
       )}
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      {/* Metric Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((card, idx) => {
           const Icon = card.icon;
           return (
-            <Card
-              key={idx}
-              className="border-slate-800/80 bg-slate-900/50 backdrop-blur-md shadow-lg relative overflow-hidden group hover:border-slate-700 transition"
-            >
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  {card.title}
-                </CardTitle>
-                <div
-                  className={`size-9 rounded-lg ${card.bgColor} ${card.borderColor} border flex items-center justify-center`}
-                >
-                  <Icon className={`size-4.5 ${card.iconColor}`} />
+            <Link key={idx} href={card.href} className="group">
+              <div className="bg-white border border-[#D2D2D7] rounded-2xl p-5 shadow-xs group-hover:border-[#B0B0B8] group-hover:shadow-sm transition-all">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[13px] font-medium text-[#6E6E73]">
+                    {card.title}
+                  </span>
+                  <div className="size-8 rounded-lg bg-[#F5F5F7] border border-[#E5E5EA] flex items-center justify-center text-[#1D1D1F] group-hover:text-[#0071E3] transition-colors">
+                    <Icon className="size-4" />
+                  </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="space-y-2 py-1">
-                    <div className="h-8 w-20 bg-slate-800 rounded animate-pulse" />
-                    <div className="h-3 w-32 bg-slate-800/60 rounded animate-pulse" />
-                  </div>
-                ) : (
-                  <div className="space-y-1">
-                    <div className="text-3xl font-extrabold text-white tracking-tight">
-                      {card.value.toLocaleString()}
-                    </div>
-                    <p className="text-xs text-slate-400">
-                      {card.description}
-                    </p>
-                  </div>
-                )}
 
-                <div className="mt-4 pt-3 border-t border-slate-800/60">
-                  <Link
-                    href={card.href}
-                    className="inline-flex items-center gap-1 text-[11px] font-medium text-indigo-400 hover:text-indigo-300 transition"
-                  >
-                    <span>Manage</span>
-                    <ArrowUpRight className="size-3" />
-                  </Link>
+                <div className="text-3xl font-semibold tracking-tight text-[#1D1D1F]">
+                  {isLoading ? (
+                    <span className="inline-block size-6 bg-[#E8E8ED] animate-pulse rounded" />
+                  ) : (
+                    card.value
+                  )}
                 </div>
-              </CardContent>
-            </Card>
+
+                <p className="text-[12px] text-[#6E6E73] mt-1">
+                  {card.description}
+                </p>
+              </div>
+            </Link>
           );
         })}
       </div>
 
-      {/* Quick Actions & Recent Exams */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick Actions Panel */}
-        <Card className="border-slate-800/80 bg-slate-900/50 backdrop-blur-md">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold text-white flex items-center gap-2">
-              <Sparkles className="size-4 text-indigo-400" />
-              <span>Quick Actions</span>
-            </CardTitle>
-            <CardDescription className="text-xs text-slate-400">
-              Frequently accessed management functions.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Link href="/admin/exams" className="block w-full">
-              <Button
-                variant="outline"
-                className="w-full justify-start h-11 border-slate-800 bg-slate-950/40 hover:bg-slate-800/60 text-slate-200 text-xs"
-              >
-                <FileText className="size-4 mr-2.5 text-indigo-400" />
-                <span>Configure New Assessment</span>
-              </Button>
-            </Link>
-
-            <Link href="/admin/subjects" className="block w-full">
-              <Button
-                variant="outline"
-                className="w-full justify-start h-11 border-slate-800 bg-slate-950/40 hover:bg-slate-800/60 text-slate-200 text-xs"
-              >
-                <BookOpen className="size-4 mr-2.5 text-blue-400" />
-                <span>Create Subject or Topic</span>
-              </Button>
-            </Link>
-
-            <Link href="/admin/subjects" className="block w-full">
-              <Button
-                variant="outline"
-                className="w-full justify-start h-11 border-slate-800 bg-slate-950/40 hover:bg-slate-800/60 text-slate-200 text-xs"
-              >
-                <HelpCircle className="size-4 mr-2.5 text-emerald-400" />
-                <span>Upload Question Bank (CSV / Manual)</span>
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-        {/* Recent Exams List */}
-        <Card className="lg:col-span-2 border-slate-800/80 bg-slate-900/50 backdrop-blur-md">
-          <CardHeader className="flex flex-row items-center justify-between">
+      {/* Quick Navigation & Recent Exams */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Recent Exams Table */}
+        <div className="lg:col-span-8 bg-white border border-[#D2D2D7] rounded-2xl p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-[#E5E5EA]">
             <div>
-              <CardTitle className="text-base font-semibold text-white">
-                Recent Exams
-              </CardTitle>
-              <CardDescription className="text-xs text-slate-400">
-                Latest created or published examination papers.
-              </CardDescription>
+              <h2 className="text-[16px] font-semibold tracking-tight text-[#1D1D1F]">
+                Recent Examinations
+              </h2>
+              <p className="text-[12px] text-[#6E6E73]">
+                Latest published and draft assessment papers
+              </p>
             </div>
-            <Link href="/admin/exams">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-xs text-indigo-400 hover:text-indigo-300"
-              >
-                View All &rarr;
-              </Button>
+            <Link
+              href="/admin/exams"
+              className="text-[12px] font-medium text-[#0071E3] hover:underline flex items-center gap-1"
+            >
+              <span>View All</span>
+              <ArrowUpRight className="size-3.5" />
             </Link>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map((n) => (
-                  <div
-                    key={n}
-                    className="h-14 bg-slate-800/50 rounded-lg animate-pulse"
-                  />
-                ))}
-              </div>
-            ) : recentExams.length === 0 ? (
-              <div className="text-center py-8 text-slate-500 text-xs">
-                No examinations found. Click &quot;Create Exam&quot; to build your first assessment.
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-800/60">
-                {recentExams.map((exam) => (
-                  <div
-                    key={exam.id}
-                    className="py-3.5 flex items-center justify-between gap-4 first:pt-0 last:pb-0"
-                  >
-                    <div className="min-w-0 space-y-1">
-                      <div className="font-medium text-sm text-slate-200 truncate">
-                        {exam.title}
-                      </div>
-                      <div className="flex items-center gap-3 text-xs text-slate-400">
-                        <span className="flex items-center gap-1">
-                          <HelpCircle className="size-3 text-slate-500" />
-                          {exam.total_questions} Questions
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="size-3 text-slate-500" />
-                          {exam.duration_minutes} Mins
-                        </span>
-                      </div>
-                    </div>
+          </div>
 
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span
-                        className={`text-[11px] font-medium px-2 py-0.5 rounded-full capitalize ${
-                          exam.status === "published"
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                            : exam.status === "closed"
-                            ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
-                            : "bg-slate-800 text-slate-400 border border-slate-700"
-                        }`}
-                      >
-                        {exam.status}
-                      </span>
-                      <Link href={`/admin/exams`}>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-slate-400 hover:text-white size-8"
-                        >
-                          <ArrowUpRight className="size-4" />
-                        </Button>
-                      </Link>
+          {isLoading ? (
+            <div className="py-12 text-center text-[13px] text-[#6E6E73]">
+              Loading examinations...
+            </div>
+          ) : recentExams.length === 0 ? (
+            <div className="py-12 text-center space-y-2">
+              <FileText className="size-8 text-[#86868B] mx-auto opacity-50" />
+              <p className="text-[13px] text-[#6E6E73]">No examinations created yet.</p>
+              <Link href="/admin/exams/new">
+                <Button size="sm" className="bg-[#0071E3] hover:bg-[#0077ED] text-white text-[12px] rounded-xl mt-2">
+                  Create First Exam
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="divide-y divide-[#E5E5EA]">
+              {recentExams.map((exam) => (
+                <div
+                  key={exam.id}
+                  className="py-3.5 flex items-center justify-between gap-4 hover:bg-[#F5F5F7]/50 rounded-lg px-2 -mx-2 transition-colors"
+                >
+                  <div className="space-y-0.5 min-w-0">
+                    <Link
+                      href={`/admin/exams/${exam.id}`}
+                      className="text-[14px] font-medium text-[#1D1D1F] hover:text-[#0071E3] truncate block"
+                    >
+                      {exam.title}
+                    </Link>
+                    <div className="flex items-center gap-2 text-[12px] text-[#6E6E73]">
+                      <span>{exam.total_questions} Questions</span>
+                      <span>•</span>
+                      <span>{exam.duration_minutes} Mins</span>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${
+                        exam.status === "published"
+                          ? "bg-[#34C759]/10 text-[#1E7E34] border border-[#34C759]/30"
+                          : exam.status === "closed"
+                          ? "bg-[#FF3B30]/10 text-[#D70015] border border-[#FF3B30]/30"
+                          : "bg-[#E8E8ED] text-[#6E6E73] border border-[#D2D2D7]"
+                      }`}
+                    >
+                      {exam.status.charAt(0).toUpperCase() + exam.status.slice(1)}
+                    </span>
+                    <Link href={`/admin/exams/${exam.id}`}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-[12px] text-[#0071E3] hover:bg-[#0071E3]/10 h-7 px-2.5 rounded-lg"
+                      >
+                        Manage
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Quick Launch & Guidance Panel */}
+        <div className="lg:col-span-4 space-y-4">
+          <div className="bg-white border border-[#D2D2D7] rounded-2xl p-6 shadow-xs space-y-4">
+            <h2 className="text-[15px] font-semibold text-[#1D1D1F]">
+              Quick Management
+            </h2>
+
+            <div className="space-y-2">
+              <Link href="/admin/exams/new" className="block">
+                <div className="p-3 rounded-xl border border-[#D2D2D7] hover:border-[#0071E3] hover:bg-[#F5F5F7] transition-all flex items-center gap-3">
+                  <div className="size-8 rounded-lg bg-[#0071E3]/10 text-[#0071E3] flex items-center justify-center">
+                    <Plus className="size-4" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-[#1D1D1F]">
+                      Create New Exam
+                    </div>
+                    <div className="text-[11px] text-[#6E6E73]">
+                      Configure rules & multi-batch generator
+                    </div>
+                  </div>
+                </div>
+              </Link>
+
+              <Link href="/admin/subjects" className="block">
+                <div className="p-3 rounded-xl border border-[#D2D2D7] hover:border-[#0071E3] hover:bg-[#F5F5F7] transition-all flex items-center gap-3">
+                  <div className="size-8 rounded-lg bg-[#34C759]/10 text-[#1E7E34] flex items-center justify-center">
+                    <BookOpen className="size-4" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-[#1D1D1F]">
+                      Manage Subjects
+                    </div>
+                    <div className="text-[11px] text-[#6E6E73]">
+                      Author questions & CSV bulk import
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          </div>
+
+          <div className="bg-white border border-[#D2D2D7] rounded-2xl p-6 shadow-xs space-y-2 text-[12px] text-[#6E6E73]">
+            <span className="font-semibold text-[#1D1D1F] block text-[13px]">
+              Examination System Status
+            </span>
+            <p className="leading-relaxed">
+              AI proctoring telemetry is actively verified on all student attempts. Generated exam tokens allow direct HTTPS candidate access.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
