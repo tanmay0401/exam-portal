@@ -248,27 +248,19 @@ export default function ExamEntryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-indigo-500/30 selection:text-indigo-200">
-      {/* Background Glows */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-gradient-to-tr from-indigo-600/15 via-purple-600/15 to-blue-600/10 blur-[130px]" />
-        <div className="absolute bottom-0 right-0 h-[400px] w-[500px] rounded-full bg-blue-600/10 blur-[120px]" />
-      </div>
-
+    <div className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F] flex flex-col justify-between selection:bg-[#0071E3]/20 selection:text-[#0071E3]">
       {/* Top Header */}
-      <header className="relative z-10 border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-xl">
+      <header className="border-b border-[#D2D2D7]/80 bg-white/80 backdrop-blur-md sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="size-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5 shadow-md shadow-indigo-500/20">
-              <div className="size-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                <Shield className="size-4.5 text-indigo-400" />
-              </div>
+            <div className="size-9 rounded-xl bg-[#0071E3] text-white flex items-center justify-center shadow-sm">
+              <Shield className="size-5" />
             </div>
             <div>
-              <span className="font-bold text-base tracking-tight text-white block leading-none">
+              <span className="font-semibold text-base tracking-tight text-[#1D1D1F] block leading-none">
                 ExamPortal
               </span>
-              <span className="text-[11px] text-slate-400 block mt-0.5">
+              <span className="text-[11px] text-[#6E6E73] block mt-0.5 font-medium">
                 Secure Candidate Assessment Environment
               </span>
             </div>
@@ -277,16 +269,16 @@ export default function ExamEntryPage() {
           {userEmail && (
             <div className="flex items-center gap-3">
               <div className="hidden sm:block text-right">
-                <span className="text-xs text-slate-400 block">Candidate</span>
-                <span className="text-xs font-semibold text-slate-200 block truncate max-w-[200px]">
+                <span className="text-xs text-[#6E6E73] block">Candidate</span>
+                <span className="text-xs font-semibold text-[#1D1D1F] block truncate max-w-[200px]">
                   {userEmail}
                 </span>
               </div>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={handleSignOut}
-                className="text-slate-400 hover:text-rose-400 hover:bg-slate-800/50"
+                className="border-[#D2D2D7] text-[#6E6E73] hover:text-[#FF3B30] hover:bg-white text-xs h-8"
               >
                 <LogOut className="size-3.5 mr-1.5" />
                 <span>Sign Out</span>
@@ -297,28 +289,28 @@ export default function ExamEntryPage() {
       </header>
 
       {/* Main Container */}
-      <main className="relative z-10 flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-10 flex flex-col justify-center">
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-10 flex flex-col justify-center">
         {loadingExam ? (
           <div className="flex flex-col items-center justify-center py-24 space-y-4">
-            <Loader2 className="size-10 text-indigo-400 animate-spin" />
-            <p className="text-slate-400 text-sm">Verifying examination token...</p>
+            <Loader2 className="size-9 text-[#0071E3] animate-spin" />
+            <p className="text-[#6E6E73] text-sm font-medium">Verifying examination token...</p>
           </div>
         ) : examError ? (
-          <Card className="border-rose-900/50 bg-rose-950/20 backdrop-blur-xl max-w-xl mx-auto w-full">
-            <CardHeader className="text-center pb-2">
-              <div className="size-12 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-2">
+          <Card className="border-[#FF3B30]/30 bg-white shadow-sm max-w-xl mx-auto w-full rounded-2xl overflow-hidden">
+            <CardHeader className="text-center pb-2 pt-6">
+              <div className="size-12 rounded-full bg-[#FF3B30]/10 text-[#FF3B30] flex items-center justify-center mx-auto mb-2">
                 <AlertCircle className="size-6" />
               </div>
-              <CardTitle className="text-rose-200 text-xl font-bold">
+              <CardTitle className="text-[#1D1D1F] text-xl font-bold">
                 Exam Access Denied
               </CardTitle>
-              <CardDescription className="text-rose-300/80">
+              <CardDescription className="text-[#6E6E73] text-sm mt-1">
                 {examError}
               </CardDescription>
             </CardHeader>
-            <CardContent className="text-center pt-2">
-              <p className="text-xs text-slate-400">
-                Please confirm the exam link URL with your assessment administrator or proctor.
+            <CardContent className="text-center pb-6">
+              <p className="text-xs text-[#86868B]">
+                Please confirm the examination link with your proctor or administrator.
               </p>
             </CardContent>
           </Card>
@@ -326,64 +318,64 @@ export default function ExamEntryPage() {
           <div className="space-y-8">
             {/* Header info */}
             <div className="text-center space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-medium backdrop-blur-md">
-                <Sparkles className="size-3 text-indigo-400" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#D2D2D7] bg-white text-[#1D1D1F] text-xs font-medium shadow-sm">
+                <Sparkles className="size-3 text-[#0071E3]" />
                 <span>Official Assessment</span>
                 {exam.is_dry_run && (
-                  <Badge variant="secondary" className="text-[10px] bg-amber-500/20 text-amber-300 ml-1 border-amber-500/30">
+                  <Badge variant="secondary" className="text-[10px] bg-[#FF9500]/15 text-[#B25E00] border border-[#FF9500]/30 font-semibold ml-1">
                     Dry Run Mode
                   </Badge>
                 )}
               </div>
 
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+              <h1 className="text-3xl sm:text-4xl font-bold text-[#1D1D1F] tracking-tight">
                 {exam.title}
               </h1>
-              <p className="text-slate-400 text-sm max-w-lg mx-auto">
+              <p className="text-[#6E6E73] text-sm max-w-lg mx-auto">
                 Read all instructions carefully before starting. Once you proceed, proctoring security protocols will be engaged.
               </p>
             </div>
 
             {/* Exam Details Highlights Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-              <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/50 backdrop-blur-md">
-                <div className="flex items-center gap-2 text-slate-400 text-xs mb-1">
-                  <Clock className="size-4 text-indigo-400" />
+              <div className="p-4.5 rounded-2xl border border-[#D2D2D7] bg-white shadow-sm">
+                <div className="flex items-center gap-1.5 text-[#6E6E73] text-xs mb-1 font-medium">
+                  <Clock className="size-4 text-[#0071E3]" />
                   <span>Duration</span>
                 </div>
-                <div className="text-xl sm:text-2xl font-bold text-white">
-                  {exam.duration_minutes} <span className="text-xs font-normal text-slate-400">mins</span>
+                <div className="text-xl sm:text-2xl font-bold text-[#1D1D1F]">
+                  {exam.duration_minutes} <span className="text-xs font-normal text-[#6E6E73]">mins</span>
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/50 backdrop-blur-md">
-                <div className="flex items-center gap-2 text-slate-400 text-xs mb-1">
-                  <FileText className="size-4 text-emerald-400" />
+              <div className="p-4.5 rounded-2xl border border-[#D2D2D7] bg-white shadow-sm">
+                <div className="flex items-center gap-1.5 text-[#6E6E73] text-xs mb-1 font-medium">
+                  <FileText className="size-4 text-[#34C759]" />
                   <span>Questions</span>
                 </div>
-                <div className="text-xl sm:text-2xl font-bold text-white">
+                <div className="text-xl sm:text-2xl font-bold text-[#1D1D1F]">
                   {exam.total_questions}
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/50 backdrop-blur-md">
-                <div className="flex items-center gap-2 text-slate-400 text-xs mb-1">
-                  <Award className="size-4 text-amber-400" />
+              <div className="p-4.5 rounded-2xl border border-[#D2D2D7] bg-white shadow-sm">
+                <div className="flex items-center gap-1.5 text-[#6E6E73] text-xs mb-1 font-medium">
+                  <Award className="size-4 text-[#FF9500]" />
                   <span>Max Marks</span>
                 </div>
-                <div className="text-xl sm:text-2xl font-bold text-white">
+                <div className="text-xl sm:text-2xl font-bold text-[#1D1D1F]">
                   {exam.max_marks}
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/50 backdrop-blur-md">
-                <div className="flex items-center gap-2 text-slate-400 text-xs mb-1">
-                  <HelpCircle className="size-4 text-cyan-400" />
+              <div className="p-4.5 rounded-2xl border border-[#D2D2D7] bg-white shadow-sm">
+                <div className="flex items-center gap-1.5 text-[#6E6E73] text-xs mb-1 font-medium">
+                  <HelpCircle className="size-4 text-[#0071E3]" />
                   <span>Marking</span>
                 </div>
-                <div className="text-xl sm:text-2xl font-bold text-white flex items-baseline gap-1">
+                <div className="text-xl sm:text-2xl font-bold text-[#1D1D1F] flex items-baseline gap-1">
                   <span>+{exam.marks_per_question ?? 4}</span>
-                  <span className="text-rose-400 text-sm font-semibold">/{exam.negative_marks ? `-${exam.negative_marks}` : "-0"}</span>
+                  <span className="text-[#FF3B30] text-sm font-semibold">/{exam.negative_marks ? `-${exam.negative_marks}` : "-0"}</span>
                 </div>
               </div>
             </div>
@@ -392,47 +384,47 @@ export default function ExamEntryPage() {
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
               {/* Instructions Panel */}
               <div className="md:col-span-6 space-y-4">
-                <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-md">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base text-slate-200 flex items-center gap-2">
-                      <Shield className="size-4 text-indigo-400" />
+                <Card className="border-[#D2D2D7] bg-white shadow-sm rounded-2xl overflow-hidden">
+                  <CardHeader className="pb-3 border-b border-[#D2D2D7]/80 bg-[#F5F5F7]/40">
+                    <CardTitle className="text-sm font-semibold text-[#1D1D1F] flex items-center gap-2">
+                      <Shield className="size-4 text-[#0071E3]" />
                       Candidate Guidelines
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3 text-xs text-slate-300 leading-relaxed">
-                    <div className="flex items-start gap-2.5">
-                      <div className="size-5 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">
+                  <CardContent className="space-y-3.5 pt-4 text-xs text-[#424245] leading-relaxed">
+                    <div className="flex items-start gap-3">
+                      <div className="size-5 rounded-full bg-[#F5F5F7] border border-[#D2D2D7] text-[#1D1D1F] flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">
                         1
                       </div>
                       <p>
-                        <strong>Continuous Proctoring:</strong> Web camera access and full-screen display are mandatory throughout the test.
+                        <strong className="text-[#1D1D1F]">Continuous Proctoring:</strong> Web camera access and full-screen display are mandatory throughout the test.
                       </p>
                     </div>
 
-                    <div className="flex items-start gap-2.5">
-                      <div className="size-5 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">
+                    <div className="flex items-start gap-3">
+                      <div className="size-5 rounded-full bg-[#F5F5F7] border border-[#D2D2D7] text-[#1D1D1F] flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">
                         2
                       </div>
                       <p>
-                        <strong>Integrity Violations:</strong> Exiting fullscreen or navigating to other tabs is tracked and logged in the proctor audit report.
+                        <strong className="text-[#1D1D1F]">Integrity Violations:</strong> Exiting fullscreen or navigating to other tabs is tracked and logged in the proctor audit report.
                       </p>
                     </div>
 
-                    <div className="flex items-start gap-2.5">
-                      <div className="size-5 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">
+                    <div className="flex items-start gap-3">
+                      <div className="size-5 rounded-full bg-[#F5F5F7] border border-[#D2D2D7] text-[#1D1D1F] flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">
                         3
                       </div>
                       <p>
-                        <strong>Automatic Submission:</strong> When the countdown reaches zero, all answered responses are immediately locked and submitted.
+                        <strong className="text-[#1D1D1F]">Automatic Submission:</strong> When the countdown reaches zero, all answered responses are immediately locked and submitted.
                       </p>
                     </div>
 
-                    <div className="flex items-start gap-2.5">
-                      <div className="size-5 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">
+                    <div className="flex items-start gap-3">
+                      <div className="size-5 rounded-full bg-[#F5F5F7] border border-[#D2D2D7] text-[#1D1D1F] flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">
                         4
                       </div>
                       <p>
-                        <strong>Marking Scheme:</strong> Correct answers receive +{exam.marks_per_question ?? 4} marks. Wrong answers incur -{exam.negative_marks ?? 1} marks. Unanswered questions award 0.
+                        <strong className="text-[#1D1D1F]">Marking Scheme:</strong> Correct answers receive +{exam.marks_per_question ?? 4} marks. Wrong answers incur -{exam.negative_marks ?? 1} marks. Unanswered questions award 0.
                       </p>
                     </div>
                   </CardContent>
@@ -442,59 +434,59 @@ export default function ExamEntryPage() {
               {/* Login or Start Action Panel */}
               <div className="md:col-span-6">
                 {checkingAttempt ? (
-                  <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-md p-8 text-center">
-                    <Loader2 className="size-8 text-indigo-400 animate-spin mx-auto mb-2" />
-                    <p className="text-xs text-slate-400">Verifying attempt history...</p>
+                  <Card className="border-[#D2D2D7] bg-white shadow-sm rounded-2xl p-8 text-center">
+                    <Loader2 className="size-8 text-[#0071E3] animate-spin mx-auto mb-2" />
+                    <p className="text-xs text-[#6E6E73] font-medium">Verifying attempt history...</p>
                   </Card>
                 ) : userEmail ? (
                   /* User already signed in */
-                  <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-md shadow-2xl shadow-indigo-500/5">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold">
-                        <CheckCircle className="size-4" />
-                        <span>Authenticated</span>
+                  <Card className="border-[#D2D2D7] bg-white shadow-sm rounded-2xl overflow-hidden">
+                    <CardHeader className="pb-3 border-b border-[#D2D2D7]/80 bg-[#F5F5F7]/40">
+                      <div className="flex items-center gap-1.5 text-[#1E7E34] text-xs font-semibold">
+                        <CheckCircle className="size-4 text-[#34C759]" />
+                        <span>Authenticated Candidate</span>
                       </div>
-                      <CardTitle className="text-lg text-white">
+                      <CardTitle className="text-base font-bold text-[#1D1D1F] mt-1">
                         Ready to Proceed
                       </CardTitle>
-                      <CardDescription className="text-slate-400 text-xs">
-                        Logged in as <strong className="text-slate-200">{userEmail}</strong>
+                      <CardDescription className="text-[#6E6E73] text-xs">
+                        Logged in as <strong className="text-[#1D1D1F] font-semibold">{userEmail}</strong>
                       </CardDescription>
                     </CardHeader>
 
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-4 pt-4">
                       {existingAttemptStatus === "graded" || existingAttemptStatus === "submitted" ? (
-                        <Alert className="border-amber-500/30 bg-amber-500/10 text-amber-200">
-                          <AlertTriangle className="size-4 text-amber-400" />
+                        <Alert className="border-[#FF9500]/30 bg-[#FF9500]/10 text-[#B25E00]">
+                          <AlertTriangle className="size-4 text-[#FF9500]" />
                           <AlertTitle className="text-xs font-semibold">
                             Exam Already Completed
                           </AlertTitle>
-                          <AlertDescription className="text-xs text-amber-300/90 mt-1">
+                          <AlertDescription className="text-xs text-[#B25E00] mt-1">
                             You have already submitted an attempt for this examination. Retakes are not permitted.
                           </AlertDescription>
                         </Alert>
                       ) : existingAttemptStatus === "in_progress" ? (
-                        <Alert className="border-indigo-500/30 bg-indigo-500/10 text-indigo-200">
-                          <Clock className="size-4 text-indigo-400" />
+                        <Alert className="border-[#0071E3]/30 bg-[#0071E3]/10 text-[#0071E3]">
+                          <Clock className="size-4 text-[#0071E3]" />
                           <AlertTitle className="text-xs font-semibold">
                             Attempt In Progress
                           </AlertTitle>
-                          <AlertDescription className="text-xs text-indigo-300/90 mt-1">
+                          <AlertDescription className="text-xs text-[#0071E3] mt-1">
                             You have an unfinished attempt. You can resume your test with all previously saved answers intact.
                           </AlertDescription>
                         </Alert>
                       ) : (
-                        <div className="p-3.5 rounded-lg bg-slate-950/50 border border-slate-800/80 text-xs text-slate-300">
+                        <div className="p-3.5 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7] text-xs text-[#424245]">
                           Next step: System compatibility verification (camera check, browser check, and fullscreen mode).
                         </div>
                       )}
                     </CardContent>
 
-                    <CardFooter className="pt-2 flex flex-col gap-2">
+                    <CardFooter className="pt-2 pb-6 px-6 flex flex-col gap-2">
                       {existingAttemptStatus === "graded" || existingAttemptStatus === "submitted" ? (
                         <Button
                           onClick={handleViewResult}
-                          className="w-full bg-slate-800 hover:bg-slate-700 text-white font-medium"
+                          className="w-full bg-[#1D1D1F] hover:bg-black text-white font-medium rounded-xl h-10 shadow-sm"
                         >
                           <Award className="size-4 mr-2" />
                           View My Score Card
@@ -503,7 +495,7 @@ export default function ExamEntryPage() {
                         <Button
                           onClick={handleProceedToSystemCheck}
                           size="lg"
-                          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold shadow-lg shadow-indigo-500/25 transition-all"
+                          className="w-full bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold rounded-xl h-11 shadow-sm transition-all"
                         >
                           <span>{existingAttemptStatus === "in_progress" ? "Resume Exam" : "Start System Check"}</span>
                           <ArrowRight className="size-4 ml-2" />
@@ -513,19 +505,19 @@ export default function ExamEntryPage() {
                   </Card>
                 ) : (
                   /* Student Login / Register Form */
-                  <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-md shadow-2xl">
-                    <CardHeader className="pb-3">
+                  <Card className="border-[#D2D2D7] bg-white shadow-sm rounded-2xl overflow-hidden">
+                    <CardHeader className="pb-3 border-b border-[#D2D2D7]/80 bg-[#F5F5F7]/40">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-base text-white flex items-center gap-2">
+                        <CardTitle className="text-base font-bold text-[#1D1D1F] flex items-center gap-2">
                           {authMode === "register" ? (
-                            <UserPlus className="size-4 text-indigo-400" />
+                            <UserPlus className="size-4 text-[#0071E3]" />
                           ) : (
-                            <LogIn className="size-4 text-indigo-400" />
+                            <LogIn className="size-4 text-[#0071E3]" />
                           )}
                           <span>Candidate Access</span>
                         </CardTitle>
                       </div>
-                      <CardDescription className="text-slate-400 text-xs">
+                      <CardDescription className="text-[#6E6E73] text-xs mt-1">
                         {authMode === "register"
                           ? "Register as an official candidate for this assessment"
                           : "Enter your registered student credentials to unlock this assessment"}
@@ -535,13 +527,19 @@ export default function ExamEntryPage() {
                       <Tabs
                         value={authMode}
                         onValueChange={(val) => setAuthMode(val as "login" | "register")}
-                        className="w-full pt-2"
+                        className="w-full pt-3"
                       >
-                        <TabsList className="grid grid-cols-2 bg-slate-950/80 border border-slate-800">
-                          <TabsTrigger value="login" className="text-xs data-active:bg-indigo-600 data-active:text-white">
+                        <TabsList className="grid grid-cols-2 bg-[#E8E8ED] p-1 rounded-xl">
+                          <TabsTrigger
+                            value="login"
+                            className="text-xs font-semibold py-1.5 rounded-lg data-[state=active]:bg-white data-[state=active]:text-[#1D1D1F] data-[state=active]:shadow-sm text-[#6E6E73]"
+                          >
                             Sign In
                           </TabsTrigger>
-                          <TabsTrigger value="register" className="text-xs data-active:bg-indigo-600 data-active:text-white">
+                          <TabsTrigger
+                            value="register"
+                            className="text-xs font-semibold py-1.5 rounded-lg data-[state=active]:bg-white data-[state=active]:text-[#1D1D1F] data-[state=active]:shadow-sm text-[#6E6E73]"
+                          >
                             Register Candidate
                           </TabsTrigger>
                         </TabsList>
@@ -549,10 +547,10 @@ export default function ExamEntryPage() {
                     </CardHeader>
 
                     <form onSubmit={handleAuth}>
-                      <CardContent className="space-y-3.5">
+                      <CardContent className="space-y-3.5 pt-4">
                         {authMode === "register" && (
                           <div className="space-y-1.5">
-                            <Label htmlFor="fullname" className="text-xs text-slate-300">
+                            <Label htmlFor="fullname" className="text-xs font-semibold text-[#1D1D1F]">
                               Full Candidate Name
                             </Label>
                             <Input
@@ -562,13 +560,13 @@ export default function ExamEntryPage() {
                               value={fullNameInput}
                               onChange={(e) => setFullNameInput(e.target.value)}
                               required={authMode === "register"}
-                              className="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-indigo-500"
+                              className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] placeholder:text-[#86868B] focus-visible:bg-white focus-visible:border-[#0071E3] rounded-xl"
                             />
                           </div>
                         )}
 
                         <div className="space-y-1.5">
-                          <Label htmlFor="email" className="text-xs text-slate-300">
+                          <Label htmlFor="email" className="text-xs font-semibold text-[#1D1D1F]">
                             Email Address
                           </Label>
                           <Input
@@ -578,12 +576,12 @@ export default function ExamEntryPage() {
                             value={emailInput}
                             onChange={(e) => setEmailInput(e.target.value)}
                             required
-                            className="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-indigo-500"
+                            className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] placeholder:text-[#86868B] focus-visible:bg-white focus-visible:border-[#0071E3] rounded-xl"
                           />
                         </div>
 
                         <div className="space-y-1.5">
-                          <Label htmlFor="password" className="text-xs text-slate-300">
+                          <Label htmlFor="password" className="text-xs font-semibold text-[#1D1D1F]">
                             Password
                           </Label>
                           <Input
@@ -593,16 +591,16 @@ export default function ExamEntryPage() {
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
                             required
-                            className="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-indigo-500"
+                            className="bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F] placeholder:text-[#86868B] focus-visible:bg-white focus-visible:border-[#0071E3] rounded-xl"
                           />
                         </div>
                       </CardContent>
 
-                      <CardFooter className="pt-2">
+                      <CardFooter className="pt-2 pb-6 px-6">
                         <Button
                           type="submit"
                           disabled={authLoading}
-                          className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-md shadow-indigo-500/20"
+                          className="w-full bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold rounded-xl h-10 shadow-sm transition-colors"
                         >
                           {authLoading ? (
                             <>
@@ -632,7 +630,7 @@ export default function ExamEntryPage() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-slate-800/60 bg-slate-950/40 py-4 text-center text-xs text-slate-500">
+      <footer className="border-t border-[#D2D2D7]/80 bg-white py-4 text-center text-xs text-[#86868B]">
         <p>ExamPortal Proctoring Engine • All rights reserved</p>
       </footer>
     </div>
