@@ -756,10 +756,10 @@ export default function ExamAttemptPage() {
 
   if (isInitializing) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-6">
-        <Loader2 className="size-12 text-indigo-400 animate-spin mb-4" />
-        <h2 className="text-xl font-bold">Securing Exam Environment...</h2>
-        <p className="text-xs text-slate-400 mt-1">
+      <div className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F] flex flex-col items-center justify-center p-6 text-center">
+        <Loader2 className="size-10 text-[#0071E3] animate-spin mb-4" />
+        <h2 className="text-xl font-bold tracking-tight text-[#1D1D1F]">Securing Exam Environment...</h2>
+        <p className="text-xs text-[#6E6E73] mt-1 max-w-sm">
           Randomizing questions, calibrating computer vision proctoring, and creating attempt ledger.
         </p>
       </div>
@@ -768,14 +768,14 @@ export default function ExamAttemptPage() {
 
   if (initError) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-6">
-        <Card className="max-w-md w-full border-rose-900/60 bg-rose-950/20 text-center p-6">
-          <AlertCircle className="size-10 text-rose-400 mx-auto mb-3" />
-          <h2 className="text-lg font-bold text-rose-200">Exam Initialization Error</h2>
-          <p className="text-xs text-rose-300/80 mt-2">{initError}</p>
+      <div className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F] flex flex-col items-center justify-center p-6">
+        <Card className="max-w-md w-full border-[#FF3B30]/30 bg-white text-center p-6 shadow-sm rounded-2xl">
+          <AlertCircle className="size-10 text-[#FF3B30] mx-auto mb-3" />
+          <h2 className="text-lg font-bold text-[#1D1D1F]">Exam Initialization Error</h2>
+          <p className="text-xs text-[#6E6E73] mt-2">{initError}</p>
           <Button
             onClick={() => router.push(`/exam/${token}`)}
-            className="mt-6 bg-slate-800 hover:bg-slate-700 text-white"
+            className="mt-6 bg-[#0071E3] hover:bg-[#0077ED] text-white font-medium text-xs rounded-xl"
           >
             Return to Exam Portal
           </Button>
@@ -785,43 +785,43 @@ export default function ExamAttemptPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col select-none">
+    <div className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F] flex flex-col select-none">
       {/* 1. Header Toolbar */}
-      <header className="h-16 border-b border-slate-800 bg-slate-950/90 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-6 flex items-center justify-between">
+      <header className="h-16 border-b border-[#D2D2D7] bg-white sticky top-0 z-40 px-4 sm:px-6 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="size-8 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+          <div className="size-8 rounded-xl bg-[#0071E3] text-white flex items-center justify-center shadow-sm">
             <Shield className="size-4" />
           </div>
           <div>
-            <h1 className="text-sm sm:text-base font-bold text-white tracking-tight truncate max-w-[200px] sm:max-w-md">
+            <h1 className="text-sm sm:text-base font-bold text-[#1D1D1F] tracking-tight truncate max-w-[200px] sm:max-w-md">
               {examTitle}
             </h1>
-            <div className="flex items-center gap-2 text-[11px] text-slate-400">
-              <span>Q {currentIndex + 1} of {questions.length}</span>
+            <div className="flex items-center gap-2 text-[11px] text-[#6E6E73]">
+              <span className="font-medium text-[#1D1D1F]">Q {currentIndex + 1} of {questions.length}</span>
               <span>•</span>
               {cameraBlocked ? (
-                <span className="text-rose-400 font-semibold flex items-center gap-1 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/30">
-                  <span className="size-1.5 rounded-full bg-rose-500 animate-ping" />
+                <span className="text-[#D70015] font-semibold flex items-center gap-1 bg-[#FF3B30]/10 px-2 py-0.5 rounded-full border border-[#FF3B30]/30">
+                  <span className="size-1.5 rounded-full bg-[#FF3B30] animate-ping" />
                   Camera Blocked
                 </span>
               ) : cameraActive && aiVisionResult?.status === "verified" ? (
-                <span className="text-emerald-400 font-medium flex items-center gap-1">
-                  <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[#1E7E34] font-semibold flex items-center gap-1 bg-[#34C759]/10 px-2 py-0.5 rounded-full border border-[#34C759]/30">
+                  <span className="size-1.5 rounded-full bg-[#34C759] animate-pulse" />
                   AI Proctor Active
                 </span>
               ) : cameraActive ? (
-                <span className="text-amber-400 font-medium flex items-center gap-1">
-                  <span className="size-1.5 rounded-full bg-amber-400" />
+                <span className="text-[#B25E00] font-semibold flex items-center gap-1 bg-[#FF9500]/10 px-2 py-0.5 rounded-full border border-[#FF9500]/30">
+                  <span className="size-1.5 rounded-full bg-[#FF9500]" />
                   AI Monitoring ({aiVisionResult?.status ? aiVisionResult.status.replace(/_/g, " ") : "Calibrating"})
                 </span>
               ) : (
-                <span className="text-rose-400 font-medium flex items-center gap-1">
-                  <span className="size-1.5 rounded-full bg-rose-400" />
+                <span className="text-[#D70015] font-semibold flex items-center gap-1 bg-[#FF3B30]/10 px-2 py-0.5 rounded-full border border-[#FF3B30]/30">
+                  <span className="size-1.5 rounded-full bg-[#FF3B30]" />
                   Proctor Inactive
                 </span>
               )}
               {proctorWarningsCount > 0 && (
-                <span className="text-amber-400 font-semibold bg-amber-500/10 px-1.5 py-0.2 rounded border border-amber-500/20">
+                <span className="text-[#B25E00] font-semibold bg-[#FF9500]/10 px-2 py-0.5 rounded-full border border-[#FF9500]/30">
                   {proctorWarningsCount} {proctorWarningsCount === 1 ? "Notice" : "Notices"}
                 </span>
               )}
@@ -835,9 +835,9 @@ export default function ExamAttemptPage() {
             size="sm"
             variant="outline"
             onClick={enterFullscreen}
-            className="hidden md:flex border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs h-8"
+            className="hidden md:flex border-[#FF9500]/40 bg-[#FF9500]/10 text-[#B25E00] hover:bg-[#FF9500]/20 text-xs h-8 font-medium rounded-lg"
           >
-            <Maximize className="size-3.5 mr-1.5" />
+            <Maximize className="size-3.5 mr-1.5 text-[#FF9500]" />
             Restore Fullscreen
           </Button>
         )}
@@ -845,20 +845,20 @@ export default function ExamAttemptPage() {
         {/* Right: Timer & Submit Action */}
         <div className="flex items-center gap-3">
           <div
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border font-mono font-bold text-sm tracking-wide ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border font-mono font-bold text-sm tracking-wide ${
               isLowTime
-                ? "bg-rose-500/20 border-rose-500/40 text-rose-400 animate-pulse"
-                : "bg-slate-900 border-slate-800 text-slate-200"
+                ? "bg-[#FF3B30]/10 border-[#FF3B30]/40 text-[#D70015] animate-pulse"
+                : "bg-[#F5F5F7] border-[#D2D2D7] text-[#1D1D1F]"
             }`}
           >
-            <Timer className={`size-4 ${isLowTime ? "text-rose-400" : "text-indigo-400"}`} />
+            <Timer className={`size-4 ${isLowTime ? "text-[#FF3B30]" : "text-[#0071E3]"}`} />
             <span>{formatTimer(remainingSeconds)}</span>
           </div>
 
           <Button
             onClick={() => setShowSubmitDialog(true)}
             size="sm"
-            className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-md shadow-indigo-600/20 h-9 px-4"
+            className="bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold shadow-sm h-9 px-4 text-xs rounded-xl transition-colors"
           >
             <Send className="size-3.5 mr-1.5" />
             <span>Submit</span>
@@ -868,9 +868,9 @@ export default function ExamAttemptPage() {
 
       {/* Floating Active Warning Banner if Anomaly Occurs */}
       {activeWarningBanner && (
-        <div className="bg-amber-500/15 border-b border-amber-500/30 text-amber-200 py-2 px-4 text-xs flex items-center justify-between sticky top-16 z-30 backdrop-blur-md animate-in slide-in-from-top-2">
+        <div className="bg-[#FF9500]/15 border-b border-[#FF9500]/30 text-[#B25E00] py-2 px-4 text-xs flex items-center justify-between sticky top-16 z-30 backdrop-blur-md animate-in slide-in-from-top-2">
           <div className="flex items-center gap-2 max-w-4xl mx-auto w-full">
-            <AlertTriangle className="size-4 text-amber-400 shrink-0" />
+            <AlertTriangle className="size-4 text-[#FF9500] shrink-0" />
             <span className="font-medium">
               Candidate Notice: {activeWarningBanner}. Please focus on the screen to avoid integrity flags.
             </span>
@@ -884,28 +884,28 @@ export default function ExamAttemptPage() {
         <div className="lg:col-span-8 flex flex-col gap-4 relative">
           {/* Answering Lock Overlay when Camera is disconnected */}
           {cameraBlocked && (
-            <div className="absolute inset-0 z-30 bg-slate-950/95 backdrop-blur-md rounded-xl border border-rose-900/60 p-6 sm:p-10 flex flex-col items-center justify-center text-center space-y-4 shadow-2xl">
-              <div className="size-16 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 animate-pulse">
+            <div className="absolute inset-0 z-30 bg-white/98 backdrop-blur-md rounded-2xl border-2 border-[#FF3B30] p-6 sm:p-10 flex flex-col items-center justify-center text-center space-y-4 shadow-2xl">
+              <div className="size-16 rounded-full bg-[#FF3B30]/10 border border-[#FF3B30]/30 flex items-center justify-center text-[#FF3B30] animate-pulse">
                 <VideoOff className="size-8" />
               </div>
               <div className="space-y-2 max-w-md">
-                <h2 className="text-xl font-bold text-white tracking-tight">
+                <h2 className="text-xl font-bold text-[#1D1D1F] tracking-tight">
                   Camera Monitoring Interrupted — Answering Locked
                 </h2>
-                <p className="text-xs text-rose-300 font-medium">
+                <p className="text-xs text-[#D70015] font-semibold">
                   {cameraErrorDetail || "Continuous web camera feed is disconnected or unavailable."}
                 </p>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
+                <p className="text-[11px] text-[#6E6E73] leading-relaxed">
                   Video proctoring is strictly mandatory throughout this examination. Answering and navigation are blocked until camera access is restored.
                 </p>
-                <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-center justify-center gap-2 font-medium">
+                <div className="p-3 rounded-xl bg-[#FF9500]/10 border border-[#FF9500]/20 text-xs text-[#B25E00] flex items-center justify-center gap-2 font-medium">
                   <Clock className="size-4 shrink-0" />
                   <span>Important: Examination timer continues to run while monitoring is interrupted.</span>
                 </div>
               </div>
               <Button
                 onClick={initCameraAndVision}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-lg shadow-indigo-600/30 px-6 py-2.5 mt-2"
+                className="bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold text-xs shadow-sm px-6 py-2.5 rounded-xl mt-2"
               >
                 <RefreshCw className="size-3.5 mr-2" />
                 Reconnect Camera & Resume
@@ -913,37 +913,37 @@ export default function ExamAttemptPage() {
             </div>
           )}
           {currentQ && (
-            <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-md">
-              <CardHeader className="border-b border-slate-800/80 pb-4">
+            <Card className="border-[#D2D2D7] bg-white shadow-sm rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-[#D2D2D7]/80 bg-[#F5F5F7]/40 pb-4">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div className="flex items-center gap-2">
-                    <Badge className="bg-indigo-600 text-white text-xs px-2.5 py-0.5">
+                    <Badge className="bg-[#0071E3]/10 text-[#0071E3] border border-[#0071E3]/30 text-xs px-2.5 py-0.5 font-semibold rounded-full">
                       Question {currentIndex + 1}
                     </Badge>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-[#6E6E73] font-medium">
                       Single Choice (+4 / -1)
                     </span>
                   </div>
 
                   <label
                     htmlFor="review-checkbox"
-                    className="flex items-center gap-2 text-xs font-medium cursor-pointer text-slate-300 hover:text-white"
+                    className="flex items-center gap-2 text-xs font-semibold cursor-pointer text-[#424245] hover:text-[#1D1D1F]"
                   >
                     <Checkbox
                       id="review-checkbox"
                       checked={currentAnswer?.is_marked_for_review ?? false}
                       onCheckedChange={(checked) => handleToggleReview(Boolean(checked))}
-                      className="border-amber-400 data-checked:bg-amber-500 data-checked:border-amber-500"
+                      className="border-[#FF9500] data-[state=checked]:bg-[#FF9500] data-[state=checked]:border-[#FF9500]"
                     />
-                    <span className="flex items-center gap-1 text-amber-300">
-                      <Flag className="size-3.5 fill-amber-300/30" />
+                    <span className="flex items-center gap-1 text-[#B25E00]">
+                      <Flag className="size-3.5 fill-[#FF9500]/30" />
                       Mark for Review
                     </span>
                   </label>
                 </div>
 
                 <div className="pt-3">
-                  <CardTitle className="text-base sm:text-lg font-normal leading-relaxed text-slate-100 whitespace-pre-wrap">
+                  <CardTitle className="text-base sm:text-lg font-medium leading-relaxed text-[#1D1D1F] whitespace-pre-wrap">
                     {currentQ.question_text}
                   </CardTitle>
                 </div>
@@ -963,20 +963,20 @@ export default function ExamAttemptPage() {
                       onClick={() => handleSelectOption(opt.key)}
                       className={`group flex items-start gap-3.5 p-3.5 sm:p-4 rounded-xl border cursor-pointer transition-all ${
                         isSelected
-                          ? "border-indigo-500 bg-indigo-600/15 shadow-sm shadow-indigo-500/20 text-white"
-                          : "border-slate-800 bg-slate-950/40 hover:border-slate-700 hover:bg-slate-900/60 text-slate-300"
+                          ? "border-[#0071E3] bg-[#0071E3]/5 text-[#1D1D1F] shadow-sm ring-1 ring-[#0071E3]"
+                          : "border-[#D2D2D7] bg-white hover:border-[#86868B] hover:bg-[#F5F5F7] text-[#1D1D1F]"
                       }`}
                     >
                       <div
                         className={`size-7 rounded-full flex items-center justify-center shrink-0 font-bold text-xs transition-colors ${
                           isSelected
-                            ? "bg-indigo-600 text-white"
-                            : "bg-slate-800 text-slate-400 group-hover:bg-slate-700 group-hover:text-slate-200"
+                            ? "bg-[#0071E3] text-white"
+                            : "bg-[#F5F5F7] border border-[#D2D2D7] text-[#6E6E73] group-hover:border-[#86868B] group-hover:text-[#1D1D1F]"
                         }`}
                       >
                         {opt.key}
                       </div>
-                      <div className="text-sm pt-0.5 leading-relaxed break-words flex-1">
+                      <div className="text-sm pt-0.5 leading-relaxed break-words flex-1 font-normal">
                         {opt.text}
                       </div>
                     </div>
@@ -984,13 +984,13 @@ export default function ExamAttemptPage() {
                 })}
               </CardContent>
 
-              <div className="p-4 bg-slate-950/40 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
+              <div className="p-4 bg-[#F5F5F7]/40 border-t border-[#D2D2D7] flex flex-wrap items-center justify-between gap-3">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleClearOption}
                   disabled={!currentAnswer?.selected_option}
-                  className="text-slate-400 hover:text-rose-400 hover:bg-slate-800/40 text-xs"
+                  className="text-[#6E6E73] hover:text-[#FF3B30] hover:bg-[#F5F5F7] text-xs font-medium"
                 >
                   <RotateCcw className="size-3.5 mr-1.5" />
                   Clear Response
@@ -1002,7 +1002,7 @@ export default function ExamAttemptPage() {
                     size="sm"
                     onClick={() => goToQuestion(currentIndex - 1)}
                     disabled={currentIndex === 0}
-                    className="border-slate-800 bg-slate-900 text-slate-300 hover:text-white text-xs"
+                    className="border-[#D2D2D7] bg-white text-[#1D1D1F] hover:bg-[#F5F5F7] text-xs font-medium rounded-lg h-9 shadow-sm"
                   >
                     <ChevronLeft className="size-4 mr-1" />
                     Previous
@@ -1013,7 +1013,7 @@ export default function ExamAttemptPage() {
                     size="sm"
                     onClick={() => goToQuestion(currentIndex + 1)}
                     disabled={currentIndex === questions.length - 1}
-                    className="border-slate-800 bg-slate-900 text-slate-300 hover:text-white text-xs"
+                    className="border-[#D2D2D7] bg-white text-[#1D1D1F] hover:bg-[#F5F5F7] text-xs font-medium rounded-lg h-9 shadow-sm"
                   >
                     Next
                     <ChevronRight className="size-4 ml-1" />
@@ -1027,36 +1027,36 @@ export default function ExamAttemptPage() {
         {/* Right Panel: Sidebar (lg:col-span-4) */}
         <div className="lg:col-span-4 flex flex-col gap-4">
           {/* 1. Real-time AI Proctoring Feed & HUD */}
-          <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-md overflow-hidden">
-            <CardHeader className="py-2.5 px-4 border-b border-slate-800 flex flex-row items-center justify-between">
-              <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                <ScanFace className="size-3.5 text-indigo-400" />
+          <Card className="border-[#D2D2D7] bg-white shadow-sm rounded-2xl overflow-hidden">
+            <CardHeader className="py-2.5 px-4 border-b border-[#D2D2D7]/80 bg-[#F5F5F7]/40 flex flex-row items-center justify-between">
+              <span className="text-xs font-semibold text-[#1D1D1F] flex items-center gap-1.5">
+                <ScanFace className="size-3.5 text-[#0071E3]" />
                 AI Vision Proctor
               </span>
               <div className="flex items-center gap-2">
                 {cameraBlocked ? (
-                  <Badge variant="destructive" className="text-[10px] py-0 px-1.5 flex items-center gap-1">
+                  <Badge variant="destructive" className="text-[10px] py-0 px-1.5 flex items-center gap-1 bg-[#FF3B30]/10 text-[#D70015] border-[#FF3B30]/30">
                     <VideoOff className="size-2.5" /> Disconnected
                   </Badge>
                 ) : aiVisionResult?.status === "multiple_faces" ? (
-                  <Badge variant="destructive" className="text-[10px] py-0 px-1.5 flex items-center gap-1">
+                  <Badge variant="destructive" className="text-[10px] py-0 px-1.5 flex items-center gap-1 bg-[#FF3B30]/10 text-[#D70015] border-[#FF3B30]/30">
                     <Users className="size-2.5" /> Multi-Face
                   </Badge>
                 ) : aiVisionResult?.status === "no_face" ? (
-                  <Badge variant="outline" className="text-[10px] py-0 px-1.5 text-rose-400 border-rose-500/30 bg-rose-500/10">
+                  <Badge variant="outline" className="text-[10px] py-0 px-1.5 text-[#D70015] border-[#FF3B30]/30 bg-[#FF3B30]/10">
                     <UserX className="size-2.5 mr-0.5" /> No Face
                   </Badge>
                 ) : aiVisionResult?.status === "head_turned" || aiVisionResult?.status === "looking_down" ? (
-                  <Badge variant="outline" className="text-[10px] py-0 px-1.5 text-amber-300 border-amber-500/30 bg-amber-500/10">
+                  <Badge variant="outline" className="text-[10px] py-0 px-1.5 text-[#B25E00] border-[#FF9500]/30 bg-[#FF9500]/10">
                     Look Forward
                   </Badge>
                 ) : cameraActive && aiVisionResult?.status === "verified" ? (
-                  <span className="flex items-center gap-1.5 text-[10px] text-emerald-400 font-medium">
-                    <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="flex items-center gap-1.5 text-[10px] text-[#1E7E34] font-semibold">
+                    <span className="size-2 rounded-full bg-[#34C759] animate-pulse" />
                     Verified
                   </span>
                 ) : (
-                  <span className="text-[10px] text-slate-400 font-medium">
+                  <span className="text-[10px] text-[#6E6E73] font-medium">
                     Initializing...
                   </span>
                 )}
@@ -1075,15 +1075,15 @@ export default function ExamAttemptPage() {
               />
 
               {cameraBlocked && (
-                <div className="absolute inset-0 z-20 bg-slate-950/90 flex flex-col items-center justify-center p-3 text-center space-y-2">
-                  <VideoOff className="size-6 text-rose-400 animate-pulse" />
-                  <span className="text-xs font-semibold text-rose-200">Camera Feed Lost</span>
-                  <span className="text-[10px] text-slate-400">Monitoring interrupted</span>
+                <div className="absolute inset-0 z-20 bg-white/95 flex flex-col items-center justify-center p-3 text-center space-y-2">
+                  <VideoOff className="size-6 text-[#FF3B30] animate-pulse" />
+                  <span className="text-xs font-semibold text-[#1D1D1F]">Camera Feed Lost</span>
+                  <span className="text-[10px] text-[#6E6E73]">Monitoring interrupted</span>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={initCameraAndVision}
-                    className="text-xs h-7 border-rose-500/30 text-rose-300 hover:bg-rose-500/10"
+                    className="text-xs h-7 border-[#FF3B30]/30 text-[#D70015] hover:bg-[#FF3B30]/10 rounded-lg"
                   >
                     <RefreshCw className="size-3 mr-1" /> Reconnect
                   </Button>
@@ -1094,11 +1094,11 @@ export default function ExamAttemptPage() {
               {cameraActive && aiVisionResult && (
                 <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-2">
                   {/* Top telemetry pills */}
-                  <div className="flex items-center justify-between text-[9px] text-slate-200">
-                    <span className="bg-slate-950/80 backdrop-blur-sm px-1.5 py-0.5 rounded border border-slate-800">
+                  <div className="flex items-center justify-between text-[9px] text-[#1D1D1F]">
+                    <span className="bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded border border-[#D2D2D7] font-medium shadow-sm">
                       Faces: {aiVisionResult.faceCount}
                     </span>
-                    <span className="bg-slate-950/80 backdrop-blur-sm px-1.5 py-0.5 rounded border border-slate-800 font-mono">
+                    <span className="bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded border border-[#D2D2D7] font-mono shadow-sm">
                       Y:{aiVisionResult.headPose.yawDeg}° P:{aiVisionResult.headPose.pitchDeg}°
                     </span>
                   </div>
@@ -1108,12 +1108,12 @@ export default function ExamAttemptPage() {
                     <div
                       className={`w-28 h-36 rounded-[40%] border border-dashed transition-colors ${
                         aiVisionResult.status === "multiple_faces"
-                          ? "border-rose-500 bg-rose-500/10"
+                          ? "border-[#FF3B30] bg-[#FF3B30]/10"
                           : aiVisionResult.status === "head_turned" || aiVisionResult.status === "looking_down"
-                          ? "border-amber-400 bg-amber-500/10"
+                          ? "border-[#FF9500] bg-[#FF9500]/10"
                           : aiVisionResult.status === "no_face"
-                          ? "border-rose-400/50 bg-rose-500/5"
-                          : "border-emerald-400/50"
+                          ? "border-[#FF3B30]/70 bg-[#FF3B30]/5"
+                          : "border-[#34C759]/70"
                       }`}
                     />
                   </div>
@@ -1121,14 +1121,14 @@ export default function ExamAttemptPage() {
                   {/* Bottom status message */}
                   <div className="text-center">
                     <span
-                      className={`inline-block text-[9px] px-2 py-0.5 rounded-full backdrop-blur-sm ${
+                      className={`inline-block text-[9px] px-2 py-0.5 rounded-full backdrop-blur-sm font-semibold shadow-sm ${
                         aiVisionResult.status === "multiple_faces"
-                          ? "bg-rose-950/90 text-rose-300 border border-rose-500/40"
+                          ? "bg-white text-[#D70015] border border-[#FF3B30]/40"
                           : aiVisionResult.status === "no_face"
-                          ? "bg-rose-950/90 text-rose-300 border border-rose-500/40"
+                          ? "bg-white text-[#D70015] border border-[#FF3B30]/40"
                           : aiVisionResult.status === "head_turned" || aiVisionResult.status === "looking_down"
-                          ? "bg-amber-950/90 text-amber-300 border border-amber-500/40"
-                          : "bg-slate-950/80 text-emerald-300 border border-slate-800"
+                          ? "bg-white text-[#B25E00] border border-[#FF9500]/40"
+                          : "bg-white text-[#1E7E34] border border-[#34C759]/40"
                       }`}
                     >
                       {aiVisionResult.statusMessage}
@@ -1139,21 +1139,21 @@ export default function ExamAttemptPage() {
             </div>
 
             {/* Proctor Alert Audit Strip */}
-            <div className="py-2 px-3 bg-slate-950/80 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
-              <span className="flex items-center gap-1 text-[10px]">
-                <Shield className="size-3 text-indigo-400" />
+            <div className="py-2 px-3 bg-[#F5F5F7] border-t border-[#D2D2D7] flex items-center justify-between text-[11px] text-[#6E6E73]">
+              <span className="flex items-center gap-1 text-[10px] font-medium text-[#1D1D1F]">
+                <Shield className="size-3 text-[#0071E3]" />
                 Edge AI Proctoring
               </span>
-              <span className="text-[10px] font-mono text-slate-400">
+              <span className="text-[10px] font-mono text-[#6E6E73]">
                 {proctorWarningsCount} Integrity Flags
               </span>
             </div>
           </Card>
 
-          {/* 2. Question Navigation Grid */}
-          <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-md">
-            <CardHeader className="py-3 px-4 border-b border-slate-800">
-              <CardTitle className="text-xs font-semibold text-slate-200">
+          {/* 2. Question Navigation Grid (Quizrr UX) */}
+          <Card className="border-[#D2D2D7] bg-white shadow-sm rounded-2xl overflow-hidden">
+            <CardHeader className="py-3 px-4 border-b border-[#D2D2D7]/80 bg-[#F5F5F7]/40">
+              <CardTitle className="text-xs font-bold text-[#1D1D1F]">
                 Question Palette
               </CardTitle>
             </CardHeader>
@@ -1168,14 +1168,16 @@ export default function ExamAttemptPage() {
                     const isReview = ans?.is_marked_for_review;
                     const isVisited = ans?.visited;
 
-                    let bgClasses = "bg-slate-900 text-slate-400 border-slate-800";
+                    let bgClasses = "bg-white text-[#86868B] border border-[#D2D2D7]";
 
-                    if (isReview) {
-                      bgClasses = "bg-amber-500 text-white border-amber-600";
+                    if (isReview && isAnswered) {
+                      bgClasses = "bg-[#5856D6] text-white border border-[#5856D6]";
+                    } else if (isReview) {
+                      bgClasses = "bg-[#FF9500] text-white border border-[#FF9500]";
                     } else if (isAnswered) {
-                      bgClasses = "bg-emerald-600 text-white border-emerald-500";
+                      bgClasses = "bg-[#34C759] text-white border border-[#34C759]";
                     } else if (isVisited) {
-                      bgClasses = "bg-slate-700 text-slate-200 border-slate-600";
+                      bgClasses = "bg-[#E8E8ED] text-[#1D1D1F] border border-[#D2D2D7]";
                     }
 
                     return (
@@ -1185,7 +1187,7 @@ export default function ExamAttemptPage() {
                         onClick={() => goToQuestion(idx)}
                         className={`size-9 rounded-lg font-bold text-xs flex items-center justify-center border transition-all ${bgClasses} ${
                           isCurrent
-                            ? "ring-2 ring-indigo-400 ring-offset-2 ring-offset-slate-950 scale-105"
+                            ? "ring-2 ring-[#0071E3] ring-offset-2 ring-offset-white scale-105"
                             : "hover:opacity-90"
                         }`}
                       >
@@ -1197,22 +1199,22 @@ export default function ExamAttemptPage() {
               </ScrollArea>
 
               {/* Legend */}
-              <div className="mt-4 pt-4 border-t border-slate-800/80 space-y-2 text-[11px] text-slate-400">
+              <div className="mt-4 pt-4 border-t border-[#D2D2D7] space-y-2 text-[11px] text-[#6E6E73]">
                 <div className="grid grid-cols-2 gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="size-3 rounded bg-emerald-600 shrink-0" />
+                    <span className="size-3 rounded bg-[#34C759] shrink-0" />
                     <span>Answered ({answeredCount})</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="size-3 rounded bg-amber-500 shrink-0" />
+                    <span className="size-3 rounded bg-[#FF9500] shrink-0" />
                     <span>Review ({reviewCount})</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="size-3 rounded bg-slate-700 shrink-0" />
+                    <span className="size-3 rounded bg-[#E8E8ED] border border-[#D2D2D7] shrink-0" />
                     <span>Unanswered ({unansweredCount})</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="size-3 rounded bg-slate-900 border border-slate-700 shrink-0" />
+                    <span className="size-3 rounded bg-white border border-[#D2D2D7] shrink-0" />
                     <span>Not Visited</span>
                   </div>
                 </div>
@@ -1224,44 +1226,44 @@ export default function ExamAttemptPage() {
 
       {/* Confirmation Submit Dialog */}
       <Dialog open={showSubmitDialog} onOpenChange={setShowSubmitDialog}>
-        <DialogContent className="border-slate-800 bg-slate-900 text-slate-100 sm:max-w-md">
+        <DialogContent className="border-[#D2D2D7] bg-white text-[#1D1D1F] sm:max-w-md rounded-2xl shadow-xl">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold text-white flex items-center gap-2">
-              <AlertTriangle className="size-5 text-amber-400" />
+            <DialogTitle className="text-base font-bold text-[#1D1D1F] flex items-center gap-2">
+              <AlertTriangle className="size-5 text-[#FF9500]" />
               Confirm Examination Submission
             </DialogTitle>
-            <DialogDescription className="text-xs text-slate-400">
+            <DialogDescription className="text-xs text-[#6E6E73]">
               Are you sure you want to finalize your exam attempt? Once submitted, your answers cannot be altered.
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid grid-cols-3 gap-2 py-3 text-center text-xs">
-            <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-              <span className="text-slate-400 block text-[10px]">Answered</span>
-              <span className="text-sm font-bold text-emerald-400">{answeredCount}</span>
+            <div className="p-3 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7]">
+              <span className="text-[#6E6E73] block text-[10px] font-medium">Answered</span>
+              <span className="text-base font-bold text-[#1E7E34]">{answeredCount}</span>
             </div>
-            <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-              <span className="text-slate-400 block text-[10px]">Under Review</span>
-              <span className="text-sm font-bold text-amber-400">{reviewCount}</span>
+            <div className="p-3 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7]">
+              <span className="text-[#6E6E73] block text-[10px] font-medium">Under Review</span>
+              <span className="text-base font-bold text-[#B25E00]">{reviewCount}</span>
             </div>
-            <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-              <span className="text-slate-400 block text-[10px]">Unanswered</span>
-              <span className="text-sm font-bold text-slate-400">{unansweredCount}</span>
+            <div className="p-3 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7]">
+              <span className="text-[#6E6E73] block text-[10px] font-medium">Unanswered</span>
+              <span className="text-base font-bold text-[#6E6E73]">{unansweredCount}</span>
             </div>
           </div>
 
           {unansweredCount > 0 && (
-            <p className="text-[11px] text-amber-300/80 bg-amber-500/10 p-2.5 rounded border border-amber-500/20">
+            <p className="text-[11px] text-[#B25E00] bg-[#FF9500]/10 p-3 rounded-xl border border-[#FF9500]/20 font-medium">
               Notice: You have {unansweredCount} unanswered questions. Unanswered questions will receive 0 marks.
             </p>
           )}
 
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="gap-2 sm:gap-0 pt-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowSubmitDialog(false)}
-              className="border-slate-700 bg-slate-800 text-slate-200"
+              className="border-[#D2D2D7] bg-white text-[#1D1D1F] hover:bg-[#F5F5F7] rounded-xl text-xs font-medium"
             >
               Resume Test
             </Button>
@@ -1269,7 +1271,7 @@ export default function ExamAttemptPage() {
               size="sm"
               onClick={() => handleSubmitExam(false)}
               disabled={isSubmitting}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold"
+              className="bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold rounded-xl text-xs"
             >
               {isSubmitting ? (
                 <>
