@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { getPrivilegedSupabaseClient } from "@/lib/supabase/admin";
+import { getAuthenticatedUser } from "@/lib/auth/get-user";
 
 export async function POST(
   request: NextRequest,
@@ -17,16 +17,12 @@ export async function POST(
     }
 
     const cleanToken = token.trim();
-    const supabase = await createClient();
     const privilegedClient = await getPrivilegedSupabaseClient();
 
-    // 1. Require candidate authentication via active session
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    // 1. Require candidate authentication via active session or candidate cookie
+    const user = await getAuthenticatedUser();
 
-    if (authError || !user) {
+    if (!user) {
       return NextResponse.json(
         {
           error:
@@ -35,13 +31,6 @@ export async function POST(
         { status: 401 }
       );
     }
-
-    // 2. Validate candidate profile
-    const { data: profile } = await privilegedClient
-      .from("profiles")
-      .select("id, email, full_name, role")
-      .eq("id", user.id)
-      .maybeSingle();
 
     // 3. Validate exam by token
     const { data: exam, error: examError } = await privilegedClient

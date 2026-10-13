@@ -163,8 +163,9 @@ export default function ExamAttemptPage() {
       setInitError(null);
 
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
+        const authRes = await fetch("/api/auth/candidate");
+        const authData = await authRes.json();
+        if (!authData.authenticated) {
           router.replace(`/exam/${token}`);
           return;
         }

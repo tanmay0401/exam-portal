@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPrivilegedSupabaseClient } from "@/lib/supabase/admin";
+import { getAuthenticatedUser } from "@/lib/auth/get-user";
 
 export async function GET(
   request: NextRequest,
@@ -127,8 +128,28 @@ export async function GET(
       );
     }
 
+    // Check if the requesting candidate is authenticated and if they have an existing attempt
+    const authUser = await getAuthenticatedUser();
+    let existingAttempt: { id: string; status: string } | null = null;
+
+    if (authUser && exam) {
+      const { data: attempts } = await supabase
+        .from("exam_attempts")
+        .select("id, status")
+        .eq("exam_id", exam.id)
+        .eq("student_id", authUser.id)
+        .order("started_at", { ascending: false })
+        .limit(1);
+
+      if (attempts && attempts.length > 0) {
+        existingAttempt = { id: attempts[0].id, status: attempts[0].status };
+      }
+    }
+
     return NextResponse.json({
       success: true,
+      authenticated_user: authUser,
+      existing_attempt: existingAttempt,
       exam: {
         id: exam.id,
         title: exam.title,

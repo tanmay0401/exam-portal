@@ -86,6 +86,16 @@ export default function ExamEntryPage() {
           }
         } else {
           setExam(data.exam);
+          if (data.authenticated_user) {
+            setUserEmail(data.authenticated_user.email);
+            setUserId(data.authenticated_user.id);
+            if (data.authenticated_user.full_name) {
+              setFullNameInput(data.authenticated_user.full_name);
+            }
+          }
+          if (data.existing_attempt) {
+            setExistingAttemptStatus(data.existing_attempt.status);
+          }
         }
       } catch {
         setExamError("Failed to reach server. Please check your internet connection.");
@@ -100,6 +110,21 @@ export default function ExamEntryPage() {
   // 2. Check current auth session
   useEffect(() => {
     async function checkAuth() {
+      try {
+        const res = await fetch("/api/auth/candidate");
+        const authData = await res.json();
+        if (authData.authenticated && authData.user) {
+          setUserEmail(authData.user.email);
+          setUserId(authData.user.id);
+          if (authData.user.full_name) {
+            setFullNameInput(authData.user.full_name);
+          }
+          return;
+        }
+      } catch {
+        // Fall back to Supabase client
+      }
+
       const { data } = await supabase.auth.getUser();
       if (data.user) {
         setUserEmail(data.user.email ?? null);
@@ -114,10 +139,6 @@ export default function ExamEntryPage() {
       if (session?.user) {
         setUserEmail(session.user.email ?? null);
         setUserId(session.user.id);
-      } else {
-        setUserEmail(null);
-        setUserId(null);
-        setExistingAttemptStatus(null);
       }
     });
 
@@ -132,16 +153,10 @@ export default function ExamEntryPage() {
       if (!exam?.id || !userId) return;
       setCheckingAttempt(true);
       try {
-        const { data: attempts } = await supabase
-          .from("exam_attempts")
-          .select("id, status")
-          .eq("exam_id", exam.id)
-          .eq("student_id", userId)
-          .order("started_at", { ascending: false })
-          .limit(1);
-
-        if (attempts && attempts.length > 0) {
-          setExistingAttemptStatus(attempts[0].status);
+        const res = await fetch(`/api/exam-link/${token}`);
+        const data = await res.json();
+        if (data.existing_attempt) {
+          setExistingAttemptStatus(data.existing_attempt.status);
         } else {
           setExistingAttemptStatus(null);
         }
@@ -153,7 +168,7 @@ export default function ExamEntryPage() {
     }
 
     checkExistingAttempt();
-  }, [exam?.id, userId, supabase]);
+  }, [exam?.id, userId, token]);
 
   // Handle Candidate Login or Registration
   async function handleAuth(e: React.FormEvent) {
@@ -193,7 +208,17 @@ export default function ExamEntryPage() {
         );
         setUserEmail(data.user?.email || emailInput);
         setUserId(data.user?.id);
-        await supabase.auth.getUser();
+        if (data.user?.full_name) {
+          setFullNameInput(data.user.full_name);
+        }
+        // Re-check exam and attempt status
+        try {
+          const examRes = await fetch(`/api/exam-link/${token}`);
+          const examData = await examRes.json();
+          if (examData.existing_attempt) {
+            setExistingAttemptStatus(examData.existing_attempt.status);
+          }
+        } catch {}
       }
     } catch {
       toast.error("An unexpected error occurred during candidate authentication");
@@ -204,7 +229,13 @@ export default function ExamEntryPage() {
 
   // Handle Sign Out
   async function handleSignOut() {
-    await supabase.auth.signOut();
+    try {
+      await fetch("/api/auth/candidate", { method: "DELETE" });
+      await supabase.auth.signOut();
+    } catch {}
+    setUserEmail(null);
+    setUserId(null);
+    setExistingAttemptStatus(null);
     toast.info("Signed out");
   }
 

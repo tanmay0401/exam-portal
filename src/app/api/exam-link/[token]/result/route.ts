@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { getPrivilegedSupabaseClient } from "@/lib/supabase/admin";
+import { getAuthenticatedUser } from "@/lib/auth/get-user";
 
 export async function GET(
   request: NextRequest,
@@ -16,15 +16,10 @@ export async function GET(
       );
     }
 
-    const supabase = await createClient();
+    // 1. Require candidate auth
+    const user = await getAuthenticatedUser();
 
-    // 1. Require student auth
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
@@ -90,7 +85,7 @@ export async function GET(
     }
 
     const subjectName = (exam.subjects as unknown as { name: string } | null)?.name || "General";
-    const studentName = profile?.full_name || user.user_metadata?.full_name || profile?.email || user.email || "Candidate";
+    const studentName = profile?.full_name || user.full_name || profile?.email || user.email || "Candidate";
     const studentEmail = profile?.email || user.email || "";
 
     const maxMarks = exam.max_marks || ((exam.marks_per_question || 4) * (exam.total_questions || 25));

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getPrivilegedSupabaseClient } from "@/lib/supabase/admin";
+import { getAuthenticatedUser } from "@/lib/auth/get-user";
 
 export async function POST(
   request: NextRequest,
@@ -25,15 +26,12 @@ export async function POST(
       );
     }
 
-    const supabase = await createClient();
+    const privilegedClient = await getPrivilegedSupabaseClient();
 
-    // 1. Require student auth
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    // 1. Require candidate auth
+    const user = await getAuthenticatedUser();
 
-    if (authError || !user) {
+    if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
@@ -41,7 +39,7 @@ export async function POST(
     }
 
     // 2. Validate attempt and ownership
-    const { data: attempt, error: attemptError } = await supabase
+    const { data: attempt, error: attemptError } = await privilegedClient
       .from("exam_attempts")
       .select("id, student_id, started_at, status, exam_id, exams(duration_minutes, ends_at, exam_link_token)")
       .eq("id", attempt_id)
@@ -104,7 +102,7 @@ export async function POST(
         selected_option?: string | null;
         is_marked_for_review?: boolean;
       }) =>
-        supabase
+        privilegedClient
           .from("exam_responses")
           .update({
             selected_option: resp.selected_option !== undefined ? resp.selected_option : null,

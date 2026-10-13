@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { getPrivilegedSupabaseClient } from "@/lib/supabase/admin";
+import { getAuthenticatedUser } from "@/lib/auth/get-user";
 
 export async function POST(
   request: NextRequest,
@@ -26,16 +26,12 @@ export async function POST(
       );
     }
 
-    const supabase = await createClient();
     const privilegedClient = await getPrivilegedSupabaseClient();
 
-    // 1. Require student auth
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    // 1. Require candidate auth
+    const user = await getAuthenticatedUser();
 
-    if (authError || !user) {
+    if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
