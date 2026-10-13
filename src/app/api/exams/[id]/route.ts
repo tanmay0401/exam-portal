@@ -57,7 +57,10 @@ export async function GET(
     exam_batches: batches || [],
   };
 
-  return NextResponse.json({ exam: examWithBatches });
+  return NextResponse.json({
+    exam: examWithBatches,
+    batches: batches || [],
+  });
 }
 
 export async function PUT(
