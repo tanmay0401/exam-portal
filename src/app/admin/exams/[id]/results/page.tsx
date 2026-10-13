@@ -301,34 +301,28 @@ export default function AdminExamResultsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-indigo-500/30 selection:text-indigo-200">
-      {/* Background Glows */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-gradient-to-tr from-indigo-600/15 via-purple-600/15 to-blue-600/10 blur-[130px]" />
-        <div className="absolute bottom-0 right-0 h-[400px] w-[500px] rounded-full bg-blue-600/10 blur-[120px]" />
-      </div>
-
+    <div className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F] flex flex-col justify-between selection:bg-[#0071E3]/20 selection:text-[#0071E3]">
       {/* Header */}
-      <header className="relative z-10 border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-[#D2D2D7]/80 bg-white/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
               asChild
               variant="ghost"
               size="sm"
-              className="text-slate-400 hover:text-white hover:bg-slate-800"
+              className="text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-[#F5F5F7] text-xs rounded-xl"
             >
               <Link href="/admin/exams">
                 <ChevronLeft className="size-4 mr-1" />
                 Back to Exams
               </Link>
             </Button>
-            <div className="h-5 w-px bg-slate-800" />
+            <div className="h-5 w-px bg-[#D2D2D7]" />
             <div>
-              <h1 className="font-bold text-base text-white tracking-tight truncate max-w-sm sm:max-w-md">
+              <h1 className="font-semibold text-base text-[#1D1D1F] tracking-tight truncate max-w-sm sm:max-w-md">
                 {exam?.title || "Exam Results Ledger"}
               </h1>
-              <span className="text-[11px] text-slate-400 block mt-0.5">
+              <span className="text-[11px] text-[#6E6E73] block mt-0.5">
                 Evaluation Analytics & Proctor Audit
               </span>
             </div>
@@ -340,7 +334,7 @@ export default function AdminExamResultsPage() {
               size="sm"
               onClick={fetchResults}
               disabled={loading}
-              className="border-slate-800 bg-slate-900 text-slate-300 hover:text-white text-xs h-8"
+              className="border-[#D2D2D7] bg-white text-[#1D1D1F] hover:bg-[#F5F5F7] text-xs h-8 rounded-xl"
             >
               <RefreshCw className={`size-3.5 mr-1.5 ${loading ? "animate-spin" : ""}`} />
               Refresh
@@ -348,7 +342,7 @@ export default function AdminExamResultsPage() {
             <Button
               size="sm"
               onClick={handleExportCSV}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs h-8 shadow-sm"
+              className="bg-[#0071E3] hover:bg-[#0077ED] text-white font-medium text-xs h-8 rounded-xl shadow-sm"
             >
               <Download className="size-3.5 mr-1.5" />
               Export CSV
@@ -358,24 +352,26 @@ export default function AdminExamResultsPage() {
       </header>
 
       {/* Main Dashboard */}
-      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-6">
         {loading && attempts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 space-y-4">
-            <Loader2 className="size-10 text-indigo-400 animate-spin" />
-            <p className="text-slate-400 text-sm">Aggregating student submissions...</p>
+            <Loader2 className="size-10 text-[#0071E3] animate-spin" />
+            <p className="text-[#6E6E73] text-sm">Aggregating student submissions...</p>
           </div>
         ) : error ? (
-          <Card className="border-rose-900/50 bg-rose-950/20 backdrop-blur-xl text-center p-8">
-            <AlertTriangle className="size-12 text-rose-400 mx-auto mb-3" />
-            <CardTitle className="text-xl font-bold text-rose-200">
+          <Card className="border-[#FF3B30]/30 bg-white text-center p-8 rounded-2xl shadow-sm">
+            <div className="size-12 rounded-full bg-[#FF3B30]/10 flex items-center justify-center mx-auto mb-4">
+              <AlertTriangle className="size-6 text-[#FF3B30]" />
+            </div>
+            <CardTitle className="text-xl font-semibold text-[#1D1D1F]">
               Failed to Load Results
             </CardTitle>
-            <CardDescription className="text-rose-300/80 text-xs mt-1">
+            <CardDescription className="text-[#6E6E73] text-xs mt-1">
               {error}
             </CardDescription>
             <Button
               onClick={fetchResults}
-              className="mt-6 bg-slate-800 hover:bg-slate-700 text-white text-xs"
+              className="mt-6 bg-[#1D1D1F] hover:bg-[#333336] text-white text-xs rounded-xl"
             >
               Retry
             </Button>
@@ -385,80 +381,80 @@ export default function AdminExamResultsPage() {
             {/* Top Stat Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Total Attempts */}
-              <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-md">
+              <Card className="border border-[#D2D2D7] bg-white rounded-xl shadow-sm">
                 <CardHeader className="py-3 px-4 flex flex-row items-center justify-between pb-1">
-                  <span className="text-xs text-slate-400 font-medium">Total Attempts</span>
-                  <Users className="size-4 text-indigo-400" />
+                  <span className="text-xs text-[#6E6E73] font-medium">Total Attempts</span>
+                  <Users className="size-4 text-[#0071E3]" />
                 </CardHeader>
                 <CardContent className="px-4 pb-3">
-                  <div className="text-2xl font-black text-white">{stats.total}</div>
-                  <span className="text-[11px] text-slate-400">Recorded candidates</span>
+                  <div className="text-2xl font-bold text-[#1D1D1F] font-mono">{stats.total}</div>
+                  <span className="text-[11px] text-[#6E6E73]">Recorded candidates</span>
                 </CardContent>
               </Card>
 
               {/* Average Score */}
-              <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-md">
+              <Card className="border border-[#D2D2D7] bg-white rounded-xl shadow-sm">
                 <CardHeader className="py-3 px-4 flex flex-row items-center justify-between pb-1">
-                  <span className="text-xs text-slate-400 font-medium">Average Score</span>
-                  <BarChart3 className="size-4 text-cyan-400" />
+                  <span className="text-xs text-[#6E6E73] font-medium">Average Score</span>
+                  <BarChart3 className="size-4 text-[#0071E3]" />
                 </CardHeader>
                 <CardContent className="px-4 pb-3">
-                  <div className="text-2xl font-black text-cyan-300">
+                  <div className="text-2xl font-bold text-[#1D1D1F] font-mono">
                     {stats.avg}{" "}
-                    <span className="text-xs font-normal text-slate-400">
+                    <span className="text-xs font-normal text-[#6E6E73]">
                       / {exam?.max_marks ?? 100}
                     </span>
                   </div>
-                  <span className="text-[11px] text-slate-400">Cohort mean</span>
+                  <span className="text-[11px] text-[#6E6E73]">Cohort mean</span>
                 </CardContent>
               </Card>
 
               {/* Highest Score */}
-              <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-md">
+              <Card className="border border-[#D2D2D7] bg-white rounded-xl shadow-sm">
                 <CardHeader className="py-3 px-4 flex flex-row items-center justify-between pb-1">
-                  <span className="text-xs text-slate-400 font-medium">Highest Score</span>
-                  <TrendingUp className="size-4 text-emerald-400" />
+                  <span className="text-xs text-[#6E6E73] font-medium">Highest Score</span>
+                  <TrendingUp className="size-4 text-[#34C759]" />
                 </CardHeader>
                 <CardContent className="px-4 pb-3">
-                  <div className="text-2xl font-black text-emerald-400">
+                  <div className="text-2xl font-bold text-[#1E7E34] font-mono">
                     {stats.highest}{" "}
-                    <span className="text-xs font-normal text-slate-400">
+                    <span className="text-xs font-normal text-[#6E6E73]">
                       / {exam?.max_marks ?? 100}
                     </span>
                   </div>
-                  <span className="text-[11px] text-slate-400">Top performance</span>
+                  <span className="text-[11px] text-[#6E6E73]">Top performance</span>
                 </CardContent>
               </Card>
 
               {/* Lowest Score */}
-              <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-md">
+              <Card className="border border-[#D2D2D7] bg-white rounded-xl shadow-sm">
                 <CardHeader className="py-3 px-4 flex flex-row items-center justify-between pb-1">
-                  <span className="text-xs text-slate-400 font-medium">Lowest Score</span>
-                  <TrendingDown className="size-4 text-rose-400" />
+                  <span className="text-xs text-[#6E6E73] font-medium">Lowest Score</span>
+                  <TrendingDown className="size-4 text-[#FF3B30]" />
                 </CardHeader>
                 <CardContent className="px-4 pb-3">
-                  <div className="text-2xl font-black text-rose-400">
+                  <div className="text-2xl font-bold text-[#D70015] font-mono">
                     {stats.lowest}{" "}
-                    <span className="text-xs font-normal text-slate-400">
+                    <span className="text-xs font-normal text-[#6E6E73]">
                       / {exam?.max_marks ?? 100}
                     </span>
                   </div>
-                  <span className="text-[11px] text-slate-400">Minimum mark</span>
+                  <span className="text-[11px] text-[#6E6E73]">Minimum mark</span>
                 </CardContent>
               </Card>
             </div>
 
             {/* Results Table Section */}
-            <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-md">
-              <CardHeader className="p-4 sm:p-6 border-b border-slate-800">
+            <Card className="border border-[#D2D2D7] bg-white rounded-xl shadow-sm overflow-hidden">
+              <CardHeader className="p-4 sm:p-5 border-b border-[#D2D2D7]/80 bg-white">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   {/* Tabs */}
                   <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
-                    <TabsList className="bg-slate-950/80 border border-slate-800">
-                      <TabsTrigger value="live" className="text-xs data-active:bg-indigo-600 data-active:text-white">
+                    <TabsList className="bg-[#E8E8ED] p-1 rounded-xl border-none">
+                      <TabsTrigger value="live" className="text-xs data-[state=active]:bg-white data-[state=active]:text-[#1D1D1F] data-[state=active]:shadow-sm text-[#6E6E73] rounded-lg font-medium">
                         Live Results ({attempts.filter((a) => !a.is_dry_run).length})
                       </TabsTrigger>
-                      <TabsTrigger value="dry_run" className="text-xs data-active:bg-indigo-600 data-active:text-white">
+                      <TabsTrigger value="dry_run" className="text-xs data-[state=active]:bg-white data-[state=active]:text-[#1D1D1F] data-[state=active]:shadow-sm text-[#6E6E73] rounded-lg font-medium">
                         Dry Run Results ({attempts.filter((a) => a.is_dry_run).length})
                       </TabsTrigger>
                     </TabsList>
@@ -466,12 +462,12 @@ export default function AdminExamResultsPage() {
 
                   {/* Search bar */}
                   <div className="relative w-full sm:w-64">
-                    <Search className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <Search className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#6E6E73]" />
                     <Input
                       placeholder="Search student or email..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-8 bg-slate-950/60 border-slate-800 text-xs h-8 text-white placeholder:text-slate-500"
+                      className="pl-8 bg-white border-[#D2D2D7] text-xs h-8 text-[#1D1D1F] placeholder:text-[#6E6E73] rounded-lg"
                     />
                   </div>
                 </div>
@@ -479,106 +475,106 @@ export default function AdminExamResultsPage() {
 
               <CardContent className="p-0">
                 <Table>
-                  <TableHeader className="bg-slate-950/60 border-b border-slate-800">
-                    <TableRow className="border-slate-800 hover:bg-transparent">
-                      <TableHead className="text-slate-400 text-xs font-semibold py-3">Student Name</TableHead>
-                      <TableHead className="text-slate-400 text-xs font-semibold">Email</TableHead>
-                      <TableHead className="text-slate-400 text-xs font-semibold cursor-pointer" onClick={toggleSort}>
-                        <div className="flex items-center gap-1.5 hover:text-white">
+                  <TableHeader className="bg-[#F5F5F7] border-b border-[#D2D2D7]">
+                    <TableRow className="border-[#D2D2D7] hover:bg-transparent">
+                      <TableHead className="text-[#6E6E73] text-xs font-semibold py-3">Student Name</TableHead>
+                      <TableHead className="text-[#6E6E73] text-xs font-semibold">Email</TableHead>
+                      <TableHead className="text-[#6E6E73] text-xs font-semibold cursor-pointer" onClick={toggleSort}>
+                        <div className="flex items-center gap-1.5 hover:text-[#1D1D1F]">
                           <span>Score</span>
                           <ArrowUpDown className="size-3" />
                         </div>
                       </TableHead>
-                      <TableHead className="text-slate-400 text-xs font-semibold text-center">Correct</TableHead>
-                      <TableHead className="text-slate-400 text-xs font-semibold text-center">Incorrect</TableHead>
-                      <TableHead className="text-slate-400 text-xs font-semibold text-center">Unanswered</TableHead>
-                      <TableHead className="text-slate-400 text-xs font-semibold">Submitted At</TableHead>
-                      <TableHead className="text-slate-400 text-xs font-semibold text-center">Mode</TableHead>
-                      <TableHead className="text-slate-400 text-xs font-semibold text-center">Proctor Warnings</TableHead>
-                      <TableHead className="text-slate-400 text-xs font-semibold text-center">Responses</TableHead>
+                      <TableHead className="text-[#6E6E73] text-xs font-semibold text-center">Correct</TableHead>
+                      <TableHead className="text-[#6E6E73] text-xs font-semibold text-center">Incorrect</TableHead>
+                      <TableHead className="text-[#6E6E73] text-xs font-semibold text-center">Unanswered</TableHead>
+                      <TableHead className="text-[#6E6E73] text-xs font-semibold">Submitted At</TableHead>
+                      <TableHead className="text-[#6E6E73] text-xs font-semibold text-center">Mode</TableHead>
+                      <TableHead className="text-[#6E6E73] text-xs font-semibold text-center">Proctor Warnings</TableHead>
+                      <TableHead className="text-[#6E6E73] text-xs font-semibold text-center">Responses</TableHead>
                     </TableRow>
                   </TableHeader>
 
                   <TableBody>
                     {processedAttempts.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={10} className="text-center py-12 text-slate-400 text-xs">
+                        <TableCell colSpan={10} className="text-center py-12 text-[#6E6E73] text-xs">
                           No attempt records match current filters.
                         </TableCell>
                       </TableRow>
                     ) : (
                       processedAttempts.map((attempt) => (
-                        <TableRow key={attempt.id} className="border-slate-800/60 hover:bg-slate-800/30 text-xs">
+                        <TableRow key={attempt.id} className="border-b border-[#D2D2D7]/60 hover:bg-[#F5F5F7]/60 text-xs transition-colors">
                           {/* Name */}
-                          <TableCell className="font-medium text-white py-3">
+                          <TableCell className="font-medium text-[#1D1D1F] py-3">
                             {attempt.student_name}
                           </TableCell>
 
                           {/* Email */}
-                          <TableCell className="text-slate-400 font-mono text-[11px]">
+                          <TableCell className="text-[#6E6E73] font-mono text-[11px]">
                             {attempt.student_email}
                           </TableCell>
 
                           {/* Score */}
-                          <TableCell className="font-bold">
+                          <TableCell className="font-bold font-mono">
                             {attempt.score !== null ? (
                               <span
                                 className={
                                   attempt.score >= (exam?.max_marks ? exam.max_marks * 0.4 : 40)
-                                     ? "text-emerald-400"
-                                    : "text-rose-400"
+                                     ? "text-[#1E7E34]"
+                                    : "text-[#D70015]"
                                 }
                               >
                                 {attempt.score}{" "}
-                                <span className="text-[10px] text-slate-500 font-normal">
+                                <span className="text-[10px] text-[#6E6E73] font-normal">
                                   / {exam?.max_marks ?? 100}
                                 </span>
                               </span>
                             ) : (
-                              <span className="text-slate-500 italic">In Progress</span>
+                              <span className="text-[#6E6E73] italic font-normal">In Progress</span>
                             )}
                           </TableCell>
 
                           {/* Correct */}
-                          <TableCell className="text-center text-emerald-400 font-medium">
+                          <TableCell className="text-center text-[#1E7E34] font-medium font-mono">
                             {attempt.total_correct}
                           </TableCell>
 
                           {/* Incorrect */}
-                          <TableCell className="text-center text-rose-400 font-medium">
+                          <TableCell className="text-center text-[#D70015] font-medium font-mono">
                             {attempt.total_incorrect}
                           </TableCell>
 
                           {/* Unanswered */}
-                          <TableCell className="text-center text-slate-400">
+                          <TableCell className="text-center text-[#6E6E73] font-mono">
                             {attempt.total_unanswered}
                           </TableCell>
 
                           {/* Submitted */}
-                          <TableCell className="text-slate-400 text-[11px]">
+                          <TableCell className="text-[#6E6E73] text-[11px]">
                             {attempt.submitted_at ? (
                               new Date(attempt.submitted_at).toLocaleString([], {
                                 dateStyle: "short",
                                 timeStyle: "short",
                               })
                             ) : (
-                              <span className="text-amber-400 text-[11px]">Active</span>
+                              <span className="text-[#FF9500] font-medium text-[11px]">Active</span>
                             )}
                           </TableCell>
 
                           {/* Auto Submitted Badge */}
                           <TableCell className="text-center">
                             {attempt.is_auto_submitted ? (
-                              <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-300 border-amber-500/30 py-0.5">
+                              <Badge variant="outline" className="text-[10px] bg-[#FF9500]/10 text-[#B25E00] border-[#FF9500]/30 py-0.5 rounded-full font-medium">
                                 <Clock className="size-2.5 mr-1" />
                                 Auto
                               </Badge>
                             ) : attempt.submitted_at ? (
-                              <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-300 border-emerald-500/30 py-0.5">
+                              <Badge variant="outline" className="text-[10px] bg-[#34C759]/10 text-[#1E7E34] border-[#34C759]/30 py-0.5 rounded-full font-medium">
                                 Manual
                               </Badge>
                             ) : (
-                              <Badge variant="outline" className="text-[10px] bg-slate-800 text-slate-400 border-slate-700 py-0.5">
+                              <Badge variant="outline" className="text-[10px] bg-[#E8E8ED] text-[#6E6E73] border-[#D2D2D7] py-0.5 rounded-full font-medium">
                                 Ongoing
                               </Badge>
                             )}
@@ -589,10 +585,10 @@ export default function AdminExamResultsPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedAttemptForProctor(attempt)}
-                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium transition hover:scale-105 ${
+                              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium transition hover:opacity-85 ${
                                 attempt.warnings_count > 0
-                                  ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
-                                  : "bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
+                                  ? "bg-[#FF3B30]/10 text-[#D70015] border border-[#FF3B30]/25"
+                                  : "bg-[#34C759]/10 text-[#1E7E34] border border-[#34C759]/25"
                               }`}
                             >
                               <Shield className="size-3" />
@@ -607,7 +603,7 @@ export default function AdminExamResultsPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => handleViewResponses(attempt.id)}
-                              className="text-indigo-400 hover:text-indigo-300 hover:bg-indigo-950/40 text-[11px] h-7 px-2"
+                              className="text-[#0071E3] hover:text-[#0077ED] hover:bg-[#0071E3]/10 text-[11px] h-7 px-2.5 rounded-lg font-medium"
                             >
                               <FileText className="size-3 mr-1" />
                               <span>Answers</span>
@@ -629,13 +625,13 @@ export default function AdminExamResultsPage() {
         open={!!selectedAttemptForProctor}
         onOpenChange={(open) => !open && setSelectedAttemptForProctor(null)}
       >
-        <DialogContent className="border-slate-800 bg-slate-900 text-slate-100 sm:max-w-lg">
+        <DialogContent className="border border-[#D2D2D7] bg-white text-[#1D1D1F] sm:max-w-lg rounded-2xl shadow-xl">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold text-white flex items-center gap-2">
-              <Shield className="size-4 text-indigo-400" />
+            <DialogTitle className="text-base font-semibold text-[#1D1D1F] flex items-center gap-2">
+              <Shield className="size-4 text-[#0071E3]" />
               Proctor Audit: {selectedAttemptForProctor?.student_name}
             </DialogTitle>
-            <DialogDescription className="text-xs text-slate-400">
+            <DialogDescription className="text-xs text-[#6E6E73]">
               Complete timeline of window visibility changes and suspicious activity logs during assessment.
             </DialogDescription>
           </DialogHeader>
@@ -644,65 +640,65 @@ export default function AdminExamResultsPage() {
             <div className="space-y-4 py-2">
               {/* Categorical Summary Badges */}
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 text-center text-xs">
-                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400 block text-[9px]">Tab Switches</span>
-                  <span className="text-sm font-bold text-amber-400">
+                <div className="p-2.5 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7]">
+                  <span className="text-[#6E6E73] block text-[9px] font-medium">Tab Switches</span>
+                  <span className="text-sm font-bold text-[#B25E00] font-mono">
                     {selectedAttemptForProctor.proctor_log_summary.tab_switches}
                   </span>
                 </div>
-                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400 block text-[9px]">Fullscreen Exits</span>
-                  <span className="text-sm font-bold text-rose-400">
+                <div className="p-2.5 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7]">
+                  <span className="text-[#6E6E73] block text-[9px] font-medium">Fullscreen Exits</span>
+                  <span className="text-sm font-bold text-[#D70015] font-mono">
                     {selectedAttemptForProctor.proctor_log_summary.fullscreen_exits}
                   </span>
                 </div>
-                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400 block text-[9px]">Face Losses</span>
-                  <span className="text-sm font-bold text-rose-300">
+                <div className="p-2.5 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7]">
+                  <span className="text-[#6E6E73] block text-[9px] font-medium">Face Losses</span>
+                  <span className="text-sm font-bold text-[#D70015] font-mono">
                     {selectedAttemptForProctor.proctor_log_summary.face_losses}
                   </span>
                 </div>
-                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400 block text-[9px]">Camera Drops</span>
-                  <span className="text-sm font-bold text-rose-500">
+                <div className="p-2.5 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7]">
+                  <span className="text-[#6E6E73] block text-[9px] font-medium">Camera Drops</span>
+                  <span className="text-sm font-bold text-[#D70015] font-mono">
                     {selectedAttemptForProctor.proctor_log_summary.camera_disconnects || 0}
                   </span>
                 </div>
-                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400 block text-[9px]">Multi-Face</span>
-                  <span className="text-sm font-bold text-purple-400">
+                <div className="p-2.5 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7]">
+                  <span className="text-[#6E6E73] block text-[9px] font-medium">Multi-Face</span>
+                  <span className="text-sm font-bold text-[#5856D6] font-mono">
                     {selectedAttemptForProctor.proctor_log_summary.multiple_faces || 0}
                   </span>
                 </div>
-                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400 block text-[9px]">Head Turns</span>
-                  <span className="text-sm font-bold text-amber-300">
+                <div className="p-2.5 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7]">
+                  <span className="text-[#6E6E73] block text-[9px] font-medium">Head Turns</span>
+                  <span className="text-sm font-bold text-[#B25E00] font-mono">
                     {selectedAttemptForProctor.proctor_log_summary.head_turns || 0}
                   </span>
                 </div>
-                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400 block text-[9px]">Looking Down</span>
-                  <span className="text-sm font-bold text-amber-300">
+                <div className="p-2.5 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7]">
+                  <span className="text-[#6E6E73] block text-[9px] font-medium">Looking Down</span>
+                  <span className="text-sm font-bold text-[#B25E00] font-mono">
                     {selectedAttemptForProctor.proctor_log_summary.looking_down || 0}
                   </span>
                 </div>
-                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400 block text-[9px]">Gaze Away</span>
-                  <span className="text-sm font-bold text-blue-300">
+                <div className="p-2.5 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7]">
+                  <span className="text-[#6E6E73] block text-[9px] font-medium">Gaze Away</span>
+                  <span className="text-sm font-bold text-[#0071E3] font-mono">
                     {selectedAttemptForProctor.proctor_log_summary.gaze_away || 0}
                   </span>
                 </div>
-                <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400 block text-[9px]">Total Alerts</span>
-                  <span className="text-sm font-bold text-slate-200">
+                <div className="p-2.5 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7]">
+                  <span className="text-[#6E6E73] block text-[9px] font-medium">Total Alerts</span>
+                  <span className="text-sm font-bold text-[#1D1D1F] font-mono">
                     {selectedAttemptForProctor.warnings_count ?? selectedAttemptForProctor.proctor_log_summary.total_events}
                   </span>
                 </div>
               </div>
 
               {/* Advisory Clarification Notice */}
-              <div className="p-2.5 rounded-lg bg-indigo-950/30 border border-indigo-500/20 text-[11px] text-indigo-300 flex items-start gap-2">
-                <Shield className="size-4 text-indigo-400 shrink-0 mt-0.5" />
+              <div className="p-3 rounded-xl bg-[#0071E3]/5 border border-[#0071E3]/20 text-[11px] text-[#0071E3] flex items-start gap-2 leading-relaxed">
+                <Shield className="size-4 text-[#0071E3] shrink-0 mt-0.5" />
                 <span>
                   <strong>Advisory Note:</strong> AI detections highlight potential environmental changes (e.g. movement, secondary individuals, camera interruptions). Automated flags should be reviewed with context and do not automatically confirm misconduct.
                 </span>
@@ -711,7 +707,7 @@ export default function AdminExamResultsPage() {
               {/* Event Logs Timeline */}
               <div className="max-h-64 overflow-y-auto space-y-2 pr-1 text-xs">
                 {selectedAttemptForProctor.proctor_log.length === 0 ? (
-                  <div className="text-center py-6 text-slate-500 text-xs">
+                  <div className="text-center py-6 text-[#6E6E73] text-xs">
                     No integrity warnings logged. Clean attempt session.
                   </div>
                 ) : (
@@ -732,37 +728,43 @@ export default function AdminExamResultsPage() {
                     return (
                       <div
                         key={idx}
-                        className="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800/80 flex items-start justify-between gap-2"
+                        className={`p-3 rounded-xl border flex items-start justify-between gap-2.5 ${
+                          isHighAlert
+                            ? "border-[#FF3B30]/25 bg-[#FF3B30]/5"
+                            : isMediumAlert
+                            ? "border-[#FF9500]/25 bg-[#FF9500]/5"
+                            : "border-[#D2D2D7] bg-[#F5F5F7]"
+                        }`}
                       >
                         <div className="space-y-0.5">
-                          <div className="font-semibold text-slate-200 flex items-center gap-1.5">
+                          <div className="font-semibold text-[#1D1D1F] flex items-center gap-1.5">
                             <span
                               className={`size-2 rounded-full ${
                                 isHighAlert
-                                  ? "bg-rose-500"
+                                  ? "bg-[#FF3B30]"
                                   : isMediumAlert
-                                  ? "bg-amber-400"
-                                  : "bg-emerald-400"
+                                  ? "bg-[#FF9500]"
+                                  : "bg-[#34C759]"
                               }`}
                             />
                             <span className="capitalize">
                               {log.event_type.replace(/_/g, " ")}
                             </span>
                             {isHighAlert && (
-                              <Badge variant="destructive" className="text-[9px] py-0 px-1">
+                              <Badge variant="destructive" className="text-[9px] py-0 px-1 bg-[#FF3B30]/10 text-[#D70015] border-[#FF3B30]/20 rounded-full font-medium">
                                 High Flag
                               </Badge>
                             )}
                           </div>
                           {log.details ? (
-                            <div className="text-[11px] text-slate-400">
+                            <div className="text-[11px] text-[#6E6E73]">
                               {typeof log.details === "string"
                                 ? log.details
                                 : (log.details as any)?.message || JSON.stringify(log.details)}
                             </div>
                           ) : null}
                         </div>
-                        <span className="text-[10px] text-slate-500 shrink-0 font-mono">
+                        <span className="text-[10px] text-[#6E6E73] shrink-0 font-mono">
                           {new Date(log.timestamp).toLocaleTimeString()}
                         </span>
                       </div>
@@ -785,39 +787,39 @@ export default function AdminExamResultsPage() {
           }
         }}
       >
-        <DialogContent className="border-slate-800 bg-slate-900 text-slate-100 sm:max-w-2xl max-h-[85vh] flex flex-col">
+        <DialogContent className="border border-[#D2D2D7] bg-white text-[#1D1D1F] sm:max-w-2xl max-h-[85vh] rounded-2xl shadow-xl flex flex-col">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold text-white flex items-center gap-2">
-              <FileText className="size-4 text-indigo-400" />
+            <DialogTitle className="text-base font-semibold text-[#1D1D1F] flex items-center gap-2">
+              <FileText className="size-4 text-[#0071E3]" />
               Candidate Responses: {attemptDetail?.attempt?.student_name || "Assessment Review"}
             </DialogTitle>
-            <DialogDescription className="text-xs text-slate-400">
+            <DialogDescription className="text-xs text-[#6E6E73]">
               Question-by-question breakdown, candidate selections, answer keys, and awarded marks.
             </DialogDescription>
           </DialogHeader>
 
           {loadingResponses ? (
             <div className="flex flex-col items-center justify-center py-12 space-y-2">
-              <Loader2 className="size-8 text-indigo-400 animate-spin" />
-              <p className="text-xs text-slate-400">Loading student responses...</p>
+              <Loader2 className="size-8 text-[#0071E3] animate-spin" />
+              <p className="text-xs text-[#6E6E73]">Loading student responses...</p>
             </div>
           ) : attemptDetail ? (
             <div className="flex-1 overflow-y-auto space-y-4 py-2 pr-1">
               {/* Summary Banner */}
-              <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div className="p-3.5 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7] flex flex-wrap items-center justify-between gap-2 text-xs">
                 <div>
-                  <span className="text-slate-400">Student: </span>
-                  <strong className="text-white">{attemptDetail.attempt.student_name}</strong>
-                  <span className="text-slate-500 font-mono text-[11px] ml-1">({attemptDetail.attempt.student_email})</span>
+                  <span className="text-[#6E6E73]">Student: </span>
+                  <strong className="text-[#1D1D1F]">{attemptDetail.attempt.student_name}</strong>
+                  <span className="text-[#6E6E73] font-mono text-[11px] ml-1">({attemptDetail.attempt.student_email})</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs bg-indigo-500/10 text-indigo-300 border-indigo-500/20">
+                  <Badge variant="outline" className="text-xs bg-[#0071E3]/10 text-[#0071E3] border-[#0071E3]/20 rounded-full font-medium">
                     Score: {attemptDetail.attempt.score ?? 0} / {exam?.max_marks ?? 100}
                   </Badge>
-                  <Badge variant="outline" className="text-xs bg-emerald-500/10 text-emerald-300 border-emerald-500/20">
+                  <Badge variant="outline" className="text-xs bg-[#34C759]/10 text-[#1E7E34] border-[#34C759]/20 rounded-full font-medium">
                     +{attemptDetail.attempt.total_correct} Correct
                   </Badge>
-                  <Badge variant="outline" className="text-xs bg-rose-500/10 text-rose-300 border-rose-500/20">
+                  <Badge variant="outline" className="text-xs bg-[#FF3B30]/10 text-[#D70015] border-[#FF3B30]/20 rounded-full font-medium">
                     -{attemptDetail.attempt.total_incorrect} Incorrect
                   </Badge>
                 </div>
@@ -825,7 +827,7 @@ export default function AdminExamResultsPage() {
 
               {/* Question List */}
               {attemptDetail.responses.length === 0 ? (
-                <div className="text-center py-8 text-xs text-slate-500">
+                <div className="text-center py-8 text-xs text-[#6E6E73]">
                   No response data recorded for this attempt.
                 </div>
               ) : (
@@ -836,20 +838,20 @@ export default function AdminExamResultsPage() {
                   return (
                     <div
                       key={r.response_id || idx}
-                      className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2 text-xs"
+                      className="p-4 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7] space-y-2.5 text-xs"
                     >
                       <div className="flex items-start justify-between gap-2">
-                        <span className="font-semibold text-slate-200">
+                        <span className="font-semibold text-[#1D1D1F]">
                           Q{r.question_order}. {r.question_text}
                         </span>
                         <Badge
                           variant="outline"
-                          className={`text-[10px] py-0 px-2 shrink-0 ${
+                          className={`text-[10px] py-0.5 px-2 shrink-0 rounded-full font-medium ${
                             isCorrect
-                              ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
+                              ? "bg-[#34C759]/10 text-[#1E7E34] border-[#34C759]/30"
                               : isWrong
-                              ? "bg-rose-500/10 text-rose-300 border-rose-500/30"
-                              : "bg-slate-800 text-slate-400 border-slate-700"
+                              ? "bg-[#FF3B30]/10 text-[#D70015] border-[#FF3B30]/30"
+                              : "bg-[#E8E8ED] text-[#6E6E73] border-[#D2D2D7]"
                           }`}
                         >
                           {isCorrect
@@ -861,33 +863,33 @@ export default function AdminExamResultsPage() {
                       </div>
 
                       {/* Options */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                         {(["A", "B", "C", "D"] as const).map((optKey) => {
                           const optText = r.options[optKey];
                           if (!optText) return null;
                           const isSelected = r.selected_option?.trim().toUpperCase() === optKey;
                           const isAnswerKey = r.correct_option?.trim().toUpperCase() === optKey;
 
-                          let optClass = "border-slate-800/80 bg-slate-900/40 text-slate-400";
+                          let optClass = "border-[#D2D2D7] bg-white text-[#6E6E73]";
                           if (isAnswerKey) {
-                            optClass = "border-emerald-500/40 bg-emerald-500/10 text-emerald-200 font-medium";
+                            optClass = "border-[#34C759]/40 bg-[#34C759]/10 text-[#1E7E34] font-medium";
                           } else if (isSelected && !isAnswerKey) {
-                            optClass = "border-rose-500/40 bg-rose-500/10 text-rose-200 font-medium";
+                            optClass = "border-[#FF3B30]/40 bg-[#FF3B30]/10 text-[#D70015] font-medium";
                           }
 
                           return (
                             <div
                               key={optKey}
-                              className={`p-2 rounded-lg border text-[11px] flex items-center justify-between gap-1.5 ${optClass}`}
+                              className={`p-2.5 rounded-lg border text-[11px] flex items-center justify-between gap-1.5 ${optClass}`}
                             >
                               <span className="truncate">
-                                <strong className="mr-1">{optKey}.</strong> {optText}
+                                <strong className="mr-1 text-[#1D1D1F]">{optKey}.</strong> {optText}
                               </span>
                               {isAnswerKey && (
-                                <span className="text-[9px] text-emerald-400 font-bold shrink-0">Correct Key</span>
+                                <span className="text-[9px] text-[#1E7E34] font-bold shrink-0">Correct Key</span>
                               )}
                               {isSelected && !isAnswerKey && (
-                                <span className="text-[9px] text-rose-400 font-bold shrink-0">Candidate Choice</span>
+                                <span className="text-[9px] text-[#D70015] font-bold shrink-0">Candidate Choice</span>
                               )}
                             </div>
                           );
@@ -895,8 +897,8 @@ export default function AdminExamResultsPage() {
                       </div>
 
                       {r.explanation && (
-                        <div className="p-2 rounded bg-indigo-950/20 border border-indigo-500/10 text-[11px] text-indigo-300">
-                          <strong>Explanation:</strong> {r.explanation}
+                        <div className="p-2.5 rounded-lg bg-white border border-[#D2D2D7] text-[11px] text-[#1D1D1F]">
+                          <strong className="text-[#0071E3]">Explanation:</strong> {r.explanation}
                         </div>
                       )}
                     </div>
@@ -909,7 +911,7 @@ export default function AdminExamResultsPage() {
       </Dialog>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-slate-800/60 bg-slate-950/40 py-4 text-center text-xs text-slate-500">
+      <footer className="border-t border-[#D2D2D7]/80 bg-white py-4 text-center text-xs text-[#6E6E73]">
         <p>ExamPortal Admin Console • Examination Integrity Reporting</p>
       </footer>
     </div>
